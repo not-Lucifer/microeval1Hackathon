@@ -9,6 +9,9 @@
 # provider (optional OpenRouter routing prefs), seed (if supported),
 # price_per_mtok (optional {input, output} USD per million tokens; only used when OpenRouter
 # does not report the cost, and for --dry-run estimates).
+# Some reasoning models reject a temperature parameter: set `temperature: null` for those
+# (it is then not sent) and record that in docs/OPEN_QUESTIONS.md. Unknown keys and duplicate
+# names are errors, so a typo cannot silently change a run's settings.
 
 defaults:
   temperature: 0

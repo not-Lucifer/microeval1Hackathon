@@ -9,6 +9,7 @@ the prompt (CLAUDE.md rule 3). tests/test_tasks_wellformed.py checks this mechan
 """
 from __future__ import annotations
 
+import io
 import json
 import sys
 from pathlib import Path
@@ -501,7 +502,8 @@ def render_all() -> dict[Path, str]:
 
 
 def main(argv: list[str]) -> int:
-    sys.stdout.reconfigure(encoding="utf-8")
+    if isinstance(sys.stdout, io.TextIOWrapper):  # Windows consoles default to cp1252 (no ε)
+        sys.stdout.reconfigure(encoding="utf-8")
     files = render_all()
     if "--check" in argv:
         stale = [p for p, text in files.items() if not p.exists() or p.read_text(encoding="utf-8") != text]

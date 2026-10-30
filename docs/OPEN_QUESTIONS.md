@@ -40,6 +40,8 @@ Numbers quoted here come from `python scripts/verify_specs.py`.
 | 24 | T03 instance | resolved | Seed 3788 satisfies every §5 constraint; minimal quotient DFA has **4** states (spec minimum 3). |
 | 25 | T07 reference grammar had unused `B3` productions | resolved | Found by the "drop any production must undergenerate" mutant test; removed. Every production of both reference grammars is now necessary. |
 | 26 | `run_eval.py --regrade` exit code | resolved | Exits 1 if any recomputed grade differs from the stored one (a reproducibility alarm for judges). |
+| 31 | OpenRouter `finish_reason = "error"` (provider failed mid-generation) | resolved | Treated as an API error (retried, then API_ERROR, excluded from denominators), never graded as a model answer (CLAUDE.md rule 8). |
+| 32 | CFG grader memory on grammars with very long strings | resolved (bug fix) | Shortest strings and contexts used to be built literally, so a 30-rule doubling chain needed ~31 GB. Nothing longer than N is built now (~1 MB). For a finite grammar whose missing word would exceed 10,000 symbols, UNDERGENERATES is reported with no stored counterexample (noted in details). |
 
 ## C. Open items for the author
 

@@ -128,6 +128,9 @@ def enumerate_upto(
 # --------------------------------------------------------------------------- exact check
 
 
+MAX_COUNTEREXAMPLE_LEN = 10_000  # longer missing words of a finite grammar are not materialized
+
+
 @dataclass
 class BoundedCheck:
     """Result of ``check_upto``. ``kind`` is None (agrees up to N), "over" or "under"."""
@@ -152,25 +155,43 @@ def _productive(term_rules, bin_rules) -> set[str]:
     return prod
 
 
-def _shortest_strings(term_rules, bin_rules, productive) -> dict[str, str]:
-    """For each productive nonterminal, its shortlex-least derivable string (fixpoint)."""
+def _shortest_strings(term_rules, bin_rules, max_len: int) -> dict[str, str]:
+    """For each nonterminal whose shortest derivable string has length <= max_len, its
+    shortlex-least such string (fixpoint). Longer strings are never built: a doubling chain
+    A_k -> A_(k-1) A_(k-1) would otherwise need 2^k characters of memory."""
     best = {a: min(ts) for a, ts in term_rules.items()}
     key = lambda s: (len(s), s)  # noqa: E731
     changed = True
     while changed:
         changed = False
         for a, b, c in bin_rules:
-            if b in best and c in best:
+            if b in best and c in best and len(best[b]) + len(best[c]) <= max_len:
                 cand = best[b] + best[c]
                 if a not in best or key(cand) < key(best[a]):
                     best[a] = cand
                     changed = True
-    return {a: s for a, s in best.items() if a in productive}
+    return best
 
 
-def _contexts(start, bin_rules, shortest) -> dict[str, tuple[str, str]]:
-    """For each nonterminal X reachable from the start through productive rules, a pair
-    (x, y) of minimal total length with start =>* x X y (Dijkstra over context length)."""
+def _reachable(start: str, bin_rules) -> set[str]:
+    """Nonterminals reachable from the start symbol through the given rules."""
+    seen, stack = {start}, [start]
+    while stack:
+        a = stack.pop()
+        for lhs, b, c in bin_rules:
+            if lhs == a:
+                for child in (b, c):
+                    if child not in seen:
+                        seen.add(child)
+                        stack.append(child)
+    return seen
+
+
+def _contexts(start, bin_rules, shortest, max_len: int) -> dict[str, tuple[str, str]]:
+    """For each nonterminal X that can occur inside a derivable string of length <= max_len,
+    a pair (x, y) of minimal total length with start =>* x X y (Dijkstra over context
+    length). Contexts longer than max_len are pruned: such an X cannot contribute to any
+    string of length <= max_len."""
     by_lhs: dict[str, list[tuple[str, str]]] = {}
     for lhs, b, c in bin_rules:
         by_lhs.setdefault(lhs, []).append((b, c))
@@ -182,9 +203,11 @@ def _contexts(start, bin_rules, shortest) -> dict[str, tuple[str, str]]:
             continue
         ctx[a] = (x, y)
         for b, c in by_lhs.get(a, ()):
+            if b not in shortest or c not in shortest:
+                continue  # a sibling's shortest string is longer than max_len
             # In A -> B C, B sits before a shortest C-string and C after a shortest B-string.
             for child, cx, cy in ((b, x, shortest[c] + y), (c, x + shortest[b], y)):
-                if child not in ctx:
+                if child not in ctx and len(cx) + len(cy) <= max_len:
                     heapq.heappush(heap, (len(cx) + len(cy), cx, cy, child))
     return ctx
 
@@ -245,8 +268,10 @@ def check_upto(
 
     Method ("wrapped enumeration"):
       1. Keep only productive nonterminals reachable from the start.
-      2. Give each remaining nonterminal X a fixed shortest context (x, y) with
-         start =>* x X y, and let c(X) = |x| + |y|.
+      2. Give each remaining nonterminal X that can occur inside a string of length <= N a
+         fixed shortest context (x, y) with start =>* x X y, and let c(X) = |x| + |y|.
+         No string longer than N is ever built, so memory does not depend on how long the
+         grammar's other strings are.
       3. Compute, by dynamic programming, the set X_l of strings X derives, for every
          l <= N - c(X) (longer strings of X can never occur inside a string of length <= N).
          Each new u in X_l is checked as x+u+y against L. x+u+y is derivable and has length
@@ -272,17 +297,18 @@ def check_upto(
         result.kind = "under" if result.counterexample is not None else None
         return result
 
-    shortest = _shortest_strings(term_rules, bin_rules, productive)
-    ctx = _contexts(grammar.start, bin_rules, shortest)
-    reachable = set(ctx)
+    reachable = _reachable(grammar.start, bin_rules)
     bin_rules = [r for r in bin_rules if r[0] in reachable]
+    shortest = _shortest_strings(term_rules, bin_rules, max_len)
+    ctx = _contexts(grammar.start, bin_rules, shortest, max_len)
     order = sorted(
-        ((a, n) for a in reachable for n in range(1, max_len - sum(map(len, ctx[a])) + 1)),
+        ((a, n) for a in ctx for n in range(1, max_len - sum(map(len, ctx[a])) + 1)),
         key=lambda an: (an[1] + len(ctx[an[0]][0]) + len(ctx[an[0]][1]), an[1], an[0]),
     )
     rules_by_lhs: dict[str, list[tuple[str, str]]] = {}
     for a, b, c in bin_rules:
-        rules_by_lhs.setdefault(a, []).append((b, c))
+        if a in ctx:
+            rules_by_lhs.setdefault(a, []).append((b, c))
 
     sets: dict[tuple[str, int], set[str]] = {}
     over: Optional[str] = None
@@ -317,14 +343,16 @@ def check_upto(
         return result
 
     # Finiteness: a trimmed grammar has an infinite language iff its graph has a cycle.
-    if not _has_cycle(reachable, bin_rules):
+    # (Uses every productive reachable nonterminal, not only those that fit inside length N.)
+    if not _has_cycle(reachable, bin_rules) and shortest_longer_than(max_len) is not None:
         result.finite_language = True
+        result.kind = "under"
         longest = _longest_lengths(reachable, term_rules, bin_rules)[grammar.start]
-        missing = shortest_longer_than(max(longest, max_len))
-        if missing is not None:
-            result.kind, result.counterexample = "under", missing
-            result.notes.append(
-                f"grammar generates a finite language (longest string has length {longest}); "
-                "the target language is infinite"
-            )
+        if longest <= MAX_COUNTEREXAMPLE_LEN:
+            result.counterexample = shortest_longer_than(max(longest, max_len))
+        result.notes.append(
+            f"grammar generates a finite language (longest string has length {longest}); "
+            "the target language is infinite"
+            + ("" if result.counterexample else "; the missing word is too long to store")
+        )
     return result

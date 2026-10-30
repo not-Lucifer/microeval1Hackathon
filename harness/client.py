@@ -3,6 +3,8 @@
 API failures are never model failures: after ``max_attempts`` the result carries
 ``error`` and the trial is recorded as API_ERROR (excluded from pass-rate denominators).
 Client errors that retrying cannot fix (400/401/403/404, e.g. a wrong model id) fail fast.
+A reply with finish_reason "error" (OpenRouter: the provider failed mid-generation) is an
+API error too, not a model answer.
 """
 from __future__ import annotations
 
@@ -55,14 +57,6 @@ class CompletionResult:
     attempts: int = 0
 
 
-RETRYABLE = (
-    openai.RateLimitError,
-    openai.APITimeoutError,
-    openai.APIConnectionError,
-    openai.InternalServerError,
-)
-
-
 def _usage_dict(resp: Any) -> dict:
     usage = getattr(resp, "usage", None)
     if usage is None:
@@ -84,6 +78,9 @@ class OpenRouterClient:
         )
         self.max_attempts = max_attempts
 
+    async def aclose(self) -> None:
+        await self._client.close()
+
     async def complete(self, spec: ModelSpec, messages: list[dict]) -> CompletionResult:
         kwargs: dict[str, Any] = {"model": spec.openrouter_id, "messages": messages, "max_tokens": spec.max_tokens}
         if spec.temperature is not None:
@@ -104,6 +101,8 @@ class OpenRouterClient:
                 if not resp.choices:
                     raise RuntimeError(f"response has no choices: {getattr(resp, 'model_extra', None)}")
                 choice = resp.choices[0]
+                if choice.finish_reason == "error":  # OpenRouter: provider failed mid-generation
+                    raise RuntimeError(f"provider error mid-generation: {getattr(choice, 'model_extra', None)}")
                 reasoning = (getattr(choice.message, "model_extra", None) or {}).get("reasoning")
                 return CompletionResult(
                     text=choice.message.content or "",
@@ -117,7 +116,7 @@ class OpenRouterClient:
             except (openai.BadRequestError, openai.AuthenticationError, openai.PermissionDeniedError,
                     openai.NotFoundError) as exc:
                 return CompletionResult(error=f"{type(exc).__name__}: {exc}", attempts=attempt)
-            except (*RETRYABLE, openai.APIError, RuntimeError) as exc:
+            except Exception as exc:  # rate limits, 5xx, timeouts, network, odd responses: retry
                 last_error = f"{type(exc).__name__}: {exc}"
             if attempt < self.max_attempts:
                 await asyncio.sleep(min(60.0, 2.0**attempt) + random.uniform(0, 1))

@@ -10,6 +10,7 @@ and that tasks/ and reference/ are up to date with scripts/generate_instances.py
 """
 from __future__ import annotations
 
+import io
 import json
 import re
 import sys
@@ -25,7 +26,7 @@ from automata.cfg import cyk, enumerate_upto  # noqa: E402
 from automata.dfa import DFA, accepts, all_words, minimal_size  # noqa: E402
 from automata.nfa import ENFA, subset_construction  # noqa: E402
 from automata.nfa import accepts as nfa_accepts  # noqa: E402
-from automata.regex import ast_matches, parse, to_min_dfa, to_python_regex  # noqa: E402
+from automata.regex import ast_matches, parse, to_python_regex  # noqa: E402
 from graders import oracles  # noqa: E402
 from graders.grader import grade_answer, load_reference, reference_dfa  # noqa: E402
 from reference import build  # noqa: E402
@@ -176,7 +177,8 @@ def compute() -> tuple[dict, list[str]]:
 
 
 def main() -> int:
-    sys.stdout.reconfigure(encoding="utf-8")
+    if isinstance(sys.stdout, io.TextIOWrapper):  # Windows consoles default to cp1252 (no ε)
+        sys.stdout.reconfigure(encoding="utf-8")
     got, problems = compute()
     width = max(len(k) for k in EXPECTED)
     mismatches = 0

@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import io
 import os
 import sys
 from pathlib import Path
@@ -30,15 +31,22 @@ def load_model_specs(path: Path, only: list[str] | None):
 
     config = yaml.safe_load(path.read_text(encoding="utf-8"))
     defaults = config.get("defaults", {})
+    names = [entry.get("name") for entry in config["models"]]
+    duplicates = sorted({n for n in names if names.count(n) > 1})
+    if duplicates:  # transcripts are stored per model name, so duplicates would overwrite each other
+        raise SystemExit(f"{path}: duplicate model names {duplicates}")
     specs, skipped = [], []
     for entry in config["models"]:
         merged = {**defaults, **entry}
+        unknown = sorted(set(merged) - set(ModelSpec.__dataclass_fields__))
+        if unknown:  # a typo such as "reasonning" must not silently change the settings
+            raise SystemExit(f"{path}: model {merged.get('name')!r} has unknown keys {unknown}")
         if only and merged["name"] not in only:
             continue
         if not merged.get("openrouter_id"):
             skipped.append(merged["name"])
             continue
-        specs.append(ModelSpec(**{k: v for k, v in merged.items() if k in ModelSpec.__dataclass_fields__}))
+        specs.append(ModelSpec(**merged))
     if skipped:
         print(f"skipping models without a verified openrouter_id: {', '.join(skipped)}")
     return specs
@@ -105,8 +113,15 @@ def live(args) -> int:
         return 1
     client = OpenRouterClient(api_key)
     cost = CostTracker(args.max_cost)
-    asyncio.run(run_trials(tasks, specs, args.trials, client, TRANSCRIPTS_DIR,
-                           ResponseCache(enabled=not args.no_cache), cost, args.concurrency))
+
+    async def run_all() -> None:
+        try:
+            await run_trials(tasks, specs, args.trials, client, TRANSCRIPTS_DIR,
+                             ResponseCache(enabled=not args.no_cache), cost, args.concurrency)
+        finally:
+            await client.aclose()  # avoids "event loop is closed" noise on Windows
+
+    asyncio.run(run_all())
     write_reports(summarize(load_transcripts(TRANSCRIPTS_DIR)), RESULTS_DIR)
     print(f"spent ${cost.total_usd:.2f} (+{cost.unknown_calls} calls with unknown cost); "
           f"wrote {RESULTS_DIR / 'summary.md'}")
@@ -114,7 +129,8 @@ def live(args) -> int:
 
 
 def main(argv: list[str]) -> int:
-    sys.stdout.reconfigure(encoding="utf-8")
+    if isinstance(sys.stdout, io.TextIOWrapper):  # Windows consoles default to cp1252 (no ε)
+        sys.stdout.reconfigure(encoding="utf-8")
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--regrade", metavar="DIR", help="offline re-grade of saved transcripts")
     ap.add_argument("--write", action="store_true", help="with --regrade: store new grades in the transcripts")

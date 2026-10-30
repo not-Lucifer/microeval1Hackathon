@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 import argparse
+import io
 import sys
 from pathlib import Path
 
@@ -17,7 +18,8 @@ from harness.metrics import load_transcripts, summarize, write_reports  # noqa: 
 
 
 def main() -> int:
-    sys.stdout.reconfigure(encoding="utf-8")
+    if isinstance(sys.stdout, io.TextIOWrapper):  # Windows consoles default to cp1252 (no ε)
+        sys.stdout.reconfigure(encoding="utf-8")
     ap = argparse.ArgumentParser()
     ap.add_argument("--transcripts", default=str(ROOT / "transcripts"))
     args = ap.parse_args()

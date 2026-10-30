@@ -98,6 +98,7 @@ Task prompts live in `scripts/generate_instances.py`; edit there, regenerate, an
 
 ## Build status (update at the end of each phase)
 - 2026-10-30: Phases 0-3 built (scaffold, engines, graders, all 8 tasks + references, harness, offline regrade, docs drafts). Tests green; `verify_specs.py` all OK.
+- 2026-10-30: review pass. Fixed CFG-grader memory blowup on long-string grammars, OpenRouter mid-generation errors now count as API_ERROR, `models.yaml` typos/duplicates now fail loudly, hook works with `python3`. 1728 tests green.
 - Next: the author verifies model ids on OpenRouter and fills `models.yaml`, then the Phase 3 pilot (1 trial x 8 tasks, 2 cheap + 1 frontier model, small `--max-cost`).
 
 ## Working agreement

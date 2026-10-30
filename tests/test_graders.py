@@ -259,6 +259,30 @@ def test_finite_list_of_all_words_up_to_n_fails():
     assert res.details["finite_language"] is True and len(res.counterexample) == 33
 
 
+def doubling_chain(k: int) -> list[dict]:
+    """S -> P_k P_k with P_i -> P_(i-1) P_(i-1): derives a^(2^(k+2)), astronomically long."""
+    prods = [{"lhs": "P0", "rhs": ["TA", "TA"]}]
+    prods += [{"lhs": f"P{i}", "rhs": [f"P{i - 1}", f"P{i - 1}"]} for i in range(1, k + 1)]
+    return prods + [{"lhs": "S", "rhs": [f"P{k}", f"P{k}"]}]
+
+
+def test_grader_memory_does_not_depend_on_long_strings():
+    """Regression: shortest strings used to be built literally, so a 30-rule doubling chain
+    needed ~31 GB. Now nothing longer than N is materialized."""
+    m = ref_answer("task_08")
+    m["productions"] += doubling_chain(200)
+    assert grade("task_08", m)[:2] == (1.0, None)  # the extra word is far beyond N
+
+
+def test_finite_grammar_with_huge_longest_word():
+    words = sorted(w for s in t08_enumerate(30).values() for w in s)
+    prods = TERMS + [{"lhs": "TA", "rhs": ["a"]}] + [p for i, w in enumerate(words) for p in chain("S", w, f"W{i}")]
+    score, code, res = grade("task_08", {"start": "S", "productions": prods + doubling_chain(200)})
+    assert (score, code) == (0.0, F.UNDERGENERATES)
+    assert res.details["finite_language"] is True
+    assert res.counterexample is None  # exists, but is too long to store (noted in details)
+
+
 def test_bounded_guarantee_is_honest():
     """Documents the limitation: an error that only shows beyond N (= 30) is NOT caught.
     The extra word a^33 is outside L but longer than N, so the grammar passes."""

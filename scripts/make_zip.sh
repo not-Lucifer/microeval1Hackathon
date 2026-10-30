@@ -8,6 +8,7 @@ cd "$(dirname "$0")/.."
 PY=python
 if [ -x .venv/Scripts/python.exe ]; then PY=.venv/Scripts/python.exe
 elif [ -x .venv/bin/python ]; then PY=.venv/bin/python
+elif ! command -v python >/dev/null 2>&1; then PY=python3   # macOS/Linux without a venv
 fi
 
 if [ -n "$(git status --porcelain)" ]; then

@@ -1,13 +1,15 @@
 """End-to-end harness tests with a fake client: no network, no API key."""
 import asyncio
 import json
+from types import SimpleNamespace
 
 import pytest
 
 import run_eval
 from graders.grader import load_reference
+from harness import client as client_module
 from harness.cache import ResponseCache
-from harness.client import CompletionResult, ModelSpec
+from harness.client import CompletionResult, ModelSpec, OpenRouterClient
 from harness.cost import CostTracker
 from harness.metrics import load_transcripts, render_markdown, summarize
 from harness.parsing import extract_final_json
@@ -150,6 +152,58 @@ def test_models_without_verified_id_are_skipped(tmp_path, entry, expected):
     path = tmp_path / "models.yaml"
     path.write_text(json.dumps({"defaults": {"temperature": 0}, "models": [entry]}), encoding="utf-8")
     assert len(run_eval.load_model_specs(path, None)) == expected
+
+
+@pytest.mark.parametrize(
+    "models, message",
+    [
+        ([{"name": "m", "openrouter_id": None, "reasonning": {"effort": "high"}}], "unknown keys"),
+        ([{"name": "m", "openrouter_id": None}, {"name": "m", "openrouter_id": None}], "duplicate model names"),
+    ],
+)
+def test_models_yaml_mistakes_are_loud(tmp_path, models, message):
+    path = tmp_path / "models.yaml"
+    path.write_text(json.dumps({"models": models}), encoding="utf-8")
+    with pytest.raises(SystemExit, match=message):
+        run_eval.load_model_specs(path, None)
+
+
+# --------------------------------------------------------------------------- client retries
+
+
+def fake_response(finish_reason: str, content: str = "ok"):
+    message = SimpleNamespace(content=content, model_extra={})
+    choice = SimpleNamespace(finish_reason=finish_reason, message=message, model_extra={})
+    return SimpleNamespace(choices=[choice], usage=None, model="m", model_extra={})
+
+
+def client_with(responses, monkeypatch) -> OpenRouterClient:
+    """OpenRouterClient whose API returns/raises the given items in order, with no sleeping."""
+    async def create(**_kwargs):
+        item = responses.pop(0)
+        if isinstance(item, Exception):
+            raise item
+        return item
+
+    async def no_sleep(_seconds):
+        return None
+
+    monkeypatch.setattr(client_module.asyncio, "sleep", no_sleep)
+    client = OpenRouterClient("not-a-real-key", max_attempts=2)
+    client._client = SimpleNamespace(chat=SimpleNamespace(completions=SimpleNamespace(create=create)))
+    return client
+
+
+def test_provider_error_mid_generation_is_an_api_error(monkeypatch):
+    client = client_with([fake_response("error", "partial"), fake_response("error", "partial")], monkeypatch)
+    result = asyncio.run(client.complete(GOOD, []))
+    assert result.error and "mid-generation" in result.error and result.attempts == 2
+
+
+def test_transient_failures_are_retried(monkeypatch):
+    client = client_with([ValueError("garbled response"), fake_response("stop", "fine")], monkeypatch)
+    result = asyncio.run(client.complete(GOOD, []))
+    assert (result.error, result.text, result.attempts) == (None, "fine", 2)
 
 
 def test_committed_models_yaml_has_no_guessed_ids():
