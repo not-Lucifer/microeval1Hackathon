@@ -117,7 +117,8 @@ def render_markdown(card: dict) -> str:
 
 def write_reports(card: dict, results_dir: Path) -> None:
     results_dir.mkdir(parents=True, exist_ok=True)
+    # newline="\n": identical bytes on every OS, so regenerated results never show spurious diffs
     (results_dir / "scorecard.json").write_text(
-        json.dumps(card, indent=2, ensure_ascii=False, sort_keys=True) + "\n", encoding="utf-8"
+        json.dumps(card, indent=2, ensure_ascii=False, sort_keys=True) + "\n", encoding="utf-8", newline="\n"
     )
-    (results_dir / "summary.md").write_text(render_markdown(card), encoding="utf-8")
+    (results_dir / "summary.md").write_text(render_markdown(card), encoding="utf-8", newline="\n")

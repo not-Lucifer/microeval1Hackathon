@@ -47,7 +47,9 @@ def transcript_path(root: Path, model_name: str, task_id: str, trial: int) -> Pa
 
 def write_json(path: Path, obj: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(obj, indent=2, ensure_ascii=False, sort_keys=True) + "\n", encoding="utf-8")
+    path.write_text(
+        json.dumps(obj, indent=2, ensure_ascii=False, sort_keys=True) + "\n", encoding="utf-8", newline="\n"
+    )
 
 
 def build_transcript(task: dict, spec: ModelSpec, trial: int, result: CompletionResult, cost: Optional[float]) -> dict:

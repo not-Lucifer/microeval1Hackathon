@@ -33,4 +33,4 @@ class ResponseCache:
         if not self.enabled:
             return
         self.root.mkdir(parents=True, exist_ok=True)
-        (self.root / f"{key}.json").write_text(json.dumps(value, sort_keys=True), encoding="utf-8")
+        (self.root / f"{key}.json").write_text(json.dumps(value, sort_keys=True), encoding="utf-8", newline="\n")
