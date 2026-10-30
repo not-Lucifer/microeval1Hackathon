@@ -1,0 +1,43 @@
+# Models under test.
+#
+# VERIFY EVERY openrouter_id ON https://openrouter.ai/models BEFORE A RUN and record the run
+# date in docs/OPEN_QUESTIONS.md. Do not guess slugs. Entries whose openrouter_id is null are
+# skipped, so this file is safe to commit as-is.
+#
+# Fields: name (used in transcripts/ paths), openrouter_id, temperature, max_tokens,
+# reasoning (OpenRouter "reasoning" object, e.g. {effort: high} or {max_tokens: 16000}),
+# provider (optional OpenRouter routing prefs), seed (if supported),
+# price_per_mtok (optional {input, output} USD per million tokens; only used when OpenRouter
+# does not report the cost, and for --dry-run estimates).
+
+defaults:
+  temperature: 0
+  max_tokens: 32000
+
+models:
+  # --- 2-3 frontier reasoning models from different labs ---------------------------------
+  - name: frontier-a
+    openrouter_id: null   # VERIFY ID ON OPENROUTER (frontier reasoning model, lab A)
+    reasoning: {effort: high}
+  - name: frontier-b
+    openrouter_id: null   # VERIFY ID ON OPENROUTER (frontier reasoning model, lab B)
+    reasoning: {effort: high}
+  - name: frontier-c
+    openrouter_id: null   # VERIFY ID ON OPENROUTER (frontier reasoning model, lab C)
+    reasoning: {effort: high}
+
+  # --- one smaller / open-weights model ---------------------------------------------------
+  - name: small-open
+    openrouter_id: null   # VERIFY ID ON OPENROUTER
+
+  # --- optional non-reasoning baseline ----------------------------------------------------
+  - name: baseline-nonreasoning
+    openrouter_id: null   # VERIFY ID ON OPENROUTER
+
+  # --- reasoning-effort sweep on one model (same id as frontier-a) ------------------------
+  - name: frontier-a-effort-low
+    openrouter_id: null   # VERIFY ID ON OPENROUTER (same model as frontier-a)
+    reasoning: {effort: low}
+  - name: frontier-a-effort-medium
+    openrouter_id: null   # VERIFY ID ON OPENROUTER (same model as frontier-a)
+    reasoning: {effort: medium}
