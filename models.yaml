@@ -20,22 +20,22 @@ defaults:
 models:
   # --- 2-3 frontier reasoning models from different labs ---------------------------------
   - name: frontier-a
-    openrouter_id: null   # VERIFY ID ON OPENROUTER (frontier reasoning model, lab A)
+    openrouter_id: anthropic/claude-haiku-5.5   # VERIFY ID ON OPENROUTER (frontier reasoning model, lab A)
     reasoning: {effort: high}
   - name: frontier-b
-    openrouter_id: null   # VERIFY ID ON OPENROUTER (frontier reasoning model, lab B)
+    openrouter_id: openai/gpt-5.6-luna   # VERIFY ID ON OPENROUTER (frontier reasoning model, lab B)
     reasoning: {effort: high}
   - name: frontier-c
-    openrouter_id: null   # VERIFY ID ON OPENROUTER (frontier reasoning model, lab C)
+    openrouter_id: google/gemini-3.8-flash   # VERIFY ID ON OPENROUTER (frontier reasoning model, lab C)
     reasoning: {effort: high}
 
   # --- one smaller / open-weights model ---------------------------------------------------
   - name: small-open
-    openrouter_id: null   # VERIFY ID ON OPENROUTER
+    openrouter_id: deepseek/deepseek-v4.1-flash   # VERIFY ID ON OPENROUTER
 
   # --- optional non-reasoning baseline ----------------------------------------------------
   - name: baseline-nonreasoning
-    openrouter_id: null   # VERIFY ID ON OPENROUTER
+    openrouter_id: x-ai/grok-4.7   # VERIFY ID ON OPENROUTER
 
   # --- reasoning-effort sweep on one model (same id as frontier-a) ------------------------
   - name: frontier-a-effort-low
