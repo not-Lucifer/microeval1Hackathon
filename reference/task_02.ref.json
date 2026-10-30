@@ -1,0 +1,51 @@
+{
+  "answer": {
+    "accepting": [
+      "q0",
+      "q2"
+    ],
+    "start": "q0",
+    "states": [
+      "q0",
+      "q1",
+      "q2",
+      "q3",
+      "q4",
+      "q5"
+    ],
+    "transitions": {
+      "q0": {
+        "a": "q1",
+        "b": "q2",
+        "c": "q0"
+      },
+      "q1": {
+        "a": "q3",
+        "b": "q3",
+        "c": "q0"
+      },
+      "q2": {
+        "a": "q0",
+        "b": "q2",
+        "c": "q0"
+      },
+      "q3": {
+        "a": "q4",
+        "b": "q4",
+        "c": "q0"
+      },
+      "q4": {
+        "a": "q5",
+        "b": "q5",
+        "c": "q0"
+      },
+      "q5": {
+        "a": "q5",
+        "b": "q5",
+        "c": "q5"
+      }
+    }
+  },
+  "how_built": "reference.build.t02_construction(window=3) (earliest deadline x previous-symbol-was-b x DEAD), then minimize",
+  "task_id": "task_02"
+}

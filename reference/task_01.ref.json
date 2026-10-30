@@ -1,0 +1,65 @@
+{
+  "answer": {
+    "accepting": [
+      "q1",
+      "q3"
+    ],
+    "start": "q0",
+    "states": [
+      "q0",
+      "q1",
+      "q2",
+      "q3",
+      "q4",
+      "q5",
+      "q6",
+      "q7",
+      "q8",
+      "q9"
+    ],
+    "transitions": {
+      "q0": {
+        "0": "q1",
+        "1": "q0"
+      },
+      "q1": {
+        "0": "q2",
+        "1": "q3"
+      },
+      "q2": {
+        "0": "q4",
+        "1": "q5"
+      },
+      "q3": {
+        "0": "q6",
+        "1": "q7"
+      },
+      "q4": {
+        "0": "q1",
+        "1": "q8"
+      },
+      "q5": {
+        "0": "q6",
+        "1": "q9"
+      },
+      "q6": {
+        "0": "q6",
+        "1": "q6"
+      },
+      "q7": {
+        "0": "q2",
+        "1": "q7"
+      },
+      "q8": {
+        "0": "q6",
+        "1": "q0"
+      },
+      "q9": {
+        "0": "q4",
+        "1": "q9"
+      }
+    }
+  },
+  "how_built": "reference.build.t01_construction (counter x last-two-symbols x DEAD), then automata.dfa.minimize",
+  "task_id": "task_01"
+}

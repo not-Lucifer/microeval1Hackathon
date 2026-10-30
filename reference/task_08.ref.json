@@ -1,0 +1,154 @@
+{
+  "answer": {
+    "productions": [
+      {
+        "lhs": "S",
+        "rhs": [
+          "A1",
+          "B1"
+        ]
+      },
+      {
+        "lhs": "S",
+        "rhs": [
+          "TA",
+          "M1"
+        ]
+      },
+      {
+        "lhs": "M1",
+        "rhs": [
+          "TB",
+          "TA"
+        ]
+      },
+      {
+        "lhs": "S",
+        "rhs": [
+          "TA",
+          "M2"
+        ]
+      },
+      {
+        "lhs": "M2",
+        "rhs": [
+          "A1",
+          "M1"
+        ]
+      },
+      {
+        "lhs": "S",
+        "rhs": [
+          "TA",
+          "M3"
+        ]
+      },
+      {
+        "lhs": "M3",
+        "rhs": [
+          "TB",
+          "M4"
+        ]
+      },
+      {
+        "lhs": "M4",
+        "rhs": [
+          "B1",
+          "TA"
+        ]
+      },
+      {
+        "lhs": "S",
+        "rhs": [
+          "TA",
+          "M5"
+        ]
+      },
+      {
+        "lhs": "M5",
+        "rhs": [
+          "A1",
+          "M3"
+        ]
+      },
+      {
+        "lhs": "A1",
+        "rhs": [
+          "TA",
+          "E1"
+        ]
+      },
+      {
+        "lhs": "E1",
+        "rhs": [
+          "TA",
+          "TB"
+        ]
+      },
+      {
+        "lhs": "A1",
+        "rhs": [
+          "TA",
+          "F1"
+        ]
+      },
+      {
+        "lhs": "F1",
+        "rhs": [
+          "TA",
+          "G1"
+        ]
+      },
+      {
+        "lhs": "G1",
+        "rhs": [
+          "A1",
+          "TB"
+        ]
+      },
+      {
+        "lhs": "B1",
+        "rhs": [
+          "TB",
+          "AA"
+        ]
+      },
+      {
+        "lhs": "B1",
+        "rhs": [
+          "TB",
+          "I1"
+        ]
+      },
+      {
+        "lhs": "I1",
+        "rhs": [
+          "B1",
+          "AA"
+        ]
+      },
+      {
+        "lhs": "AA",
+        "rhs": [
+          "TA",
+          "TA"
+        ]
+      },
+      {
+        "lhs": "TA",
+        "rhs": [
+          "a"
+        ]
+      },
+      {
+        "lhs": "TB",
+        "rhs": [
+          "b"
+        ]
+      }
+    ],
+    "start": "S"
+  },
+  "how_built": "reference.build.t08_reference_grammar (hand CNF conversion of the PROJECT_GUIDE grammar)",
+  "task_id": "task_08"
+}

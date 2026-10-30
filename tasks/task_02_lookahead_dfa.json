@@ -1,0 +1,52 @@
+{
+  "answer_schema": "dfa",
+  "difficulty_knobs": {
+    "minimal_size_formula_for_this_definition": "W + 3 (see verify_specs.py)",
+    "window_W": 3
+  },
+  "examples": {
+    "in": [
+      "",
+      "ac",
+      "aac",
+      "abbc",
+      "ba",
+      "bab",
+      "abac"
+    ],
+    "out": [
+      "a",
+      "abbbc",
+      "cab",
+      "abbac"
+    ]
+  },
+  "family": "lookahead_dfa",
+  "grader": {
+    "params": {
+      "alphabet": [
+        "a",
+        "b",
+        "c"
+      ],
+      "require_complete": true,
+      "require_minimal": true
+    },
+    "type": "dfa_exact"
+  },
+  "id": "task_02",
+  "metadata": {
+    "expected_failure_modes": [
+      "tracking the latest instead of the earliest deadline",
+      "exemption applied too broadly",
+      "accepting words that end with an open obligation",
+      "missing trap state"
+    ],
+    "real_world": "Protocol/monitor rules of the form 'every request must be acknowledged within W steps unless ...' (runtime verification, timeouts).",
+    "seed": null,
+    "status": "DRAFTED BY CLAUDE CODE - author must review and rewrite in their own words",
+    "why_hard": "Obligations overlap: a later c satisfies every pending a, but the earliest deadline governs; the b-exemption applies only to the immediately following a; obligations still open at the end of the word reject."
+  },
+  "prompt": "TASK: minimal DFA for a deadline (\"lookahead obligation\") rule\n\nAlphabet: Σ = {a, b, c}. Words are finite strings over Σ; ε denotes the empty word.\nPositions in a word w are numbered from 0: w = w[0] w[1] ... w[n-1], where n = |w|.\n\nObligations. Every position i with w[i] = a creates an obligation, EXCEPT when i > 0 and w[i-1] = b (an a immediately preceded by b creates no obligation). An a at position 0 always creates an obligation.\nAn obligation created at position i is satisfied if and only if there is a position j with i+1 <= j <= i+3 and j < n such that w[j] = c. (A c must appear among the next 3 symbols; the window is cut off by the end of the word.)\nL is the set of words in which every obligation is satisfied. In particular ε is in L, and every word without obligations is in L.\n\nNotes: a single c can satisfy several pending obligations at once. Only the symbol immediately before an a decides whether that a is exempt.\nExamples in L: ε, ac, aac, abbc, ba, bab, abac\nExamples not in L: a (obligation at 0 unmet), abbbc (c comes 4 positions later), cab (obligation at 1 unmet), abbac (obligation at 0 unmet; the a at 3 is exempt)\n\nGive the minimal complete DFA for L.\n\nWHAT TO SUBMIT\nA deterministic finite automaton (DFA) for L, written as one JSON object with these keys:\n  \"states\"      : list of distinct state names (strings)\n  \"start\"       : the start state (one of \"states\")\n  \"accepting\"   : list of accepting states (a subset of \"states\"; may be empty)\n  \"transitions\" : object mapping EVERY state to an object that maps EVERY symbol of {a, b, c} to exactly one next state\n\nHOW IT IS GRADED (exactly, by algorithms; nothing is sampled)\n1. Complete: every state must have exactly one transition for every symbol of {a, b, c}. If some inputs can never lead to acceptance, include an explicit trap (dead) state.\n2. Correct: the DFA must accept exactly the words of L, including the right decision for the empty word ε (checked by an exact equivalence algorithm).\n3. Minimal: it must have the fewest states of any complete DFA that accepts L. Every state you list counts, including unreachable states and the trap state.\nState names and the order of states do not matter.\nScore: 1.0 if complete, correct and minimal; 0.5 if complete and correct but with more states than necessary; 0 otherwise.\n\nFORMAT EXAMPLE (for an unrelated language over {x, y}: words with an odd number of x)\n```json\n{\"states\": [\"even\", \"odd\"], \"start\": \"even\", \"accepting\": [\"odd\"],\n \"transitions\": {\"even\": {\"x\": \"odd\", \"y\": \"even\"}, \"odd\": {\"x\": \"even\", \"y\": \"odd\"}}}\n```",
+  "title": "Lookahead-obligation DFA (window W=3)"
+}

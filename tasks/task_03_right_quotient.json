@@ -1,0 +1,119 @@
+{
+  "answer_schema": "dfa",
+  "difficulty_knobs": {
+    "dfa_size": 5
+  },
+  "examples": {
+    "in": [],
+    "out": []
+  },
+  "family": "right_quotient",
+  "grader": {
+    "params": {
+      "alphabet": [
+        "a",
+        "b"
+      ],
+      "require_complete": true,
+      "require_minimal": true
+    },
+    "type": "dfa_exact"
+  },
+  "id": "task_03",
+  "instance": {
+    "m1": {
+      "accepting": [
+        "p2",
+        "p3"
+      ],
+      "alphabet": [
+        "a",
+        "b"
+      ],
+      "start": "p0",
+      "states": [
+        "p0",
+        "p1",
+        "p2",
+        "p3",
+        "p4"
+      ],
+      "transitions": {
+        "p0": {
+          "a": "p1",
+          "b": "p2"
+        },
+        "p1": {
+          "a": "p4",
+          "b": "p4"
+        },
+        "p2": {
+          "a": "p2",
+          "b": "p3"
+        },
+        "p3": {
+          "a": "p4",
+          "b": "p4"
+        },
+        "p4": {
+          "a": "p3",
+          "b": "p4"
+        }
+      }
+    },
+    "m2": {
+      "accepting": [
+        "r0",
+        "r4"
+      ],
+      "alphabet": [
+        "a",
+        "b"
+      ],
+      "start": "r0",
+      "states": [
+        "r0",
+        "r1",
+        "r2",
+        "r3",
+        "r4"
+      ],
+      "transitions": {
+        "r0": {
+          "a": "r3",
+          "b": "r4"
+        },
+        "r1": {
+          "a": "r2",
+          "b": "r2"
+        },
+        "r2": {
+          "a": "r2",
+          "b": "r0"
+        },
+        "r3": {
+          "a": "r4",
+          "b": "r0"
+        },
+        "r4": {
+          "a": "r1",
+          "b": "r4"
+        }
+      }
+    }
+  },
+  "metadata": {
+    "expected_failure_modes": [
+      "describing the language in English and guessing",
+      "left instead of right quotient",
+      "forgetting y = ε",
+      "not minimizing"
+    ],
+    "real_world": "Prefix/residual reasoning used in parsers, input validation ('can this prefix still be completed?') and protocol analysis.",
+    "seed": 3788,
+    "status": "DRAFTED BY CLAUDE CODE - author must review and rewrite in their own words",
+    "why_hard": "The quotient must be computed, not guessed: keep M1's transitions and make q accepting iff some y in L(M2) leads q into M1's accepting states, which needs a product-reachability argument; then minimize. Easy to confuse with left quotient or with L(M1) itself."
+  },
+  "prompt": "TASK: minimal DFA for a right quotient\n\nAlphabet: Σ = {a, b}. Two complete DFAs M1 and M2 over Σ are given below.\nThe right quotient of L(M1) by L(M2) is\n  L = L(M1) / L(M2) = { x in Σ* : there exists y in L(M2) such that the concatenation xy is in L(M1) }.\nBoth x and y may be the empty word ε.\n\nM1: start state p0; accepting states {p2, p3}\n  state | a  | b\n  p0    | p1 | p2\n  p1    | p4 | p4\n  p2    | p2 | p3\n  p3    | p4 | p4\n  p4    | p3 | p4\n\nM2: start state r0; accepting states {r0, r4}\n  state | a  | b\n  r0    | r3 | r4\n  r1    | r2 | r2\n  r2    | r2 | r0\n  r3    | r4 | r0\n  r4    | r1 | r4\n\n(Each table row gives the next state on a and on b.)\n\nGive the minimal complete DFA for L.\n\nWHAT TO SUBMIT\nA deterministic finite automaton (DFA) for L, written as one JSON object with these keys:\n  \"states\"      : list of distinct state names (strings)\n  \"start\"       : the start state (one of \"states\")\n  \"accepting\"   : list of accepting states (a subset of \"states\"; may be empty)\n  \"transitions\" : object mapping EVERY state to an object that maps EVERY symbol of {a, b} to exactly one next state\n\nHOW IT IS GRADED (exactly, by algorithms; nothing is sampled)\n1. Complete: every state must have exactly one transition for every symbol of {a, b}. If some inputs can never lead to acceptance, include an explicit trap (dead) state.\n2. Correct: the DFA must accept exactly the words of L, including the right decision for the empty word ε (checked by an exact equivalence algorithm).\n3. Minimal: it must have the fewest states of any complete DFA that accepts L. Every state you list counts, including unreachable states and the trap state.\nState names and the order of states do not matter.\nScore: 1.0 if complete, correct and minimal; 0.5 if complete and correct but with more states than necessary; 0 otherwise.\n\nFORMAT EXAMPLE (for an unrelated language over {x, y}: words with an odd number of x)\n```json\n{\"states\": [\"even\", \"odd\"], \"start\": \"even\", \"accepting\": [\"odd\"],\n \"transitions\": {\"even\": {\"x\": \"odd\", \"y\": \"even\"}, \"odd\": {\"x\": \"even\", \"y\": \"odd\"}}}\n```",
+  "title": "Right quotient L(M1)/L(M2) of two given 5-state DFAs"
+}

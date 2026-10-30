@@ -1,0 +1,50 @@
+{
+  "answer": {
+    "accepting": [
+      "q2",
+      "q5"
+    ],
+    "start": "q0",
+    "states": [
+      "q0",
+      "q1",
+      "q2",
+      "q3",
+      "q4",
+      "q5",
+      "q6"
+    ],
+    "transitions": {
+      "q0": {
+        "a": "q1",
+        "b": "q2"
+      },
+      "q1": {
+        "a": "q3",
+        "b": "q2"
+      },
+      "q2": {
+        "a": "q0",
+        "b": "q2"
+      },
+      "q3": {
+        "a": "q4",
+        "b": "q2"
+      },
+      "q4": {
+        "a": "q4",
+        "b": "q5"
+      },
+      "q5": {
+        "a": "q0",
+        "b": "q6"
+      },
+      "q6": {
+        "a": "q6",
+        "b": "q6"
+      }
+    }
+  },
+  "how_built": "automata.nfa.subset_construction (with ε-closures), then minimize",
+  "task_id": "task_06"
+}

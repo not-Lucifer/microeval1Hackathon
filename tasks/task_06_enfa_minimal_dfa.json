@@ -1,0 +1,107 @@
+{
+  "answer_schema": "dfa",
+  "difficulty_knobs": {
+    "nfa_states": 5,
+    "reachable_subsets": 11
+  },
+  "examples": {
+    "in": [],
+    "out": []
+  },
+  "family": "enfa_minimal_dfa",
+  "grader": {
+    "params": {
+      "alphabet": [
+        "a",
+        "b"
+      ],
+      "require_complete": true,
+      "require_minimal": true
+    },
+    "type": "dfa_exact"
+  },
+  "id": "task_06",
+  "instance": {
+    "nfa": {
+      "accepting": [
+        "q2"
+      ],
+      "alphabet": [
+        "a",
+        "b"
+      ],
+      "start": "q0",
+      "states": [
+        "q0",
+        "q1",
+        "q2",
+        "q3",
+        "q4"
+      ],
+      "transitions": {
+        "q0": {
+          "": [
+            "q4"
+          ],
+          "a": [
+            "q1",
+            "q3",
+            "q4"
+          ],
+          "b": [
+            "q0",
+            "q4"
+          ]
+        },
+        "q1": {
+          "a": [
+            "q1"
+          ],
+          "b": [
+            "q2"
+          ]
+        },
+        "q2": {
+          "a": [
+            "q0",
+            "q4"
+          ]
+        },
+        "q3": {
+          "": [
+            "q1"
+          ],
+          "b": [
+            "q1",
+            "q3"
+          ]
+        },
+        "q4": {
+          "a": [
+            "q3"
+          ],
+          "b": [
+            "q0",
+            "q1",
+            "q2",
+            "q4"
+          ]
+        }
+      }
+    }
+  },
+  "metadata": {
+    "expected_failure_modes": [
+      "ε-closure errors",
+      "start state taken as {q0} instead of its closure",
+      "no merging of equivalent subsets",
+      "missing empty-set trap"
+    ],
+    "real_world": "Compiling regex/lexer specifications and protocol models (NFA -> DFA) by hand or in review.",
+    "seed": 8618,
+    "status": "DRAFTED BY CLAUDE CODE - author must review and rewrite in their own words",
+    "why_hard": "The subset construction with ε-closures reaches 11 subsets (including the empty set); every step needs a correct ε-closure, the start state is the closure of q0 (not q0), and indistinguishable subsets must then be merged."
+  },
+  "prompt": "TASK: determinize and minimize an ε-NFA\n\nAlphabet: Σ = {a, b}. N is the nondeterministic finite automaton with ε-moves given below.\nN accepts a word w if and only if some computation of N starts in the start state, reads all of w (taking any number of ε-moves before, between and after reading symbols) and ends in an accepting state. ε-moves consume no input.\n\nStates: q0, q1, q2, q3, q4; start state q0; accepting states {q2}.\nTransitions (each entry is the set of possible next states; \"-\" means no transition):\n  state | a            | b                | ε\n  q0    | {q1, q3, q4} | {q0, q4}         | {q4}\n  q1    | {q1}         | {q2}             | -\n  q2    | {q0, q4}     | -                | -\n  q3    | -            | {q1, q3}         | {q1}\n  q4    | {q3}         | {q0, q1, q2, q4} | -\n\nLet L = L(N). Give the minimal complete DFA for L.\n\nWHAT TO SUBMIT\nA deterministic finite automaton (DFA) for L, written as one JSON object with these keys:\n  \"states\"      : list of distinct state names (strings)\n  \"start\"       : the start state (one of \"states\")\n  \"accepting\"   : list of accepting states (a subset of \"states\"; may be empty)\n  \"transitions\" : object mapping EVERY state to an object that maps EVERY symbol of {a, b} to exactly one next state\n\nHOW IT IS GRADED (exactly, by algorithms; nothing is sampled)\n1. Complete: every state must have exactly one transition for every symbol of {a, b}. If some inputs can never lead to acceptance, include an explicit trap (dead) state.\n2. Correct: the DFA must accept exactly the words of L, including the right decision for the empty word ε (checked by an exact equivalence algorithm).\n3. Minimal: it must have the fewest states of any complete DFA that accepts L. Every state you list counts, including unreachable states and the trap state.\nState names and the order of states do not matter.\nScore: 1.0 if complete, correct and minimal; 0.5 if complete and correct but with more states than necessary; 0 otherwise.\n\nFORMAT EXAMPLE (for an unrelated language over {x, y}: words with an odd number of x)\n```json\n{\"states\": [\"even\", \"odd\"], \"start\": \"even\", \"accepting\": [\"odd\"],\n \"transitions\": {\"even\": {\"x\": \"odd\", \"y\": \"even\"}, \"odd\": {\"x\": \"even\", \"y\": \"odd\"}}}\n```",
+  "title": "5-state ε-NFA → minimal DFA"
+}
