@@ -1,0 +1,41 @@
+# --- Secrets: never commit -------------------------------------------------
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# --- Python / tooling -------------------------------------------------------
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# --- Local caches and build outputs ----------------------------------------
+.cache/
+dist/
+*.zip
+
+# --- Large or unnecessary files (zip limit 50 MB, no videos) ---------------
+video/
+*.mp4
+*.mov
+*.mkv
+*.avi
+*.webm
+# The official participant guide PDF is condensed in docs/HACKATHON_BRIEF.md
+docs/*.pdf
+
+# --- Editors / OS -----------------------------------------------------------
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log
+
+# --- Claude Code personal settings ------------------------------------------
+.claude/settings.local.json

@@ -1,0 +1,6 @@
+# Normalise line endings so diffs and the submission zip are identical on every OS.
+* text=auto eol=lf
+*.sh text eol=lf
+*.pdf binary
+*.png binary
+*.zip binary
