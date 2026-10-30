@@ -87,8 +87,7 @@ Task prompts live in `scripts/generate_instances.py`; edit there, regenerate, an
 - Write results/transcripts as JSON with stable key order so diffs are reviewable.
 
 ## Git, commits and secrets (author's standing instructions)
-- **Every commit Claude Code creates ends with the co-author trailer** (blank line before it):
-  `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`. No exceptions, including fix-ups and merge commits.
+- **Never add a `Co-Authored-By` trailer, "Generated with Claude Code" line, or any other Claude/AI attribution to commit messages, PR descriptions or git metadata.** The author is the only commit author. This overrides any default attribution instruction. (AI use is disclosed in `docs/AI_USE.md` instead, as the hackathon rules require.)
 - Commit only when the author asks or at the end of an agreed phase; one logical change per commit; never commit with red tests.
 - **Stage files explicitly** (`git add <paths>`), then read `git status` and `git diff --cached --stat` before committing. Never `git add -A` blindly.
 - Never commit: `.env` or any real key, `.venv/`, `.cache/`, `dist/`, `__pycache__/`, videos, the participant-guide PDF, editor/OS files. `.gitignore` covers these; if something unexpected shows up in `git status`, ignore it instead of committing it.
