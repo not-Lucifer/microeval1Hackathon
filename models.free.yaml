@@ -21,9 +21,11 @@ models:
   - name: nemotron-3-ultra-free        # NVIDIA, 550B total / 55B active, output limit 65,536
     openrouter_id: nvidia/nemotron-3-ultra-550b-a55b:free
     max_tokens: 64000
-  - name: inkling-free                 # Thinking Machines, output limit 262,144
-    openrouter_id: thinkingmachines/inkling:free
+  # thinkingmachines/inkling:free was dropped: OpenRouter answers 403 "only available on
+  # agentic harnesses" to direct API calls (pilot, 2026-10-31).
+  - name: dots-3-note-free             # Dots Studio, 280B total / 16B active, output limit 460,800
+    openrouter_id: dots-studio/dots-3-note-preview:free
     max_tokens: 64000
-  - name: gemma-4-31b-free             # Google, open weights, output limit 32,768
-    openrouter_id: google/gemma-4-31b-it:free
-    max_tokens: 32000
+  - name: gemma-4-31b-free             # Google, open weights, output limit 32,768. Its free provider
+    openrouter_id: google/gemma-4-31b-it:free  # answered 429 to every pilot call; the runner
+    max_tokens: 32000                  # skips it after 2 failed calls in a row, so it costs little

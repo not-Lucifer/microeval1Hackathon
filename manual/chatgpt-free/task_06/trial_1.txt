@@ -1,0 +1,15 @@
+{
+  "states": ["S", "B", "D", "F", "Dead", "HJ", "Acc", "I"],
+  "start": "S",
+  "accepting": ["Acc", "I"],
+  "transitions": {
+    "S": {"a": "B", "b": "Acc"},
+    "B": {"a": "D", "b": "Acc"},
+    "D": {"a": "F", "b": "Acc"},
+    "F": {"a": "F", "b": "I"},
+    "Dead": {"a": "Dead", "b": "Dead"},
+    "HJ": {"a": "HJ", "b": "Acc"},
+    "Acc": {"a": "HJ", "b": "Acc"},
+    "I": {"a": "S", "b": "Dead"}
+  }
+}

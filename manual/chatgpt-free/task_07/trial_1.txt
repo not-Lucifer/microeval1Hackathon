@@ -1,0 +1,43 @@
+{
+  "start": "S",
+  "productions": [
+    {"lhs": "S", "rhs": ["R1", "S"]},
+    {"lhs": "S", "rhs": ["Q1", "S"]},
+    {"lhs": "S", "rhs": ["OP", "RP"]},
+    {"lhs": "S", "rhs": ["OP", "R1T"]},
+    {"lhs": "S", "rhs": ["OS", "RS"]},
+    {"lhs": "S", "rhs": ["OS", "Q1T"]},
+
+    {"lhs": "R1", "rhs": ["OP", "RP"]},
+    {"lhs": "R1", "rhs": ["OP", "R1T"]},
+    {"lhs": "R1T", "rhs": ["R2", "RP"]},
+    {"lhs": "R1T", "rhs": ["Q2", "RP"]},
+    {"lhs": "R1T", "rhs": ["R2", "R1T"]},
+    {"lhs": "R1T", "rhs": ["Q2", "R1T"]},
+
+    {"lhs": "Q1", "rhs": ["OS", "RS"]},
+    {"lhs": "Q1", "rhs": ["OS", "Q1T"]},
+    {"lhs": "Q1T", "rhs": ["Q2", "RS"]},
+    {"lhs": "Q1T", "rhs": ["Q2", "Q1T"]},
+
+    {"lhs": "R2", "rhs": ["OP", "RP"]},
+    {"lhs": "R2", "rhs": ["OP", "R2T"]},
+    {"lhs": "R2T", "rhs": ["R3", "RP"]},
+    {"lhs": "R2T", "rhs": ["Q3", "RP"]},
+    {"lhs": "R2T", "rhs": ["R3", "R2T"]},
+    {"lhs": "R2T", "rhs": ["Q3", "R2T"]},
+
+    {"lhs": "Q2", "rhs": ["OS", "RS"]},
+    {"lhs": "Q2", "rhs": ["OS", "Q2T"]},
+    {"lhs": "Q2T", "rhs": ["Q3", "RS"]},
+    {"lhs": "Q2T", "rhs": ["Q3", "Q2T"]},
+
+    {"lhs": "R3", "rhs": ["OP", "RP"]},
+    {"lhs": "Q3", "rhs": ["OS", "RS"]},
+
+    {"lhs": "OP", "rhs": ["("]},
+    {"lhs": "RP", "rhs": [")"]},
+    {"lhs": "OS", "rhs": ["["]},
+    {"lhs": "RS", "rhs": ["]"]}
+  ]
+}

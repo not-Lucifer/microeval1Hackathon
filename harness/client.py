@@ -2,8 +2,9 @@
 
 API failures are never model failures: after ``max_attempts`` the result carries
 ``error`` and the trial is recorded as API_ERROR (excluded from pass-rate denominators).
-Client errors that retrying cannot fix (400/401/403/404, e.g. a wrong model id) fail fast,
-and 402 (not enough OpenRouter credits) also tells the runner to stop the whole run.
+Client errors that retrying cannot fix (400/401/403/404, e.g. a wrong model id, or a free
+model OpenRouter only serves to listed apps) fail fast and tell the runner to skip that
+model; 402 (not enough OpenRouter credits) tells the runner to stop the whole run.
 OpenRouter reserves credit for the full max_tokens of a request before it starts, so a low
 balance makes every request fail with 402 even if the answer would have been short.
 A reply with finish_reason "error" (OpenRouter: the provider failed mid-generation) is an
@@ -63,6 +64,7 @@ class CompletionResult:
     error: Optional[str] = None
     attempts: int = 0
     stop_run: Optional[str] = None  # set when every further call would fail too (no credits, daily quota)
+    skip_model: Optional[str] = None  # set when every further call to THIS model would fail (refused)
 
 
 STOP_NO_CREDITS = "OpenRouter account is out of credits (HTTP 402); top up and rerun"
@@ -140,7 +142,8 @@ class OpenRouterClient:
                 )
             except (openai.BadRequestError, openai.AuthenticationError, openai.PermissionDeniedError,
                     openai.NotFoundError) as exc:
-                return CompletionResult(error=describe_error(exc), attempts=attempt)
+                refused = f"OpenRouter refused this model (HTTP {exc.status_code}); check its id and access"
+                return CompletionResult(error=describe_error(exc), attempts=attempt, skip_model=refused)
             except openai.APIStatusError as exc:
                 if exc.status_code == 402:  # not enough credits: retrying cannot help
                     return CompletionResult(error=describe_error(exc), attempts=attempt, stop_run=STOP_NO_CREDITS)

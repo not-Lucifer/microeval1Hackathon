@@ -1,0 +1,318 @@
+{
+  "api_attempts": 1,
+  "date": "2026-10-31T12:40:31+00:00",
+  "finish_reason": "stop",
+  "grade": {
+    "counterexample": null,
+    "details": {
+      "bound_N": 16,
+      "diagnostic_recall_upto_len": 1.0,
+      "finite_language": false,
+      "fully_compared_upto_len": 16,
+      "guarantee": "exact for strings of length <= N only (CFG equivalence is undecidable)",
+      "notes": []
+    },
+    "failure_code": null,
+    "passed": true,
+    "score": 1.0
+  },
+  "latency_s": 417.09,
+  "model": "nemotron-3-ultra-free",
+  "model_returned": "nvidia/nemotron-3-ultra-550b-a55b:free",
+  "parsed_answer": {
+    "productions": [
+      {
+        "lhs": "LP",
+        "rhs": [
+          "("
+        ]
+      },
+      {
+        "lhs": "RP",
+        "rhs": [
+          ")"
+        ]
+      },
+      {
+        "lhs": "LB",
+        "rhs": [
+          "["
+        ]
+      },
+      {
+        "lhs": "RB",
+        "rhs": [
+          "]"
+        ]
+      },
+      {
+        "lhs": "S",
+        "rhs": [
+          "A1",
+          "S"
+        ]
+      },
+      {
+        "lhs": "S",
+        "rhs": [
+          "B1",
+          "S"
+        ]
+      },
+      {
+        "lhs": "S",
+        "rhs": [
+          "LP",
+          "X_PR1"
+        ]
+      },
+      {
+        "lhs": "S",
+        "rhs": [
+          "LB",
+          "X_QR1"
+        ]
+      },
+      {
+        "lhs": "S",
+        "rhs": [
+          "LP",
+          "RP"
+        ]
+      },
+      {
+        "lhs": "S",
+        "rhs": [
+          "LB",
+          "RB"
+        ]
+      },
+      {
+        "lhs": "P1",
+        "rhs": [
+          "A2",
+          "P1"
+        ]
+      },
+      {
+        "lhs": "P1",
+        "rhs": [
+          "B2",
+          "P1"
+        ]
+      },
+      {
+        "lhs": "P1",
+        "rhs": [
+          "LP",
+          "X_PR2"
+        ]
+      },
+      {
+        "lhs": "P1",
+        "rhs": [
+          "LB",
+          "X_QR2"
+        ]
+      },
+      {
+        "lhs": "P1",
+        "rhs": [
+          "LP",
+          "RP"
+        ]
+      },
+      {
+        "lhs": "P1",
+        "rhs": [
+          "LB",
+          "RB"
+        ]
+      },
+      {
+        "lhs": "Q1",
+        "rhs": [
+          "B2",
+          "Q1"
+        ]
+      },
+      {
+        "lhs": "Q1",
+        "rhs": [
+          "LB",
+          "X_QR2"
+        ]
+      },
+      {
+        "lhs": "Q1",
+        "rhs": [
+          "LB",
+          "RB"
+        ]
+      },
+      {
+        "lhs": "P2",
+        "rhs": [
+          "A3",
+          "P2"
+        ]
+      },
+      {
+        "lhs": "P2",
+        "rhs": [
+          "B3",
+          "P2"
+        ]
+      },
+      {
+        "lhs": "P2",
+        "rhs": [
+          "LP",
+          "RP"
+        ]
+      },
+      {
+        "lhs": "P2",
+        "rhs": [
+          "LB",
+          "RB"
+        ]
+      },
+      {
+        "lhs": "Q2",
+        "rhs": [
+          "B3",
+          "Q2"
+        ]
+      },
+      {
+        "lhs": "Q2",
+        "rhs": [
+          "LB",
+          "RB"
+        ]
+      },
+      {
+        "lhs": "A1",
+        "rhs": [
+          "LP",
+          "X_PR1"
+        ]
+      },
+      {
+        "lhs": "A1",
+        "rhs": [
+          "LP",
+          "RP"
+        ]
+      },
+      {
+        "lhs": "B1",
+        "rhs": [
+          "LB",
+          "X_QR1"
+        ]
+      },
+      {
+        "lhs": "B1",
+        "rhs": [
+          "LB",
+          "RB"
+        ]
+      },
+      {
+        "lhs": "A2",
+        "rhs": [
+          "LP",
+          "X_PR2"
+        ]
+      },
+      {
+        "lhs": "A2",
+        "rhs": [
+          "LP",
+          "RP"
+        ]
+      },
+      {
+        "lhs": "B2",
+        "rhs": [
+          "LB",
+          "X_QR2"
+        ]
+      },
+      {
+        "lhs": "B2",
+        "rhs": [
+          "LB",
+          "RB"
+        ]
+      },
+      {
+        "lhs": "A3",
+        "rhs": [
+          "LP",
+          "RP"
+        ]
+      },
+      {
+        "lhs": "B3",
+        "rhs": [
+          "LB",
+          "RB"
+        ]
+      },
+      {
+        "lhs": "X_PR1",
+        "rhs": [
+          "P1",
+          "RP"
+        ]
+      },
+      {
+        "lhs": "X_QR1",
+        "rhs": [
+          "Q1",
+          "RB"
+        ]
+      },
+      {
+        "lhs": "X_PR2",
+        "rhs": [
+          "P2",
+          "RP"
+        ]
+      },
+      {
+        "lhs": "X_QR2",
+        "rhs": [
+          "Q2",
+          "RB"
+        ]
+      }
+    ],
+    "start": "S"
+  },
+  "prompt": "TASK: context-free grammar (in Chomsky normal form) for a constrained bracket language\n\nAlphabet: the four symbols ( ) [ ] (round and square brackets).\nA word is WELL-NESTED if its symbols can be paired so that every ( is paired with a later ), every [ with a later ], and pairs are properly nested (no crossing, as in ([)]). A paired opening and closing symbol together with everything between them is a GROUP; it is a (-group or a [-group according to its opening symbol. The DEPTH of a group is 1 plus the number of groups that strictly contain it, so top-level groups have depth 1. The PARENT of a group is the smallest group that strictly contains it; top-level groups have no parent.\n\nL is the set of words w such that:\n  (1) w is non-empty and well-nested;\n  (2) no group has depth greater than 3;\n  (3) no (-group has a [-group as its parent.\n(-groups may appear at top level or with a (-group as parent. [-groups may have any parent, subject to (2).\n\nExamples in L: (), [](), ([]), (([])), [[[]]]\nExamples not in L: ε (empty), (] (not well-nested), [()] (a (-group whose parent is a [-group), [[()]] (same reason), (((()))) (depth 4)\n\nGive a grammar in Chomsky normal form that generates exactly L.\n\nWHAT TO SUBMIT\nA context-free grammar in Chomsky normal form (CNF), as one JSON object with these keys:\n  \"start\"       : the start nonterminal\n  \"productions\" : list of objects {\"lhs\": <nonterminal>, \"rhs\": [<symbol>, ...]}, one object per alternative\nSymbols: an rhs entry that is exactly one of the terminal symbols ( ) [ ] is a terminal; every other name is a nonterminal. Use names without spaces; uppercase names such as S, A1, X_2 are recommended.\nCNF means every production has exactly one of these two forms:\n  A -> B C   (rhs is a list of two nonterminals), or\n  A -> t     (rhs is a list containing exactly one terminal).\nNot allowed: ε-productions (empty rhs), unit productions A -> B, right-hand sides with three or more symbols, and mixed right-hand sides such as A -> t B. The start symbol may also appear on right-hand sides. A CNF grammar cannot generate ε, which is why L excludes ε.\n\nHOW IT IS GRADED\n1. The grammar must be in CNF exactly as defined above (otherwise score 0).\n2. For EVERY word w over the alphabet with 1 <= |w| <= 16: the grammar must generate w if and only if w is in L. This is checked exhaustively by an exact algorithm, not by sampling.\n3. The grammar must generate infinitely many words, because L is infinite.\nScore: 1.0 if all three checks pass, otherwise 0. Equivalence of context-free grammars is undecidable in general, so the check is exact only for words up to length 16; your grammar should nevertheless generate exactly L.\n\nFORMAT EXAMPLE (for an unrelated language { x^n y^n : n >= 1 } over {x, y})\n```json\n{\"start\": \"S\", \"productions\": [\n  {\"lhs\": \"S\", \"rhs\": [\"X\", \"Y\"]}, {\"lhs\": \"S\", \"rhs\": [\"X\", \"T\"]},\n  {\"lhs\": \"T\", \"rhs\": [\"S\", \"Y\"]},\n  {\"lhs\": \"X\", \"rhs\": [\"x\"]}, {\"lhs\": \"Y\", \"rhs\": [\"y\"]}]}\n```",
+  "raw_output": "```json\n{\"start\": \"S\", \"productions\": [\n  {\"lhs\": \"LP\", \"rhs\": [\"(\"]},\n  {\"lhs\": \"RP\", \"rhs\": [\")\"]},\n  {\"lhs\": \"LB\", \"rhs\": [\"[\"]},\n  {\"lhs\": \"RB\", \"rhs\": [\"]\"]},\n  {\"lhs\": \"S\", \"rhs\": [\"A1\", \"S\"]},\n  {\"lhs\": \"S\", \"rhs\": [\"B1\", \"S\"]},\n  {\"lhs\": \"S\", \"rhs\": [\"LP\", \"X_PR1\"]},\n  {\"lhs\": \"S\", \"rhs\": [\"LB\", \"X_QR1\"]},\n  {\"lhs\": \"S\", \"rhs\": [\"LP\", \"RP\"]},\n  {\"lhs\": \"S\", \"rhs\": [\"LB\", \"RB\"]},\n  {\"lhs\": \"P1\", \"rhs\": [\"A2\", \"P1\"]},\n  {\"lhs\": \"P1\", \"rhs\": [\"B2\", \"P1\"]},\n  {\"lhs\": \"P1\", \"rhs\": [\"LP\", \"X_PR2\"]},\n  {\"lhs\": \"P1\", \"rhs\": [\"LB\", \"X_QR2\"]},\n  {\"lhs\": \"P1\", \"rhs\": [\"LP\", \"RP\"]},\n  {\"lhs\": \"P1\", \"rhs\": [\"LB\", \"RB\"]},\n  {\"lhs\": \"Q1\", \"rhs\": [\"B2\", \"Q1\"]},\n  {\"lhs\": \"Q1\", \"rhs\": [\"LB\", \"X_QR2\"]},\n  {\"lhs\": \"Q1\", \"rhs\": [\"LB\", \"RB\"]},\n  {\"lhs\": \"P2\", \"rhs\": [\"A3\", \"P2\"]},\n  {\"lhs\": \"P2\", \"rhs\": [\"B3\", \"P2\"]},\n  {\"lhs\": \"P2\", \"rhs\": [\"LP\", \"RP\"]},\n  {\"lhs\": \"P2\", \"rhs\": [\"LB\", \"RB\"]},\n  {\"lhs\": \"Q2\", \"rhs\": [\"B3\", \"Q2\"]},\n  {\"lhs\": \"Q2\", \"rhs\": [\"LB\", \"RB\"]},\n  {\"lhs\": \"A1\", \"rhs\": [\"LP\", \"X_PR1\"]},\n  {\"lhs\": \"A1\", \"rhs\": [\"LP\", \"RP\"]},\n  {\"lhs\": \"B1\", \"rhs\": [\"LB\", \"X_QR1\"]},\n  {\"lhs\": \"B1\", \"rhs\": [\"LB\", \"RB\"]},\n  {\"lhs\": \"A2\", \"rhs\": [\"LP\", \"X_PR2\"]},\n  {\"lhs\": \"A2\", \"rhs\": [\"LP\", \"RP\"]},\n  {\"lhs\": \"B2\", \"rhs\": [\"LB\", \"X_QR2\"]},\n  {\"lhs\": \"B2\", \"rhs\": [\"LB\", \"RB\"]},\n  {\"lhs\": \"A3\", \"rhs\": [\"LP\", \"RP\"]},\n  {\"lhs\": \"B3\", \"rhs\": [\"LB\", \"RB\"]},\n  {\"lhs\": \"X_PR1\", \"rhs\": [\"P1\", \"RP\"]},\n  {\"lhs\": \"X_QR1\", \"rhs\": [\"Q1\", \"RB\"]},\n  {\"lhs\": \"X_PR2\", \"rhs\": [\"P2\", \"RP\"]},\n  {\"lhs\": \"X_QR2\", \"rhs\": [\"Q2\", \"RB\"]}\n]}```",
+  "reasoning_excerpt": "We need to design a CFG in CNF for the language L of well-nested brackets with constraints:\n- Alphabet: ( ) [ ]\n- Well-nested (properly nested parentheses and square brackets).\n- Max depth of any group ≤ 3.\n- No (-group has a [-group as its parent. That is, a '(' cannot be directly inside a '[' group. But a '[' can be inside a '(' group, and both can be at top level. Also '(' can be inside '(' group. So the parent of a (-group must be either a (-group or none (top-level). The parent of a [-group can be anything (subject to depth ≤3).\n\nWe need to generate exactly L, non-empty, well-nested, depth ≤3, and the parent constraint.\n\nWe need a CFG in CNF. Since CNF doesn't allow ε-productions, and L excludes ε, that's fine.\n\nWe need to generate all words up to length 16 correctly, and infinitely many words.\n\nWe need to think about the structure. This is a classic bracket language with constraints. We can define nonterminals representing groups at certain depths and with certain types of parent constraints.\n\nLet's denote:\n- Depth 1: top-level groups.\n- Depth 2: groups directly inside a top-level group.\n- Depth 3: groups directly inside a depth-2 group.\n- Depth >3 not allowed.\n\nAlso constraint: a (-group cannot have a [-group as parent. So if a group is a [-group, its children cannot be (-groups. But its children can be [-groups. If a group is a (-group, its children can be either (-groups or [-groups.\n\nWe can model this with nonterminals that generate sequences of groups at a given depth and with a given \"parent type\" (or rather, the type of the current group determines what children it can have). But since we need CNF, we need to break down productions into binary nonterminals or terminals.\n\nWe can think of the language as a set of strings generated by a grammar with nonterminals for \"group of type X at depth d\" and \"sequence of such groups\". But CNF requires binary productions. We can use standard techniques: define nonterminals for each type of group and for concatenation.\n\nLet's define nonterminals:\n- S: start symbol, generates a non-empty sequence of top-level groups (depth 1). Since top-level groups have no parent, they can be either (-groups or [-groups. But we also have depth constraint: max depth 3. So top-level groups can have children up to depth 2, and those can have children up to depth 3.\n\nWe need to enforce the parent constraint: a (-group cannot be directly inside a [-group. So if we are inside a [-group, we cannot generate a (-group as a child. But we can generate [-groups.\n\nWe can define nonterminals for \"group\" with a specific opening bracket and a specific allowed child types. But the child types depend on the parent's bracket type.\n\nLet's define:\n- A: generates a (-group (i.e., a pair of parentheses with content inside that is a sequence of groups allowed inside a (-group, with depth limit).\n- B: generates a [-group (square brackets with content inside that is a sequence of groups allowed inside a [-group, with depth limit).\n\nBut we also need to track depth. Since max depth is 3, we can have nonterminals for groups at depth 1, 2, 3. But the allowed children depend on the parent's bracket type and the current depth.\n\nAlternatively, we can define nonterminals for \"content\" at a given depth and given parent bracket type. Since depth is limited to 3, we can have a finite set of nonterminals.\n\nLet's denote:\n- For a given context (parent bracket type, current depth), we have a nonterminal that generates a sequence of groups (possibly empty? But CNF doesn't allow ε. However, a group can have empty content? In well-nested brackets, a group can be empty: e.g., \"()\" is a (-group with empty content. But the language L excludes empty word, but groups can be empty. In CNF, we cannot have ε-productions. So we need to handle empty content without ε. Typically, we can have a nonterminal that generates a sequence of groups, and we allow it to be \"empty\" by not including it? But in CNF, every production must produce either two nonterminals or one terminal. To generate empty string, we would need ε-productions, which are not allowed. However, the language L does not contain ε, but groups can be empty. For example, \"()\" is in L. That means the content inside the parentheses is empty. In a CFG without ε, we can still generate \"()\" by having a production that directly produces '(' and ')' with nothing in between? But CNF requires either A -> BC or A -> t. We cannot have A -> '(' ')' because that's two terminals. We could have A -> '(' B ')' but that's three symbols. So we need to break it down.\n\nStandard technique for parentheses in CNF: Use nonterminals for each bracket pair and for the content. For example:\nS -> '(' T ')' but that's three symbols. In CNF, we can do:\nS -> '(' X\nX -> T ')'\nBut then X -> T ')' is a terminal and a nonterminal, not allowed (mixed). CNF requires either two nonterminals or one terminal. So we cannot have a terminal and a nonterminal together. The usual conversion to CNF for such grammars introduces nonterminals for each terminal. For example, we define nonterminals LPAREN -> '(', RPAREN -> ')', LBRACK -> '[', RBRACK -> ']'. Then we can have productions like A -> LPAREN B, but that's still a nonterminal and a nonterminal? Actually LPAREN is a nonterminal that produces a terminal. But then A -> LPAREN B is two nonterminals, allowed. And B -> C RPAREN is two nonterminals. So we can do that.\n\nSo we can introduce nonterminals for each terminal:\nLP -> '('\nRP -> ')'\nLB -> '['\nRB -> ']'\n\nThen we can have productions like:\nGroup -> LP Content RP\nBut that's three nonterminals. We need to break into binary: Group -> LP Mid, Mid -> Content RP. But Content is a nonterminal generating the inside sequence. That's allowed: Group -> LP Mid (two nonterminals), Mid -> Content RP (two nonterminals). But then Content must generate a sequence of groups (possibly empty). However, CNF does not allow ε. So Content cannot generate ε. But we need empty content. How to handle empty content without ε? In CNF, if a nonterminal can generate ε, we eliminate ε-productions. But the resulting grammar may not generate ε, but it can generate strings that originally had ε in the middle? Actually, if a nonterminal can generate ε, after elimination, the grammar generates the same language minus ε. But here the language L does not contain ε, but groups can have empty content. For example, \"()\" is generated by Group -> LP RP? But with the above, Group -> LP Mid, Mid -> Content RP. If Content can generate ε, then Mid -> RP, but RP is a nonterminal that produces ')', so Mid -> RP is a unit production (nonterminal to nonterminal), not allowed in CNF. Also Content -> ε is ε-production. So we need to avoid ε altogether.\n\nWe can design the grammar such that empty content is represented by not having a Content nonterminal at all. For example, we can have two types of group productions: one for empty content and one for non-empty content. For empty content: Group -> LP RP? But that's two terminals, not allowed. With terminal nonterminals: Group -> LP RP? But LP and RP are nonterminals, so Group -> LP RP is two nonterminals, allowed! Because LP and RP are nonterminals that each produce a single terminal. So we can have a production Group -> LP RP directly. That generates \"()\". Similarly, Group -> LB RB generates \"[]\". That's allowed in CNF: two nonterminals on RHS.\n\nFor non-empty content: Group -> LP Content RP, but we need to break into binary. We can do: Group -> LP Mid, Mid -> Content RP. But then Content must generate a non-empty sequence of groups. Since Content cannot be empty, that's fine. But then we also have the empty case via Group -> LP RP. So we don't need ε.\n\nBut wait: In CNF, the RHS must be exactly two nonterminals or exactly one terminal. Group -> LP RP is two nonterminals, okay. Group -> LP Mid is two nonterminals, okay. Mid -> Content RP is two nonterminals, okay. Content -> something that generates a sequence of groups. But Content itself must generate a non-empty sequence of groups. How to generate a sequence of groups in CNF? We can have Content -> Group, or Content -> Group Content (but that's two nonterminals? Actually Content -> Group Content is two nonterminals, allowed). But that would be left-recursive or right-recursive. In CNF, we can have Content -> Group Rest, Rest -> Group Rest | Group? But Rest -> Group is a unit production (nonterminal to nonterminal), not allowed. So we need to avoid unit productions. We can define Content as a nonterminal that generates one or more groups, using binary productions that combine groups. For example:\nContent -> Group\nContent -> Group Content\nBut Content -> Group is a unit production (since Group is a nonterminal). Not allowed. So we need to factor it differently. We can have Content -> Group Tail, Tail -> Group Tail | Group? Still unit. The standard way to avoid unit productions in CNF for sequences is to have a nonterminal for each \"list\" that directly produces the first element and then the rest, but the rest must be a nonterminal that produces at least one element. Actually, we can define:\nContent -> Group\nContent -> Group Content\nBut Content -> Group is unit. To eliminate unit productions, we can inline the productions of Group into Content. But Group has multiple productions (empty and non-empty). That would blow up. Alternatively, we can define Content as a nonterminal that generates a non-empty sequence of \"Group\" but we can't use unit productions. So we need to have Content produce two nonterminals that together represent a sequence. For example, we can have Content -> GroupSeq, but that's unit. Instead, we can define Content to be the same as GroupSeq, and define GroupSeq with productions that are binary. For a non-empty sequence, we can have:\nGroupSeq -> Group\nGroupSeq -> Group GroupSeq\nBut again GroupSeq -> Group is unit. In CNF, unit productions are not allowed. So we must avoid any production of the form A -> B where both are nonterminals. That means every nonterminal must either produce two nonterminals or one terminal. So we cannot have a nonterminal that directly produces another single nonterminal.\n\nThus, we need to design the grammar such that every nonterminal either produces a terminal (via the terminal nonterminals LP, RP, etc.) or produces two nonterminals. But we also have the terminal nonterminals LP, RP, LB, RB that produce a single terminal. Those are allowed: A -> t is allowed. So LP -> '(' is allowed. But then if we have Group -> LP RP, that's two nonterminals, allowed. But if we have Content -> Group, that's unit, not allowed. So we cannot have Content -> Group. We need Content to produce two nonterminals. How can Content produce a sequence of groups without unit productions? We can define Content as a nonterminal that produces a pair of nonterminals that together generate a sequence. For example, we can have Content -> FirstGroup RestGroups, where FirstGroup generates a single group (but not via unit production), and RestGroups generates a sequence of groups (possibly empty? but empty not allowed). But RestGroups would need to generate a sequence, again leading to unit productions.\n\nWait, maybe we can use a different approach: Since the language is finite up to depth 3, but actually infinite because we can have arbitrarily many groups at the same depth? For example, at top level we can have many groups: ()()()... So the language is infinite. But the depth is bounded by 3. So we can have arbitrarily many groups at depth 1, 2, 3. So we need recursion for concatenation.\n\nIn CNF, recursion for concatenation is typically done with a nonterminal that produces two nonterminals: e.g., S -> S S | '(' S ')' | ... but that's not CNF because '(' S ')' is three symbols. We can convert to CNF by introducing nonterminals for terminals and breaking into binary. But the unit production issue remains for the concatenation: S -> S S is allowed (two nonterminals). But we also need base cases: S -> '(' ')' etc. But '(' ')' would be two terminals, not allowed. So we use LP and RP: S -> LP RP. That's two nonterminals. But then S -> LP RP is a production for a group with empty content. For non-empty content, we need S -> LP Mid, Mid -> Content RP. But then Content must generate a non-empty sequence of groups. If Content is the same as S (since inside a group we can have a sequence of groups), then Content -> S? That would be unit. But we can avoid unit by having Content be a nonterminal that generates a sequence of groups, and we define its productions directly without unit. For example, we can have:\nContent -> Group\nContent -> Group Content\nBut Content -> Group is unit. To eliminate, we can replace Content -> Group with all productions of Group. But Group has productions: Group -> LP RP, Group -> LP Mid, etc. That would make Content have those productions directly. But then Content would also need to generate sequences of groups. That might work if we define Content as the start symbol for a sequence of groups, and we give it productions that generate one group (by inlining Group's productions) and also productions that generate a group followed by Content. But then Content -> Group Content becomes Content -> (productions of Group) Content. That would be many productions, but still CNF if each production is binary or terminal. However, we must ensure no unit productions. If we inline Group's productions into Content, we get productions like Content -> LP RP (two nonterminals), Content -> LP Mid (two nonterminals), Content -> LB RB, Content -> LB Mid2, etc. And also Content -> (those) Content? But Content -> LP RP Content would be three nonterminals. So we need to break that into binary: Content -> LP Rest, Rest -> RP Content. But Rest -> RP Content is two nonterminals, allowed. But then we need to handle the case where the group has non-empty content: Group -> LP Mid, Mid -> Content RP. If we inline, Content -> LP Mid, but then Mid -> Content RP. That's getting messy.\n\nMaybe we can design a grammar with nonterminals for each \"type\" of group at each depth, and use a nonterminal for \"sequence of groups\" that is defined recursively without unit productions by having it produce a group and then another sequence, but the group itself is not a single nonterminal but a structure that yields two nonterminals. Actually, we can define a nonterminal Seq that generates a non-empty sequence of groups. We can define Seq -> GroupTail, where GroupTail is a nonterminal that generates a group followed by optional Seq? But again unit.\n\nLet's think systematically. In CNF, any CFG without ε can be converted to CNF. The standard conversion introduces new nonterminals for terminals and breaks long productions into binary. It also eliminates unit productions by replacing A -> B with all productions of B. So we can first design a grammar with ε-productions and unit productions, then convert to CNF. But the problem asks for a CNF grammar directly. We can design a grammar that is already in CNF by carefully choosing nonterminals.\n\nGiven the constraints (depth ≤3, parent constraint), the language is a subset of Dyck language with two bracket types and restrictions. Since depth is bounded by 3, the language is actually a regular language? No, because we can have arbitrarily many groups at the same depth, but the nesting depth is bounded. A language with bounded nesting depth is regular. Indeed, the set of well-nested brackets with maximum depth k is a regular language. But here we have two bracket types and a parent constraint. Still, with bounded depth, the language is regular. However, we are asked for a CFG in CNF, not a regular grammar. But a regular grammar can be converted to CNF (though regular grammars in CNF are a special case). But we can just design a CFG.\n\nSince depth ≤3, we can enumerate all possible group structures up to depth 3. But the number of groups at each level is unbounded, so we need recursion for concatenation. But concatenation at the same depth can be handled by a nonterminal that generates a list of groups. In CNF, a list can be generated by a nonterminal L with productions L -> G L | G, but that has unit production L -> G. To avoid unit, we can make L generate the first group and then the rest, but the first group must be generated by a nonterminal that produces two nonterminals. We can define a nonterminal for each type of group that directly produces the opening bracket and a nonterminal for the rest of the group. For example, for a (-group at depth d with allowed children, we can have a nonterminal Paren_d that generates '(' ... ')'. But we need to handle empty and non-empty content.\n\nAlternative approach: Use nonterminals for \"content\" at each depth and parent type. Since depth is at most 3, we have a finite number of contexts. Let's define contexts by (parent_bracket_type, current_depth). Parent bracket type can be: none (top-level), '(', '['. Current depth: 1,2,3. But depth 3 groups cannot have children (since depth would become 4). So at depth 3, groups must have empty content.\n\nWe can define nonterminals for \"sequence of groups\" in a given context. Let's denote:\n- T: top-level sequence (depth 1, no parent). This is the start symbol.\n- P_d: sequence of groups inside a (-group at depth d (so these groups are at depth d+1). But the parent is '('.\n- B_d: sequence of groups inside a [-group at depth d (parent is '[').\n\nBut we also need to generate the groups themselves. A group is either a (-group or a [-group. The type of group we can generate depends on the context (parent type). In context T (top-level), we can generate both (-groups and [-groups. In context P_d (inside a (-group), we can generate both (-groups and [-groups. In context B_d (inside a [-group), we can generate only [-groups (since (-groups cannot have [-group as parent). Also, depth constraint: if current depth is 3, we cannot generate any groups inside (since that would be depth 4). So at depth 3, groups must have empty content.\n\nWe also need to generate the brackets themselves. We'll have terminal nonterminals: LP, RP, LB, RB.\n\nNow, we need to define productions in CNF. Let's define nonterminals for sequences:\n- S: start, generates non-empty sequence of top-level groups (depth 1). Actually, the whole word is a non-empty sequence of top-level groups. So S generates that sequence.\n- A_d: generates a non-empty sequence of groups inside a (-group at depth d (so these groups are at depth d+1). d can be 1,2. (At depth 3, no groups inside, so we don't need A_3 for content; but we might need a nonterminal for empty content? We'll handle empty content separately.)\n- B_d: generates a non-empty sequence of groups inside a [-group at depth d. d can be 1,2.\n\nBut we also need to generate individual groups. Let's define nonterminals for a single group (with its content) in a given context. However, a group is a pair of brackets with content. In CNF, we can define a nonterminal for a group that produces the opening bracket and a nonterminal for the rest (content + closing bracket). For example:\n- Paren_d: generates a (-group at depth d (so its content is at depth d+1). But the group itself is at depth d. Its content is a sequence of groups at depth d+1, which could be empty or non-empty. Since we cannot have ε, we need two cases: empty content and non-empty content.\nWe can have:\nParen_d -> LP RP   (empty content)\nParen_d -> LP MidParen_d   (non-empty content)\nMidParen_d -> Content_d RP\nwhere Content_d is the nonterminal for non-empty sequence of groups at depth d+1 inside a (-group. But Content_d would be A_{d+1}? Actually, inside a (-group at depth d, the children are at depth d+1, and the parent is '(', so the sequence of children is generated by A_{d+1} (if d+1 ≤ 3). But A_{d+1} generates a non-empty sequence. For empty content, we use the first production.\n\nSimilarly for square brackets:\nBrack_d -> LB RB\nBrack_d -> LB MidBrack_d\nMidBrack_d -> Content_d RB\nwhere Content_d is the sequence of groups inside a [-gr",
+  "settings": {
+    "max_tokens": 64000,
+    "openrouter_id": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "provider": null,
+    "reasoning": {
+      "effort": "high"
+    },
+    "seed": null,
+    "temperature": 0
+  },
+  "system_prompt": "You are a careful formal-methods engineer answering one exam-style question about finite automata, regular expressions or context-free grammars.\n- No tools are available. You cannot run code, and no code will be run for you. Work everything out yourself.\n- You may reason step by step, at any length, before giving your answer.\n- End your reply with exactly one fenced code block that starts with ```json and contains only the final answer: a single JSON object in the schema given in the question. If your reply contains several ```json blocks, only the last one is graded.\n- Do not put comments or trailing commas inside the JSON.",
+  "task_id": "task_07",
+  "trial": 1,
+  "usage": {
+    "completion_tokens": 18330,
+    "cost_usd": 0.0,
+    "prompt_tokens": 957,
+    "reasoning_tokens": 15299
+  }
+}

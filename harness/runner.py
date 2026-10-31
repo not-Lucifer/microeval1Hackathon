@@ -22,6 +22,8 @@ from harness.cost import CostTracker, call_cost
 from harness.parsing import extract_final_json
 from harness.prompts import SYSTEM_PROMPT, build_messages
 
+MODEL_GIVE_UP_AFTER = 2  # calls in a row that end in API_ERROR before a model is skipped for this run
+
 
 class ChatClient(Protocol):
     async def complete(self, spec: ModelSpec, messages: list[dict]) -> CompletionResult: ...
@@ -91,10 +93,14 @@ async def run_trials(
     """Run every (model, task, trial); returns the transcripts that were produced.
     New (uncached) calls stop being made once --max-cost or --max-requests is reached, or
     OpenRouter reports that no further call can succeed (no credits, free daily quota used
-    up); skipped trials leave no transcript and run next time."""
+    up). One model is skipped once OpenRouter refuses it, or after MODEL_GIVE_UP_AFTER of
+    its calls in a row fail (e.g. its free provider is rate-limited), so a broken model does
+    not use up a free daily quota. Skipped trials leave no transcript and run next time."""
     semaphore = asyncio.Semaphore(concurrency)
     produced: list[dict] = []
     halted: list[str] = []  # reason the run stopped making paid calls, if any
+    given_up: dict[str, str] = {}  # model name -> reason its remaining calls are skipped
+    failed_in_a_row: dict[str, int] = {}
 
     async def one(spec: ModelSpec, task: dict, trial: int) -> None:
         async with semaphore:
@@ -109,8 +115,8 @@ async def run_trials(
                     halted.append("--max-cost reached")
                 if not halted and cost.requests_exhausted():
                     halted.append("--max-requests reached")
-                if halted:
-                    log(f"skip {spec.name}/{task['id']}/trial {trial}: {halted[0]}")
+                if halted or spec.name in given_up:
+                    log(f"skip {spec.name}/{task['id']}/trial {trial}: {halted[0] if halted else given_up[spec.name]}")
                     return
                 result = await client.complete(spec, messages)
                 cost.add_requests(max(result.attempts, 1))  # a call that was sent is at least one request
@@ -118,7 +124,16 @@ async def run_trials(
                     halted.append(result.stop_run)
                     log(f"STOPPING: {halted[0]}")
                 if result.error is None:
+                    failed_in_a_row[spec.name] = 0
                     cache.put(key, result.__dict__)
+                else:
+                    failed_in_a_row[spec.name] = failed_in_a_row.get(spec.name, 0) + 1
+                    if result.skip_model:
+                        given_up.setdefault(spec.name, result.skip_model)
+                    elif failed_in_a_row[spec.name] >= MODEL_GIVE_UP_AFTER:
+                        given_up.setdefault(spec.name, f"{MODEL_GIVE_UP_AFTER} calls in a row failed; rerun later")
+                    if spec.name in given_up and not halted:
+                        log(f"SKIPPING {spec.name} for the rest of this run: {given_up[spec.name]}")
             price = call_cost(result.usage, spec) if result.error is None else None
             if cached is None:
                 cost.add(price)

@@ -104,7 +104,8 @@ Task prompts live in `scripts/generate_instances.py`; edit there, regenerate, an
 - 2026-10-30: review pass. Fixed CFG-grader memory blowup on long-string grammars, OpenRouter mid-generation errors now count as API_ERROR, `models.yaml` typos/duplicates now fail loudly, hook works with `python3`. 1728 tests green.
 - 2026-10-31: first live run hit OpenRouter 402 (out of credits) on 143 calls; ~$0.19 spent. Live runs now require `--max-cost`, a 402 stops the run, key ids are redacted, `--dry-run` uses recorded cost per call. 1733 tests green. Open: T08 truncation at 32k tokens and low headroom (OPEN_QUESTIONS 34-35).
 - 2026-10-31: author has **no budget for paid runs**. Use only the free routes: `models.free.yaml` (OpenRouter `:free`, 50 requests/day, failed attempts count) and chat apps via `--new-manual`/`--import-manual`. Never suggest a paid run without being asked. Guide: `docs/RUNNING_FOR_FREE.md`.
-- Next: free pilot (1 trial x 8 tasks x 3 free models = 24 requests), then decide difficulty changes BEFORE trials 2-3 (changing a task invalidates its earlier answers), then chat-app runs for at least one frontier model.
+- 2026-10-31: free pilot. Only Nemotron answered (7/7 pass); `inkling:free` is app-only (403, replaced by `dots-3-note-preview:free`), Gemma's free provider was busy (429). The runner now skips a refused or repeatedly failing model for the rest of a run (OPEN_QUESTIONS 37). ChatGPT web replies pasted for T01-T08 trial 1 + T07/T08 trials 2-3, not yet imported (info.yaml empty; T05 space, OPEN_QUESTIONS 38).
+- Next: author decides on difficulty (OPEN_QUESTIONS 35) BEFORE trials 2-3 (changing a task invalidates its earlier answers), then the remaining free trials and chat-app runs.
 
 ## Working agreement
 - Start non-trivial work in plan mode; state the plan, then execute phase by phase (see `docs/KICKOFF_PROMPTS.md`).

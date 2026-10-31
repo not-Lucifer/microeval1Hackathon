@@ -33,13 +33,21 @@ python run_eval.py --models models.free.yaml --trials 1 --max-cost 0 --concurren
 - `--max-attempts 2` limits retries, because every retry uses up the daily quota.
 - If OpenRouter says the daily quota is used up, the run **stops by itself**. Finished answers
   are cached, so the next day the same command continues where it stopped.
-- To run a single model: add `--model inkling-free`.
+- A model that OpenRouter refuses, or whose calls fail twice in a row, is **skipped for the
+  rest of the run** (its other trials are left for next time), so one broken model cannot use
+  up the day's quota.
+- To run a single model: add `--model nemotron-3-ultra-free`.
 
 **If something fails** (it is recorded as `API_ERROR`, never as a model failure):
 - `404 ... data policy`: in OpenRouter **Settings > Privacy**, allow the free endpoints
   (free providers may log prompts; our prompts are synthetic, so nothing private is sent).
 - `404 ... no endpoints` or `model not found`: that free model was withdrawn. Pick another one
   from https://openrouter.ai/models?q=free and edit `models.free.yaml`.
+- `403 ... only available on agentic harnesses`: OpenRouter serves that free model only to
+  listed apps, not to scripts (this happened to `thinkingmachines/inkling:free`). Replace it.
+- `429 ... Provider returned error` (not "per-day"): the model's free provider is busy. Try
+  that model again later, e.g. at a different time of day.
+- `503 ... overloaded`: same, try again later. Finished answers are cached.
 - `TRUNCATED`: the model used its whole `max_tokens` without answering. That *is* a model
   failure (CLAUDE.md rule 8). It is counted and reported separately.
 
@@ -65,8 +73,10 @@ app has one. Keep the same model and the same reasoning setting for every trial.
 1. Open a **brand-new chat**.
 2. Paste the whole content of `manual/prompts/task_XX.txt` as one message.
 3. When the answer is complete, copy the **entire reply** with the app's copy button, so the
-   final ```` ```json ```` block is kept.
-4. Paste it into `manual/<name>/task_XX/trial_N.txt` and save.
+   final ```` ```json ```` block is kept, along with any explanation the model wrote before it.
+4. Paste it into `manual/<name>/task_XX/trial_N.txt` and save. **Never edit it**: no
+   retyping, no added or removed spaces. The grader is strict (a space inside a T05 witness
+   scores 0, as the prompt says), so the file must be exactly what the model wrote.
 5. If the reply visibly ran code or searched the web, discard it and redo the trial in a new chat.
 
 **4. Fill in `manual/<name>/info.yaml`**: app, the model name the app showed, the date, the

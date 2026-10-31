@@ -1,0 +1,8 @@
+# Fill in every field before importing (python run_eval.py --import-manual manual/).
+app: "ChatGPT, free plan, web"
+model_shown: "no model name shown (free plan default)"
+date: "2026-10-31"
+reasoning_mode: "default (Think off)"
+no_tools_confirmed: true    # code execution, web search and file tools were OFF and no reply used them
+new_chat_per_trial: true    # every trial was a brand-new chat (memory/personalization off)
+notes: "Replies pasted exactly as ChatGPT gave them: each reply was only the JSON answer, with no text before it. Pilot run on task set v1."

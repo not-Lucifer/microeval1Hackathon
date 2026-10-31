@@ -215,9 +215,9 @@ def test_transient_failures_are_retried(monkeypatch):
     assert (result.error, result.text, result.attempts) == (None, "fine", 2)
 
 
-def status_error(code: int, message: str) -> openai.APIStatusError:
-    """An APIStatusError without building an HTTP response object."""
-    exc = openai.APIStatusError.__new__(openai.APIStatusError)
+def status_error(code: int, message: str, cls: type = openai.APIStatusError) -> openai.APIStatusError:
+    """An APIStatusError (or subclass) without building an HTTP response object."""
+    exc = cls.__new__(cls)
     Exception.__init__(exc, message)
     exc.status_code = code
     return exc
@@ -252,6 +252,33 @@ def test_run_stops_after_out_of_credits(tmp_path):
                            ResponseCache(tmp_path / "c"), CostTracker(), 1, log=lambda *_: None))
     assert len(client.calls) == 1  # the three remaining trials were never sent
     assert [t["grade"]["failure_code"] for t in load_transcripts(tmp_path / "t")] == ["API_ERROR"]
+
+
+def test_refused_model_is_skipped_but_other_models_still_run(tmp_path, monkeypatch):
+    refusal = status_error(403, "thinkingmachines/inkling:free is only available on agentic harnesses",
+                           openai.PermissionDeniedError)
+    result = asyncio.run(client_with([refusal], monkeypatch).complete(BAD, []))
+    assert result.attempts == 1 and "HTTP 403" in result.skip_model and result.stop_run is None
+
+    replies = scripted_replies()
+    replies[("bad-model", "task_01")] = [result]
+    client = FakeClient(replies)
+    run(tmp_path, client)
+    assert [c[0] for c in client.calls] == ["good-model"] * 4 + ["bad-model"]
+    assert len(load_transcripts(tmp_path / "transcripts")) == 5  # skipped trials run next time
+
+
+def test_model_is_skipped_after_failing_twice_in_a_row(tmp_path):
+    ref1 = load_reference("task_01")["answer"]
+    failed = CompletionResult(error="RateLimitError: 429 - Provider returned error", attempts=2)
+    client = FakeClient({
+        ("bad-model", "task_01"): [failed, ok(ref1), failed],  # the success in between resets the count
+        ("bad-model", "task_05"): [failed],
+    })
+    asyncio.run(run_trials(load_tasks(["task_01", "task_05"]), [BAD], 3, client, tmp_path / "t",
+                           ResponseCache(tmp_path / "c"), CostTracker(), 1, log=lambda *_: None))
+    assert len(client.calls) == 4  # task_05 trials 2 and 3 were never sent
+    assert len(load_transcripts(tmp_path / "t")) == 4
 
 
 def test_live_run_requires_max_cost(tmp_path, capsys):
