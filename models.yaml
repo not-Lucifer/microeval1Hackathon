@@ -39,8 +39,8 @@ models:
 
   # --- reasoning-effort sweep on one model (same id as frontier-a) ------------------------
   - name: frontier-a-effort-low
-    openrouter_id: null   # VERIFY ID ON OPENROUTER (same model as frontier-a)
+    openrouter_id: anthropic/claude-haiku-5.5   # VERIFY ID ON OPENROUTER (same model as frontier-a)
     reasoning: {effort: low}
   - name: frontier-a-effort-medium
-    openrouter_id: null   # VERIFY ID ON OPENROUTER (same model as frontier-a)
+    openrouter_id: anthropic/claude-haiku-5.5   # VERIFY ID ON OPENROUTER (same model as frontier-a)
     reasoning: {effort: medium}

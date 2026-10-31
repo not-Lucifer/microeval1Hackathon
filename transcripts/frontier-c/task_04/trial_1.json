@@ -1,11 +1,11 @@
 {
   "api_attempts": 5,
-  "date": "2026-10-30T19:33:06+00:00",
+  "date": "2026-10-31T10:44:42+00:00",
   "finish_reason": null,
   "grade": {
     "counterexample": null,
     "details": {
-      "error": "APIStatusError: Error code: 402 - This request requires more credits, or fewer max_tokens. You requested up to 32000 tokens, but can only afford 8488. To increase, visit https://openrouter.ai/workspaces/default/keys/d6bd07e9f98c3f3dae6523f5ee91a801d0985be1b214e128ee7afe8e226a4f68 and adjust the key's total limit"
+      "error": "APIStatusError: Error code: 402 - This request requires more credits, or fewer max_tokens. You requested up to 32000 tokens, but can only afford 672. To increase, visit https://openrouter.ai/workspaces/default/keys/<redacted> and adjust the key's total limit"
     },
     "failure_code": "API_ERROR",
     "passed": false,

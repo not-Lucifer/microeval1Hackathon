@@ -3,19 +3,43 @@
     "baseline-nonreasoning": {
       "api_errors": [
         "task_01/trial_1",
+        "task_01/trial_2",
+        "task_01/trial_3",
+        "task_01/trial_4",
         "task_02/trial_1",
+        "task_02/trial_2",
+        "task_02/trial_3",
+        "task_02/trial_4",
         "task_03/trial_1",
+        "task_03/trial_2",
+        "task_03/trial_3",
+        "task_03/trial_4",
         "task_04/trial_1",
+        "task_04/trial_2",
+        "task_04/trial_3",
+        "task_04/trial_4",
         "task_05/trial_1",
+        "task_05/trial_2",
+        "task_05/trial_3",
+        "task_05/trial_4",
         "task_06/trial_1",
+        "task_06/trial_2",
+        "task_06/trial_3",
+        "task_06/trial_4",
         "task_07/trial_1",
-        "task_08/trial_1"
+        "task_07/trial_2",
+        "task_07/trial_3",
+        "task_07/trial_4",
+        "task_08/trial_1",
+        "task_08/trial_2",
+        "task_08/trial_3",
+        "task_08/trial_4"
       ],
-      "calls_with_unknown_cost": 8,
+      "calls_with_unknown_cost": 0,
       "completion_tokens": 0,
       "cost_usd": 0,
       "dates": [
-        "2026-10-30"
+        "2026-10-31"
       ],
       "failure_code_histogram": {},
       "mean_score": null,
@@ -38,12 +62,37 @@
       "valid_trials": 0
     },
     "frontier-a": {
-      "api_errors": [],
+      "api_errors": [
+        "task_01/trial_2",
+        "task_01/trial_3",
+        "task_01/trial_4",
+        "task_02/trial_2",
+        "task_02/trial_3",
+        "task_02/trial_4",
+        "task_03/trial_2",
+        "task_03/trial_3",
+        "task_03/trial_4",
+        "task_04/trial_2",
+        "task_04/trial_3",
+        "task_04/trial_4",
+        "task_05/trial_2",
+        "task_05/trial_3",
+        "task_05/trial_4",
+        "task_06/trial_2",
+        "task_06/trial_3",
+        "task_06/trial_4",
+        "task_07/trial_2",
+        "task_07/trial_3",
+        "task_07/trial_4",
+        "task_08/trial_2",
+        "task_08/trial_3",
+        "task_08/trial_4"
+      ],
       "calls_with_unknown_cost": 0,
       "completion_tokens": 80680,
       "cost_usd": 0.0412,
       "dates": [
-        "2026-10-30"
+        "2026-10-31"
       ],
       "failure_code_histogram": {
         "PASS": 7,
@@ -183,27 +232,129 @@
       "truncated": 1,
       "valid_trials": 8
     },
-    "frontier-b": {
+    "frontier-a-effort-low": {
       "api_errors": [
+        "task_01/trial_1",
+        "task_02/trial_1",
+        "task_03/trial_1",
         "task_04/trial_1",
         "task_05/trial_1",
         "task_06/trial_1",
         "task_07/trial_1",
         "task_08/trial_1"
       ],
-      "calls_with_unknown_cost": 5,
+      "calls_with_unknown_cost": 0,
+      "completion_tokens": 0,
+      "cost_usd": 0,
+      "dates": [
+        "2026-10-31"
+      ],
+      "failure_code_histogram": {},
+      "mean_score": null,
+      "mean_score_sd_across_trial_indices": null,
+      "pass_at_k": null,
+      "pass_hat_k": null,
+      "pass_rate": null,
+      "settings": {
+        "max_tokens": 32000,
+        "openrouter_id": "anthropic/claude-haiku-5.5",
+        "provider": null,
+        "reasoning": {
+          "effort": "low"
+        },
+        "seed": null,
+        "temperature": 0
+      },
+      "tasks": {},
+      "total_latency_s": 0,
+      "trials_per_task": 0,
+      "truncated": 0,
+      "valid_trials": 0
+    },
+    "frontier-a-effort-medium": {
+      "api_errors": [
+        "task_01/trial_1",
+        "task_02/trial_1",
+        "task_03/trial_1",
+        "task_04/trial_1",
+        "task_05/trial_1",
+        "task_06/trial_1",
+        "task_07/trial_1",
+        "task_08/trial_1"
+      ],
+      "calls_with_unknown_cost": 0,
+      "completion_tokens": 0,
+      "cost_usd": 0,
+      "dates": [
+        "2026-10-31"
+      ],
+      "failure_code_histogram": {},
+      "mean_score": null,
+      "mean_score_sd_across_trial_indices": null,
+      "pass_at_k": null,
+      "pass_hat_k": null,
+      "pass_rate": null,
+      "settings": {
+        "max_tokens": 32000,
+        "openrouter_id": "anthropic/claude-haiku-5.5",
+        "provider": null,
+        "reasoning": {
+          "effort": "medium"
+        },
+        "seed": null,
+        "temperature": 0
+      },
+      "tasks": {},
+      "total_latency_s": 0,
+      "trials_per_task": 0,
+      "truncated": 0,
+      "valid_trials": 0
+    },
+    "frontier-b": {
+      "api_errors": [
+        "task_01/trial_2",
+        "task_01/trial_3",
+        "task_01/trial_4",
+        "task_02/trial_2",
+        "task_02/trial_3",
+        "task_02/trial_4",
+        "task_03/trial_2",
+        "task_03/trial_3",
+        "task_03/trial_4",
+        "task_04/trial_1",
+        "task_04/trial_2",
+        "task_04/trial_3",
+        "task_04/trial_4",
+        "task_05/trial_1",
+        "task_05/trial_2",
+        "task_05/trial_3",
+        "task_05/trial_4",
+        "task_06/trial_1",
+        "task_06/trial_2",
+        "task_06/trial_3",
+        "task_06/trial_4",
+        "task_07/trial_1",
+        "task_07/trial_2",
+        "task_07/trial_3",
+        "task_07/trial_4",
+        "task_08/trial_1",
+        "task_08/trial_2",
+        "task_08/trial_3",
+        "task_08/trial_4"
+      ],
+      "calls_with_unknown_cost": 0,
       "completion_tokens": 12738,
       "cost_usd": 0.0157,
       "dates": [
-        "2026-10-30"
+        "2026-10-31"
       ],
       "failure_code_histogram": {
         "PASS": 3
       },
       "mean_score": 1.0,
       "mean_score_sd_across_trial_indices": null,
-      "pass_at_k": 1,
-      "pass_hat_k": 1,
+      "pass_at_k": 1.0,
+      "pass_hat_k": 1.0,
       "pass_rate": 1.0,
       "settings": {
         "max_tokens": 32000,
@@ -267,19 +418,43 @@
     "frontier-c": {
       "api_errors": [
         "task_01/trial_1",
+        "task_01/trial_2",
+        "task_01/trial_3",
+        "task_01/trial_4",
         "task_02/trial_1",
+        "task_02/trial_2",
+        "task_02/trial_3",
+        "task_02/trial_4",
         "task_03/trial_1",
+        "task_03/trial_2",
+        "task_03/trial_3",
+        "task_03/trial_4",
         "task_04/trial_1",
+        "task_04/trial_2",
+        "task_04/trial_3",
+        "task_04/trial_4",
         "task_05/trial_1",
+        "task_05/trial_2",
+        "task_05/trial_3",
+        "task_05/trial_4",
         "task_06/trial_1",
+        "task_06/trial_2",
+        "task_06/trial_3",
+        "task_06/trial_4",
         "task_07/trial_1",
-        "task_08/trial_1"
+        "task_07/trial_2",
+        "task_07/trial_3",
+        "task_07/trial_4",
+        "task_08/trial_1",
+        "task_08/trial_2",
+        "task_08/trial_3",
+        "task_08/trial_4"
       ],
-      "calls_with_unknown_cost": 8,
+      "calls_with_unknown_cost": 0,
       "completion_tokens": 0,
       "cost_usd": 0,
       "dates": [
-        "2026-10-30"
+        "2026-10-31"
       ],
       "failure_code_histogram": {},
       "mean_score": null,
@@ -304,22 +479,33 @@
       "valid_trials": 0
     },
     "small-open": {
-      "api_errors": [],
+      "api_errors": [
+        "task_05/trial_4",
+        "task_06/trial_2",
+        "task_06/trial_3",
+        "task_06/trial_4",
+        "task_07/trial_2",
+        "task_07/trial_3",
+        "task_07/trial_4",
+        "task_08/trial_2",
+        "task_08/trial_3",
+        "task_08/trial_4"
+      ],
       "calls_with_unknown_cost": 0,
-      "completion_tokens": 134271,
-      "cost_usd": 0.0986,
+      "completion_tokens": 332793,
+      "cost_usd": 0.1304,
       "dates": [
-        "2026-10-30"
+        "2026-10-31"
       ],
       "failure_code_histogram": {
-        "PASS": 7,
+        "PASS": 21,
         "TRUNCATED": 1
       },
-      "mean_score": 0.875,
-      "mean_score_sd_across_trial_indices": null,
+      "mean_score": 0.9545,
+      "mean_score_sd_across_trial_indices": 0.0541,
       "pass_at_k": 0.875,
       "pass_hat_k": 0.875,
-      "pass_rate": 0.875,
+      "pass_rate": 0.9545,
       "settings": {
         "max_tokens": 32000,
         "openrouter_id": "deepseek/deepseek-v4.1-flash",
@@ -331,73 +517,115 @@
       "tasks": {
         "task_01": {
           "counterexamples": [
+            null,
+            null,
+            null,
             null
           ],
           "failure_codes": [
+            null,
+            null,
+            null,
             null
           ],
           "mean_score": 1.0,
-          "passes": 1,
+          "passes": 4,
           "scores": [
+            1.0,
+            1.0,
+            1.0,
             1.0
           ],
-          "trials": 1
+          "trials": 4
         },
         "task_02": {
           "counterexamples": [
+            null,
+            null,
+            null,
             null
           ],
           "failure_codes": [
+            null,
+            null,
+            null,
             null
           ],
           "mean_score": 1.0,
-          "passes": 1,
+          "passes": 4,
           "scores": [
+            1.0,
+            1.0,
+            1.0,
             1.0
           ],
-          "trials": 1
+          "trials": 4
         },
         "task_03": {
           "counterexamples": [
+            null,
+            null,
+            null,
             null
           ],
           "failure_codes": [
+            null,
+            null,
+            null,
             null
           ],
           "mean_score": 1.0,
-          "passes": 1,
+          "passes": 4,
           "scores": [
+            1.0,
+            1.0,
+            1.0,
             1.0
           ],
-          "trials": 1
+          "trials": 4
         },
         "task_04": {
           "counterexamples": [
+            null,
+            null,
+            null,
             null
           ],
           "failure_codes": [
+            null,
+            null,
+            null,
             null
           ],
           "mean_score": 1.0,
-          "passes": 1,
+          "passes": 4,
           "scores": [
+            1.0,
+            1.0,
+            1.0,
             1.0
           ],
-          "trials": 1
+          "trials": 4
         },
         "task_05": {
           "counterexamples": [
+            null,
+            null,
             null
           ],
           "failure_codes": [
+            null,
+            null,
             null
           ],
           "mean_score": 1.0,
-          "passes": 1,
+          "passes": 3,
           "scores": [
+            1.0,
+            1.0,
             1.0
           ],
-          "trials": 1
+          "trials": 3
         },
         "task_06": {
           "counterexamples": [
@@ -442,11 +670,11 @@
           "trials": 1
         }
       },
-      "total_latency_s": 468.3,
-      "trials_per_task": 1,
+      "total_latency_s": 3380.1,
+      "trials_per_task": 4,
       "truncated": 1,
-      "valid_trials": 8
+      "valid_trials": 22
     }
   },
-  "n_transcripts": 40
+  "n_transcripts": 176
 }
