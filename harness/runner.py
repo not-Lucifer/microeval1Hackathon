@@ -89,8 +89,9 @@ async def run_trials(
     log=print,
 ) -> list[dict]:
     """Run every (model, task, trial); returns the transcripts that were produced.
-    New (uncached) calls stop being made once --max-cost is reached or OpenRouter reports
-    that the account is out of credits; skipped trials leave no transcript."""
+    New (uncached) calls stop being made once --max-cost or --max-requests is reached, or
+    OpenRouter reports that no further call can succeed (no credits, free daily quota used
+    up); skipped trials leave no transcript and run next time."""
     semaphore = asyncio.Semaphore(concurrency)
     produced: list[dict] = []
     halted: list[str] = []  # reason the run stopped making paid calls, if any
@@ -101,16 +102,20 @@ async def run_trials(
             key = ResponseCache.key(spec.settings(), messages, trial)
             cached = cache.get(key)
             if cached is not None:
-                result = CompletionResult(**cached)
+                known = CompletionResult.__dataclass_fields__  # tolerate entries from older versions
+                result = CompletionResult(**{k: v for k, v in cached.items() if k in known})
             else:
-                if cost.exhausted() and not halted:
+                if not halted and cost.exhausted():
                     halted.append("--max-cost reached")
+                if not halted and cost.requests_exhausted():
+                    halted.append("--max-requests reached")
                 if halted:
                     log(f"skip {spec.name}/{task['id']}/trial {trial}: {halted[0]}")
                     return
                 result = await client.complete(spec, messages)
-                if result.out_of_credits and not halted:
-                    halted.append("OpenRouter account is out of credits (HTTP 402); top up and rerun")
+                cost.add_requests(max(result.attempts, 1))  # a call that was sent is at least one request
+                if result.stop_run and not halted:
+                    halted.append(result.stop_run)
                     log(f"STOPPING: {halted[0]}")
                 if result.error is None:
                     cache.put(key, result.__dict__)

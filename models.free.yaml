@@ -1,0 +1,29 @@
+# Free OpenRouter models (":free" ids cost $0). Ids checked against OpenRouter's live model
+# list (GET https://openrouter.ai/api/v1/models) on 2026-10-31; free models come and go, so
+# re-check on https://openrouter.ai/models?q=free before each run.
+#
+# Limits (OpenRouter, Oct 2026): 20 requests/minute and 50 requests/day across all free
+# models while lifetime credit purchases are under $10; every attempt counts, including
+# failed ones. One full run of one model = 8 tasks x 3 trials = 24 requests.
+#
+# Run with:
+#   python run_eval.py --models models.free.yaml --trials 3 --max-cost 0 --concurrency 1 \
+#                      --max-attempts 2 --max-requests 45
+#
+# max_tokens: free calls reserve no credit, so each model gets close to its own output limit
+# (see docs/OPEN_QUESTIONS.md #36). The earlier paid run truncated Task 08 at 32,000.
+
+defaults:
+  temperature: 0
+  reasoning: {effort: high}
+
+models:
+  - name: nemotron-3-ultra-free        # NVIDIA, 550B total / 55B active, output limit 65,536
+    openrouter_id: nvidia/nemotron-3-ultra-550b-a55b:free
+    max_tokens: 64000
+  - name: inkling-free                 # Thinking Machines, output limit 262,144
+    openrouter_id: thinkingmachines/inkling:free
+    max_tokens: 64000
+  - name: gemma-4-31b-free             # Google, open weights, output limit 32,768
+    openrouter_id: google/gemma-4-31b-it:free
+    max_tokens: 32000

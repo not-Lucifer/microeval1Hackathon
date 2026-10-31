@@ -24,7 +24,9 @@ pytest -q                                   # must be green before any commit (~
 python scripts/verify_specs.py              # recomputes every expected number in the task specs
 python scripts/generate_instances.py        # (re)writes tasks/*.json + reference/*.ref.json; --check = stale?
 python scripts/check_secrets.py             # scans every tracked file for keys/.env/videos/>5MB files
-python run_eval.py --models models.yaml --trials 3        # live run (needs OPENROUTER_API_KEY)
+python run_eval.py --models models.yaml --trials 3 --max-cost 5   # PAID live run (needs OPENROUTER_API_KEY)
+python run_eval.py --models models.free.yaml --trials 3 --max-cost 0 --concurrency 1 --max-attempts 2 --max-requests 45  # FREE models
+python run_eval.py --new-manual NAME --trials 3 / --import-manual manual/   # free chat apps, pasted by hand
 python run_eval.py --regrade transcripts/                 # offline re-grade of saved transcripts, no API key
 python scripts/report.py                    # builds results/summary.md + scorecard.json
 bash scripts/make_zip.sh                    # builds submission zip from HEAD, fails if >50MB or secrets found
@@ -35,7 +37,8 @@ bash scripts/make_zip.sh                    # builds submission zip from HEAD, f
 automata/    pure algorithms: dfa.py nfa.py regex.py cfg.py   (no I/O, no model calls)
 graders/     task-level scoring: dfa_grader.py witness_grader.py cfg_grader.py grader.py failure_codes.py
              answers.py (answer schemas) oracles.py (T07/T08 language definitions) result.py
-harness/     client.py parsing.py prompts.py runner.py cache.py cost.py metrics.py
+harness/     client.py parsing.py prompts.py runner.py cache.py cost.py metrics.py manual.py (chat-app import)
+manual/      <model>/info.yaml + task_XX/trial_N.txt pasted chat-app replies (prompts/ is generated, git-ignored)
 tasks/       task_01..08 JSON: prompt + metadata ONLY (never answers) -- GENERATED, do not hand-edit
 reference/   build.py (constructions + seeded generators) and task_XX.ref.json (never loaded by the harness)
 scripts/     generate_instances.py verify_specs.py check_task08_noncf.py search_t05_pairs.py
@@ -100,7 +103,8 @@ Task prompts live in `scripts/generate_instances.py`; edit there, regenerate, an
 - 2026-10-30: Phases 0-3 built (scaffold, engines, graders, all 8 tasks + references, harness, offline regrade, docs drafts). Tests green; `verify_specs.py` all OK.
 - 2026-10-30: review pass. Fixed CFG-grader memory blowup on long-string grammars, OpenRouter mid-generation errors now count as API_ERROR, `models.yaml` typos/duplicates now fail loudly, hook works with `python3`. 1728 tests green.
 - 2026-10-31: first live run hit OpenRouter 402 (out of credits) on 143 calls; ~$0.19 spent. Live runs now require `--max-cost`, a 402 stops the run, key ids are redacted, `--dry-run` uses recorded cost per call. 1733 tests green. Open: T08 truncation at 32k tokens and low headroom (OPEN_QUESTIONS 34-35).
-- Next: the author verifies model ids on OpenRouter and fills `models.yaml`, then the Phase 3 pilot (1 trial x 8 tasks, 2 cheap + 1 frontier model, small `--max-cost`).
+- 2026-10-31: author has **no budget for paid runs**. Use only the free routes: `models.free.yaml` (OpenRouter `:free`, 50 requests/day, failed attempts count) and chat apps via `--new-manual`/`--import-manual`. Never suggest a paid run without being asked. Guide: `docs/RUNNING_FOR_FREE.md`.
+- Next: free pilot (1 trial x 8 tasks x 3 free models = 24 requests), then decide difficulty changes BEFORE trials 2-3 (changing a task invalidates its earlier answers), then chat-app runs for at least one frontier model.
 
 ## Working agreement
 - Start non-trivial work in plan mode; state the plan, then execute phase by phase (see `docs/KICKOFF_PROMPTS.md`).

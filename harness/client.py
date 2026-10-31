@@ -8,6 +8,9 @@ OpenRouter reserves credit for the full max_tokens of a request before it starts
 balance makes every request fail with 402 even if the answer would have been short.
 A reply with finish_reason "error" (OpenRouter: the provider failed mid-generation) is an
 API error too, not a model answer.
+Free (":free") models: 429 "free-models-per-day" stops the run (the daily quota is gone);
+other 429s wait out the per-minute window. Failed attempts count toward the daily quota,
+so free runs should use few attempts (--max-attempts).
 """
 from __future__ import annotations
 
@@ -59,7 +62,15 @@ class CompletionResult:
     model_returned: Optional[str] = None
     error: Optional[str] = None
     attempts: int = 0
-    out_of_credits: bool = False  # HTTP 402: every further call would fail too, so the run stops
+    stop_run: Optional[str] = None  # set when every further call would fail too (no credits, daily quota)
+
+
+STOP_NO_CREDITS = "OpenRouter account is out of credits (HTTP 402); top up and rerun"
+STOP_FREE_DAILY = (
+    "OpenRouter free-model daily limit reached (HTTP 429); rerun tomorrow - finished answers are cached"
+)
+FREE_DAILY_LIMIT = re.compile(r"per[-_ ]?day", re.IGNORECASE)  # "free-models-per-day"; per-minute is retryable
+RATE_LIMIT_WAIT_S = 30.0  # the free per-minute window; every failed attempt also counts toward the daily cap
 
 
 def describe_error(exc: Exception) -> str:
@@ -85,7 +96,7 @@ def _usage_dict(resp: Any) -> dict:
 
 
 class OpenRouterClient:
-    def __init__(self, api_key: str, max_attempts: int = 5, timeout_s: float = 900.0):
+    def __init__(self, api_key: str, max_attempts: int = 5, timeout_s: float = 1800.0):
         self._client = openai.AsyncOpenAI(
             base_url=OPENROUTER_BASE_URL, api_key=api_key, max_retries=0, timeout=timeout_s
         )
@@ -109,6 +120,7 @@ class OpenRouterClient:
         last_error = "unknown error"
         for attempt in range(1, self.max_attempts + 1):
             started = time.monotonic()
+            rate_limited = False
             try:
                 resp = await self._client.chat.completions.create(**kwargs, extra_body=extra_body)
                 if not resp.choices:
@@ -131,10 +143,13 @@ class OpenRouterClient:
                 return CompletionResult(error=describe_error(exc), attempts=attempt)
             except openai.APIStatusError as exc:
                 if exc.status_code == 402:  # not enough credits: retrying cannot help
-                    return CompletionResult(error=describe_error(exc), attempts=attempt, out_of_credits=True)
-                last_error = describe_error(exc)
-            except Exception as exc:  # rate limits, 5xx, timeouts, network, odd responses: retry
+                    return CompletionResult(error=describe_error(exc), attempts=attempt, stop_run=STOP_NO_CREDITS)
+                if exc.status_code == 429 and FREE_DAILY_LIMIT.search(str(exc)):
+                    return CompletionResult(error=describe_error(exc), attempts=attempt, stop_run=STOP_FREE_DAILY)
+                last_error, rate_limited = describe_error(exc), exc.status_code == 429
+            except Exception as exc:  # 5xx, timeouts, network, odd responses: retry
                 last_error = describe_error(exc)
             if attempt < self.max_attempts:
-                await asyncio.sleep(min(60.0, 2.0**attempt) + random.uniform(0, 1))
+                backoff = RATE_LIMIT_WAIT_S if rate_limited else min(60.0, 2.0**attempt)
+                await asyncio.sleep(backoff + random.uniform(0, 1))
         return CompletionResult(error=last_error, attempts=self.max_attempts)

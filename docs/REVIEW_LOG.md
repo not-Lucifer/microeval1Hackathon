@@ -28,3 +28,4 @@ matched the script's state classes".
 | Witness grader | `graders/witness_grader.py` + mutants | | | ☐ |
 | CFG grader (bounded) | `graders/cfg_grader.py`, `automata/cfg.py::check_upto` | e.g. explain the "wrapped enumeration" argument and why it is exact up to N | | ☐ |
 | Harness | `harness/`, `run_eval.py` (fake-client tests) | | | ☐ |
+| Chat-app import | `harness/manual.py`; paste one reply you know is right and one you know is wrong, import, and check the grades | | | ☐ |

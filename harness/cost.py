@@ -21,8 +21,11 @@ def call_cost(usage: dict, spec: ModelSpec) -> Optional[float]:
 
 
 class CostTracker:
-    def __init__(self, max_usd: Optional[float] = None):
-        self.max_usd, self.total_usd, self.unknown_calls = max_usd, 0.0, 0
+    """Spend and request accounting behind --max-cost and --max-requests."""
+
+    def __init__(self, max_usd: Optional[float] = None, max_requests: Optional[int] = None):
+        self.max_usd, self.max_requests = max_usd, max_requests
+        self.total_usd, self.unknown_calls, self.requests = 0.0, 0, 0
 
     def add(self, cost: Optional[float]) -> None:
         if cost is None:
@@ -30,8 +33,17 @@ class CostTracker:
         else:
             self.total_usd += cost
 
+    def add_requests(self, n: int) -> None:
+        """Every attempt is a request (and counts toward OpenRouter's free daily quota)."""
+        self.requests += n
+
     def exhausted(self) -> bool:
-        return self.max_usd is not None and self.total_usd >= self.max_usd
+        """True once spending reached --max-cost. Free calls cost $0, so with --max-cost 0
+        this only becomes True if something was actually charged."""
+        return self.max_usd is not None and self.total_usd > 0 and self.total_usd >= self.max_usd
+
+    def requests_exhausted(self) -> bool:
+        return self.max_requests is not None and self.requests >= self.max_requests
 
 
 def settings_key(settings: dict) -> str:
@@ -66,7 +78,9 @@ def estimate(
     for spec in specs:
         calls = len(tasks) * trials
         seen = (observed or {}).get(settings_key(spec.settings()))
-        if seen:
+        if spec.openrouter_id.endswith(":free"):
+            cost, basis = 0.0, f"free model: uses {calls} of your daily free requests"
+        elif seen:
             cost, basis = seen[0] * calls, f"avg ${seen[0]:.4f}/call over {seen[1]} earlier answered calls"
         else:
             prompt_tokens = sum(len(t["prompt"]) // CHARS_PER_TOKEN + 300 for t in tasks) * trials

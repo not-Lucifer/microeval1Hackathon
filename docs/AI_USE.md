@@ -14,6 +14,7 @@ answer and grading rule. Claude Code (Anthropic) was used as a pair programmer.
 | Task prompts | `tasks/*.json` (generated) | `tests/test_tasks_wellformed.py`: required statements present, every example agrees with the reference, format examples valid |
 | Non-CF proof script | `scripts/check_task08_noncf.py` | Exhaustive decomposition search for N = 2..8 agrees with the hand proof in its docstring |
 | Harness | `harness/*.py`, `run_eval.py`, `scripts/report.py` | End-to-end tests with a fake client (`tests/test_harness.py`); no-leak tests (`tests/test_no_leak.py`) |
+| Free-run support (2026-10-31) | `models.free.yaml`, `harness/manual.py` (chat-app import), `docs/RUNNING_FOR_FREE.md` | `tests/test_manual.py` (import grades exactly like API answers, refuses incomplete or unconfirmed setups, never overwrites API transcripts); `tests/test_harness.py` (daily-quota stop, request cap, free-only guard) |
 | Repo hygiene | `.gitignore`, `.githooks/pre-commit`, `scripts/check_secrets.py`, `scripts/make_zip.sh` | `tests/test_repo_hygiene.py` |
 | Docs | `docs/OPEN_QUESTIONS.md`, `docs/REVIEW_LOG.md`, this file, README draft | Author review pending |
 

@@ -1,0 +1,103 @@
+# Running the eval for free
+
+Two free routes. Grading is identical for both: the same parser and the same exact graders
+as a paid API run. Only the way the answer is obtained differs, and every transcript records which.
+
+| Route | Models | What it costs you | Command |
+|---|---|---|---|
+| A. OpenRouter `:free` models | open-weight (NVIDIA, Thinking Machines, Google) | $0; 50 requests/day | `run_eval.py --models models.free.yaml --max-cost 0` |
+| B. Free chat apps, pasted by hand | frontier models in ChatGPT / Claude.ai / Gemini | $0; ~24 pastes per model | `run_eval.py --new-manual NAME`, then `--import-manual manual/` |
+
+Use A for the pilot and the "open model" rows; use B for at least one frontier model (the
+hackathon checklist asks for one).
+
+---
+
+## Route A: OpenRouter free models
+
+**Limits (OpenRouter, Oct 2026).** 20 requests/minute and **50 requests/day across all free
+models** while your lifetime credit purchases are under $10. **Failed attempts count too.** One
+model x 8 tasks x 3 trials = 24 requests.
+
+**Once:** `.env` must contain your `OPENROUTER_API_KEY` (never commit it; the hook blocks it).
+
+**Each run:**
+
+```bash
+python run_eval.py --models models.free.yaml --trials 1 --max-cost 0 --dry-run      # check the plan (free)
+python run_eval.py --models models.free.yaml --trials 1 --max-cost 0 --concurrency 1 --max-attempts 2 --max-requests 45
+```
+
+- `--max-cost 0` refuses to run anything that is not `:free`.
+- `--max-requests 45` keeps a few of the day's 50 requests spare.
+- `--max-attempts 2` limits retries, because every retry uses up the daily quota.
+- If OpenRouter says the daily quota is used up, the run **stops by itself**. Finished answers
+  are cached, so the next day the same command continues where it stopped.
+- To run a single model: add `--model inkling-free`.
+
+**If something fails** (it is recorded as `API_ERROR`, never as a model failure):
+- `404 ... data policy`: in OpenRouter **Settings > Privacy**, allow the free endpoints
+  (free providers may log prompts; our prompts are synthetic, so nothing private is sent).
+- `404 ... no endpoints` or `model not found`: that free model was withdrawn. Pick another one
+  from https://openrouter.ai/models?q=free and edit `models.free.yaml`.
+- `TRUNCATED`: the model used its whole `max_tokens` without answering. That *is* a model
+  failure (CLAUDE.md rule 8). It is counted and reported separately.
+
+---
+
+## Route B: free chat apps (frontier models)
+
+**1. Create the folder for one app/model** (example name `chatgpt-free`):
+
+```bash
+python run_eval.py --new-manual chatgpt-free --trials 3
+```
+
+This creates `manual/chatgpt-free/info.yaml`, empty files
+`manual/chatgpt-free/task_01/trial_1.txt ... task_08/trial_3.txt`, and
+`manual/prompts/task_01.txt ...` (the exact text to paste).
+
+**2. Before chatting:** in the app's settings, turn **off** code execution / data analysis,
+web search, file tools, and memory/personalization. Use a temporary or incognito chat if the
+app has one. Keep the same model and the same reasoning setting for every trial.
+
+**3. For every task and every trial:**
+1. Open a **brand-new chat**.
+2. Paste the whole content of `manual/prompts/task_XX.txt` as one message.
+3. When the answer is complete, copy the **entire reply** with the app's copy button, so the
+   final ```` ```json ```` block is kept.
+4. Paste it into `manual/<name>/task_XX/trial_N.txt` and save.
+5. If the reply visibly ran code or searched the web, discard it and redo the trial in a new chat.
+
+**4. Fill in `manual/<name>/info.yaml`**: app, the model name the app showed, the date, the
+reasoning mode, and set `no_tools_confirmed` and `new_chat_per_trial` to `true` only if both are
+really true. The import refuses a folder with missing fields.
+
+**5. Grade:**
+
+```bash
+python run_eval.py --import-manual manual/
+```
+
+Empty trial files are skipped, so you can import after every sitting. Re-importing overwrites
+that model's manual transcripts with the current files.
+
+**Honesty notes for the README.** For these rows, say that they were collected through the
+free web app on that date; that temperature, reasoning budget and exact model version are
+whatever the app used; and that the system prompt was pasted together with the task. Judges
+can re-grade them with `--regrade` but cannot re-run them through an API.
+
+---
+
+## Plan that fits the free quota (deadline Nov 9, 10:45 IST)
+
+| Day | Route A (≤ 45 requests/day) | Route B (any time) |
+|---|---|---|
+| Oct 31 / Nov 1 | **Pilot:** 3 free models x 8 tasks x 1 trial = 24 requests | 1 trial per task in one app (8 pastes) |
+| next day | Decide difficulty changes **with the pilot data before more runs**. Changing a task changes its prompt, and old answers to it no longer count | — |
+| +1 day | Trials 2-3 for two models (32 requests) | finish 3 trials in app 1 |
+| +2 days | Trials 2-3 for the third model (16 requests) + reruns | optional second app |
+| Nov 5-8 | analysis, README, video, zip | |
+
+Commit transcripts after each run (`git add transcripts results manual`, then commit). They are
+the evidence judges re-grade.

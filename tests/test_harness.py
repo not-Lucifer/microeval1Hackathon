@@ -10,7 +10,7 @@ import run_eval
 from graders.grader import load_reference
 from harness import client as client_module
 from harness.cache import ResponseCache
-from harness.client import CompletionResult, ModelSpec, OpenRouterClient
+from harness.client import STOP_FREE_DAILY, STOP_NO_CREDITS, CompletionResult, ModelSpec, OpenRouterClient
 from harness.cost import CostTracker, estimate, settings_key
 from harness.metrics import load_transcripts, render_markdown, summarize
 from harness.parsing import extract_final_json
@@ -131,8 +131,16 @@ def test_cache_avoids_repeat_calls_but_not_api_errors(tmp_path):
 
 def test_max_cost_stops_new_calls(tmp_path):
     client = FakeClient(scripted_replies())
-    run(tmp_path, client, cost=CostTracker(max_usd=0.0))
+    spent = CostTracker(max_usd=0.01)
+    spent.add(0.02)
+    run(tmp_path, client, cost=spent)
     assert client.calls == []
+
+
+def test_max_cost_zero_allows_free_calls(tmp_path):
+    client = FakeClient(scripted_replies())
+    run(tmp_path, client, cost=CostTracker(max_usd=0.0))  # free calls report $0... (these fakes cost $0.01)
+    assert len(client.calls) == 1  # ...and the first charged call stops the run
 
 
 def test_regrade_reproduces_stored_grades(tmp_path):
@@ -219,12 +227,27 @@ def test_out_of_credits_fails_fast_and_redacts_account_ids(monkeypatch):
     msg = "Error code: 402 - can only afford 420 tokens. Visit https://openrouter.ai/workspaces/default/keys/d6bd07e9abc"
     client = client_with([status_error(402, msg)], monkeypatch)
     result = asyncio.run(client.complete(GOOD, []))
-    assert result.out_of_credits and result.attempts == 1  # no pointless retries
+    assert result.stop_run == STOP_NO_CREDITS and result.attempts == 1  # no pointless retries
     assert "d6bd07e9abc" not in result.error and "keys/<redacted>" in result.error
 
 
+def test_free_daily_quota_stops_but_per_minute_limit_is_retried(monkeypatch):
+    daily = status_error(429, "Rate limit exceeded: free-models-per-day. Add 10 credits to unlock more")
+    result = asyncio.run(client_with([daily], monkeypatch).complete(GOOD, []))
+    assert result.stop_run == STOP_FREE_DAILY and result.attempts == 1
+    per_minute = status_error(429, "Rate limit exceeded: free-models-per-min.")
+    result = asyncio.run(client_with([per_minute, fake_response("stop", "fine")], monkeypatch).complete(GOOD, []))
+    assert (result.error, result.text, result.attempts) == (None, "fine", 2)
+
+
+def test_max_requests_caps_a_run(tmp_path):
+    client = FakeClient(scripted_replies())
+    run(tmp_path, client, cost=CostTracker(max_requests=3))
+    assert len(client.calls) == 3
+
+
 def test_run_stops_after_out_of_credits(tmp_path):
-    client = FakeClient({("bad-model", "task_01"): [CompletionResult(error="402", out_of_credits=True)]})
+    client = FakeClient({("bad-model", "task_01"): [CompletionResult(error="402", stop_run=STOP_NO_CREDITS)]})
     asyncio.run(run_trials(load_tasks(["task_01", "task_05"]), [BAD], 2, client, tmp_path / "t",
                            ResponseCache(tmp_path / "c"), CostTracker(), 1, log=lambda *_: None))
     assert len(client.calls) == 1  # the three remaining trials were never sent
@@ -235,7 +258,26 @@ def test_live_run_requires_max_cost(tmp_path, capsys):
     path = tmp_path / "models.yaml"
     path.write_text(json.dumps({"models": [{"name": "m", "openrouter_id": "lab/m"}]}), encoding="utf-8")
     assert run_eval.main(["--models", str(path), "--trials", "1"]) == 1
-    assert "PAID" in capsys.readouterr().out
+    assert "cost money" in capsys.readouterr().out
+
+
+def test_max_cost_zero_refuses_paid_models(tmp_path, capsys):
+    path = tmp_path / "models.yaml"
+    models = [{"name": "free", "openrouter_id": "lab/m:free"}, {"name": "paid", "openrouter_id": "lab/m"}]
+    path.write_text(json.dumps({"models": models}), encoding="utf-8")
+    assert run_eval.main(["--models", str(path), "--trials", "1", "--max-cost", "0"]) == 1
+    assert "paid: paid" in capsys.readouterr().out
+
+
+def test_free_models_estimate_zero():
+    free = ModelSpec(name="f", openrouter_id="lab/m:free")
+    (row,) = estimate([free], load_tasks(["task_01"]), 3, 1000, {})
+    assert row["estimated_usd"] == 0.0 and "free" in row["basis"]
+
+
+def test_committed_free_models_config_is_free_only():
+    specs = run_eval.load_model_specs(run_eval.ROOT / "models.free.yaml", None)
+    assert specs and all(s.openrouter_id.endswith(":free") for s in specs)
 
 
 def test_dry_run_estimate_uses_observed_costs():

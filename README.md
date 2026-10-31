@@ -27,6 +27,8 @@ python run_eval.py --models models.yaml --trials 3 --dry-run          # free cos
 python run_eval.py --models models.yaml --trials 3 --max-cost 5       # paid
 ```
 
+**Running for free:** `models.free.yaml` lists OpenRouter `:free` models (`--max-cost 0` refuses anything else). Frontier models can be tested through free chat apps, with replies pasted in by hand and graded by the same code. Step-by-step guide: [docs/RUNNING_FOR_FREE.md](docs/RUNNING_FOR_FREE.md).
+
 OpenRouter reserves credit for each request's full `max_tokens` before it starts. A low balance therefore makes every request fail with HTTP 402 (recorded as `API_ERROR`, excluded from scores, never charged).
 
 ## Tasks

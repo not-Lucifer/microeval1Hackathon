@@ -90,7 +90,10 @@ def render_markdown(card: dict) -> str:
     ]
     for name, m in card["models"].items():
         s = m["settings"]
-        setting = f"`{s['openrouter_id']}`, T={s['temperature']}, reasoning={s['reasoning']}"
+        if s.get("source") == "manual chat app":
+            setting = f"{s['app']}: {s['model_shown']}, reasoning={s['reasoning']}, pasted by hand"
+        else:
+            setting = f"`{s['openrouter_id']}`, T={s['temperature']}, reasoning={s['reasoning']}"
         cost = f"{m['cost_usd']:.2f}" + (f" (+{m['calls_with_unknown_cost']} unknown)" if m["calls_with_unknown_cost"] else "")
         lines.append(
             f"| {name} ({setting}) | {m['trials_per_task']} | {_fmt(m['pass_rate'])} | {_fmt(m['pass_at_k'])} | "
