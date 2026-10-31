@@ -3,6 +3,7 @@ import asyncio
 import json
 from types import SimpleNamespace
 
+import openai
 import pytest
 
 import run_eval
@@ -10,7 +11,7 @@ from graders.grader import load_reference
 from harness import client as client_module
 from harness.cache import ResponseCache
 from harness.client import CompletionResult, ModelSpec, OpenRouterClient
-from harness.cost import CostTracker
+from harness.cost import CostTracker, estimate, settings_key
 from harness.metrics import load_transcripts, render_markdown, summarize
 from harness.parsing import extract_final_json
 from harness.prompts import load_tasks
@@ -204,6 +205,53 @@ def test_transient_failures_are_retried(monkeypatch):
     client = client_with([ValueError("garbled response"), fake_response("stop", "fine")], monkeypatch)
     result = asyncio.run(client.complete(GOOD, []))
     assert (result.error, result.text, result.attempts) == (None, "fine", 2)
+
+
+def status_error(code: int, message: str) -> openai.APIStatusError:
+    """An APIStatusError without building an HTTP response object."""
+    exc = openai.APIStatusError.__new__(openai.APIStatusError)
+    Exception.__init__(exc, message)
+    exc.status_code = code
+    return exc
+
+
+def test_out_of_credits_fails_fast_and_redacts_account_ids(monkeypatch):
+    msg = "Error code: 402 - can only afford 420 tokens. Visit https://openrouter.ai/workspaces/default/keys/d6bd07e9abc"
+    client = client_with([status_error(402, msg)], monkeypatch)
+    result = asyncio.run(client.complete(GOOD, []))
+    assert result.out_of_credits and result.attempts == 1  # no pointless retries
+    assert "d6bd07e9abc" not in result.error and "keys/<redacted>" in result.error
+
+
+def test_run_stops_after_out_of_credits(tmp_path):
+    client = FakeClient({("bad-model", "task_01"): [CompletionResult(error="402", out_of_credits=True)]})
+    asyncio.run(run_trials(load_tasks(["task_01", "task_05"]), [BAD], 2, client, tmp_path / "t",
+                           ResponseCache(tmp_path / "c"), CostTracker(), 1, log=lambda *_: None))
+    assert len(client.calls) == 1  # the three remaining trials were never sent
+    assert [t["grade"]["failure_code"] for t in load_transcripts(tmp_path / "t")] == ["API_ERROR"]
+
+
+def test_live_run_requires_max_cost(tmp_path, capsys):
+    path = tmp_path / "models.yaml"
+    path.write_text(json.dumps({"models": [{"name": "m", "openrouter_id": "lab/m"}]}), encoding="utf-8")
+    assert run_eval.main(["--models", str(path), "--trials", "1"]) == 1
+    assert "PAID" in capsys.readouterr().out
+
+
+def test_dry_run_estimate_uses_observed_costs():
+    tasks = load_tasks(["task_01", "task_05"])
+    observed = {settings_key(GOOD.settings()): (0.01, 5)}
+    good, bad = estimate([GOOD, BAD], tasks, 3, 1000, observed)
+    assert good["estimated_usd"] == pytest.approx(0.06) and "avg" in good["basis"]
+    assert bad["estimated_usd"] is None  # no history and no prices: honest "unknown"
+
+
+def test_pass_at_k_is_a_fraction_and_api_errors_cost_nothing(tmp_path):
+    run(tmp_path, FakeClient(scripted_replies()))
+    card = summarize(load_transcripts(tmp_path / "transcripts"))
+    good, bad = card["models"]["good-model"], card["models"]["bad-model"]
+    assert isinstance(good["pass_at_k"], float) and "| 100% | 100% |" in render_markdown(card)
+    assert bad["calls_with_unknown_cost"] == 0
 
 
 def test_committed_models_yaml_has_no_guessed_ids():

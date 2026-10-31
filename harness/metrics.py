@@ -47,7 +47,7 @@ def summarize(transcripts: list[dict]) -> dict:
                 "counterexamples": [t["grade"]["counterexample"] for t in ts],
             }
         scores = [t["grade"]["score"] for t in valid]
-        costs = [t["usage"].get("cost_usd") for t in items]
+        costs = [t["usage"].get("cost_usd") for t in valid]  # API errors are rejected requests: free
         trial_means = defaultdict(list)  # spread across trial indices
         for t in valid:
             trial_means[t["trial"]].append(t["grade"]["score"])
@@ -62,8 +62,10 @@ def summarize(transcripts: list[dict]) -> dict:
             "mean_score": round(mean(scores), 4) if scores else None,
             "mean_score_sd_across_trial_indices": round(pstdev([mean(v) for v in trial_means.values()]), 4)
             if len(trial_means) > 1 else None,
-            "pass_at_k": round(mean(r["passes"] > 0 for r in task_rows.values()), 4) if task_rows else None,
-            "pass_hat_k": round(mean(r["passes"] == r["trials"] for r in task_rows.values()), 4) if task_rows else None,
+            # float(): the mean of booleans is an int when they are all equal (e.g. 1, not 1.0)
+            "pass_at_k": round(float(mean(r["passes"] > 0 for r in task_rows.values())), 4) if task_rows else None,
+            "pass_hat_k": round(float(mean(r["passes"] == r["trials"] for r in task_rows.values())), 4)
+            if task_rows else None,
             "failure_code_histogram": dict(Counter(t["grade"]["failure_code"] or "PASS" for t in valid)),
             "cost_usd": round(sum(c for c in costs if c is not None), 4),
             "calls_with_unknown_cost": sum(c is None for c in costs),
@@ -92,7 +94,8 @@ def render_markdown(card: dict) -> str:
         cost = f"{m['cost_usd']:.2f}" + (f" (+{m['calls_with_unknown_cost']} unknown)" if m["calls_with_unknown_cost"] else "")
         lines.append(
             f"| {name} ({setting}) | {m['trials_per_task']} | {_fmt(m['pass_rate'])} | {_fmt(m['pass_at_k'])} | "
-            f"{_fmt(m['pass_hat_k'])} | {m['mean_score']} | {m['truncated']} | {len(m['api_errors'])} | {cost} |"
+            f"{_fmt(m['pass_hat_k'])} | {'–' if m['mean_score'] is None else m['mean_score']} | "
+            f"{m['truncated']} | {len(m['api_errors'])} | {cost} |"
         )
     task_ids = sorted({tid for m in card["models"].values() for tid in m["tasks"]})
     lines += ["", "## Per task (passes / valid trials, failure codes)", "", "| Model | " + " | ".join(task_ids) + " |",

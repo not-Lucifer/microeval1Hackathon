@@ -20,11 +20,14 @@ python scripts/verify_specs.py       # recomputes every number quoted below
 python run_eval.py --regrade transcripts/   # offline re-grade, no API key needed
 ```
 
-Live run (costs money; fill in verified ids in `models.yaml` and `OPENROUTER_API_KEY` in `.env` first):
+Everything above is free: no model is called. Only a live run spends money. It refuses to start without `--max-cost`, and it stops when OpenRouter reports the account is out of credits. Fill in verified ids in `models.yaml` and `OPENROUTER_API_KEY` in `.env` first:
 
 ```bash
-python run_eval.py --models models.yaml --trials 3 --max-cost 20
+python run_eval.py --models models.yaml --trials 3 --dry-run          # free cost estimate
+python run_eval.py --models models.yaml --trials 3 --max-cost 5       # paid
 ```
+
+OpenRouter reserves credit for each request's full `max_tokens` before it starts. A low balance therefore makes every request fail with HTTP 402 (recorded as `API_ERROR`, excluded from scores, never charged).
 
 ## Tasks
 

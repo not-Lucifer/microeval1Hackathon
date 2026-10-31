@@ -99,6 +99,7 @@ Task prompts live in `scripts/generate_instances.py`; edit there, regenerate, an
 ## Build status (update at the end of each phase)
 - 2026-10-30: Phases 0-3 built (scaffold, engines, graders, all 8 tasks + references, harness, offline regrade, docs drafts). Tests green; `verify_specs.py` all OK.
 - 2026-10-30: review pass. Fixed CFG-grader memory blowup on long-string grammars, OpenRouter mid-generation errors now count as API_ERROR, `models.yaml` typos/duplicates now fail loudly, hook works with `python3`. 1728 tests green.
+- 2026-10-31: first live run hit OpenRouter 402 (out of credits) on 143 calls; ~$0.19 spent. Live runs now require `--max-cost`, a 402 stops the run, key ids are redacted, `--dry-run` uses recorded cost per call. 1733 tests green. Open: T08 truncation at 32k tokens and low headroom (OPEN_QUESTIONS 34-35).
 - Next: the author verifies model ids on OpenRouter and fills `models.yaml`, then the Phase 3 pilot (1 trial x 8 tasks, 2 cheap + 1 frontier model, small `--max-cost`).
 
 ## Working agreement

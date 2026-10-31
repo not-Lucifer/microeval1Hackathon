@@ -41,6 +41,7 @@ Numbers quoted here come from `python scripts/verify_specs.py`.
 | 25 | T07 reference grammar had unused `B3` productions | resolved | Found by the "drop any production must undergenerate" mutant test; removed. Every production of both reference grammars is now necessary. |
 | 26 | `run_eval.py --regrade` exit code | resolved | Exits 1 if any recomputed grade differs from the stored one (a reproducibility alarm for judges). |
 | 31 | OpenRouter `finish_reason = "error"` (provider failed mid-generation) | resolved | Treated as an API error (retried, then API_ERROR, excluded from denominators), never graded as a model answer (CLAUDE.md rule 8). |
+| 33 | Spending safety (first live run, 2026-10-31, hit OpenRouter 402 "not enough credits" 143 times) | resolved | Live runs refuse to start without `--max-cost` and print how many paid calls they plan; a 402 stops the run instead of producing an API_ERROR for every remaining trial (402s were also retried 5x for nothing); error texts redact the OpenRouter key id; `--dry-run` estimates from the recorded cost per call. |
 | 32 | CFG grader memory on grammars with very long strings | resolved (bug fix) | Shortest strings and contexts used to be built literally, so a 30-rule doubling chain needed ~31 GB. Nothing longer than N is built now (~1 MB). For a finite grammar whose missing word would exceed 10,000 symbols, UNDERGENERATES is reported with no stored counterexample (noted in details). |
 
 ## C. Open items for the author
@@ -51,3 +52,5 @@ Numbers quoted here come from `python scripts/verify_specs.py`.
 | 28 | Rewrite every `why_hard` / `real_world` field (currently marked as drafted by Claude Code) in your own words | open |
 | 29 | Prior-art check (existing automata/regex LLM benchmarks) and disclosure in the README | open |
 | 30 | Pilot calibration decisions (T02 knob, T05 harder pair, T04 modulus) | pending-pilot |
+| 34 | Task 08 token budget: in the 2026-10-31 run both T08 answers were TRUNCATED. `anthropic/claude-haiku-5.5` (effort high) used 31,999 reasoning tokens and `deepseek/deepseek-v4.1-flash` used 27,042 of the 32,000 max_tokens, with no visible answer. Rule 8 counts this as a model failure; decide whether to raise `max_tokens` (e.g. 64,000, which needs more credit to reserve) so the budget is defensible, and say which in the README | pending-pilot |
+| 35 | Headroom: in the same run (mostly 1 trial each, T06–T08 barely reached), small-open passed 21/22 valid trials, frontier-a 7/8, frontier-b 3/3. If a proper pilot confirms pass rates near 100%, raise difficulty (T05 harder pair, T02 extra condition, larger T01/T04 modulus) before the full run | pending-pilot |

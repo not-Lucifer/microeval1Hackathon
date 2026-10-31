@@ -88,9 +88,12 @@ async def run_trials(
     concurrency: int = 4,
     log=print,
 ) -> list[dict]:
-    """Run every (model, task, trial); returns the transcripts that were produced."""
+    """Run every (model, task, trial); returns the transcripts that were produced.
+    New (uncached) calls stop being made once --max-cost is reached or OpenRouter reports
+    that the account is out of credits; skipped trials leave no transcript."""
     semaphore = asyncio.Semaphore(concurrency)
     produced: list[dict] = []
+    halted: list[str] = []  # reason the run stopped making paid calls, if any
 
     async def one(spec: ModelSpec, task: dict, trial: int) -> None:
         async with semaphore:
@@ -100,10 +103,15 @@ async def run_trials(
             if cached is not None:
                 result = CompletionResult(**cached)
             else:
-                if cost.exhausted():
-                    log(f"skip {spec.name}/{task['id']}/trial {trial}: --max-cost reached")
+                if cost.exhausted() and not halted:
+                    halted.append("--max-cost reached")
+                if halted:
+                    log(f"skip {spec.name}/{task['id']}/trial {trial}: {halted[0]}")
                     return
                 result = await client.complete(spec, messages)
+                if result.out_of_credits and not halted:
+                    halted.append("OpenRouter account is out of credits (HTTP 402); top up and rerun")
+                    log(f"STOPPING: {halted[0]}")
                 if result.error is None:
                     cache.put(key, result.__dict__)
             price = call_cost(result.usage, spec) if result.error is None else None

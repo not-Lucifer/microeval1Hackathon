@@ -1,12 +1,14 @@
 """Automata-Synth-Eval command line.
 
-Live run (needs OPENROUTER_API_KEY in .env):
-    python run_eval.py --models models.yaml --trials 3 [--task task_01 ...] [--model NAME ...]
-                       [--concurrency 4] [--max-cost 10] [--no-cache]
-Cost estimate only (no API calls):
-    python run_eval.py --models models.yaml --trials 3 --dry-run [--assume-completion-tokens 8000]
-Offline re-grade of saved transcripts (no API key, no network):
+Live run -- SPENDS MONEY on OpenRouter (needs OPENROUTER_API_KEY in .env and --max-cost):
+    python run_eval.py --models models.yaml --trials 3 --max-cost 5 [--task task_01 ...]
+                       [--model NAME ...] [--concurrency 4] [--no-cache]
+Cost estimate only (free, no API calls):
+    python run_eval.py --models models.yaml --trials 3 --dry-run
+Offline re-grade of saved transcripts (free, no API key, no network):
     python run_eval.py --regrade transcripts/ [--write]
+
+pytest, scripts/verify_specs.py and --regrade never call a model and cost nothing.
 
 Both modes rebuild results/scorecard.json and results/summary.md from transcripts/.
 """
@@ -89,7 +91,7 @@ def live(args) -> int:
 
     from harness.cache import ResponseCache
     from harness.client import OpenRouterClient
-    from harness.cost import CostTracker, estimate
+    from harness.cost import CostTracker, estimate, observed_cost_per_call
     from harness.metrics import load_transcripts, summarize, write_reports
     from harness.prompts import load_tasks
     from harness.runner import run_trials
@@ -99,13 +101,26 @@ def live(args) -> int:
     if not tasks or not specs:
         print("nothing to run (check --task/--model filters and openrouter_id values in models.yaml)")
         return 1
+    n_calls = len(specs) * len(tasks) * args.trials
     if args.dry_run:
-        for row in estimate(specs, tasks, args.trials, args.assume_completion_tokens):
-            usd = "unknown (set price_per_mtok)" if row["estimated_usd"] is None else f"${row['estimated_usd']:.2f}"
-            print(f"{row['model']:28} calls={row['calls']:4} prompt_tok~{row['prompt_tokens']:>8} "
-                  f"completion_tok~{row['completion_tokens']:>9} cost~{usd}")
+        rows = estimate(specs, tasks, args.trials, args.assume_completion_tokens,
+                        observed_cost_per_call(load_transcripts(TRANSCRIPTS_DIR)))
+        for row in rows:
+            usd = "unknown" if row["estimated_usd"] is None else f"${row['estimated_usd']:.2f}"
+            print(f"{row['model']:28} calls={row['calls']:4} cost~{usd:>9}  ({row['basis']})")
+        known = [r["estimated_usd"] for r in rows if r["estimated_usd"] is not None]
+        print(f"total ~${sum(known):.2f} for {n_calls} calls"
+              + (f" (+{len(rows) - len(known)} models unknown)" if len(known) < len(rows) else "")
+              + ". Cached answers are free. OpenRouter also needs enough balance to reserve "
+              "max_tokens for every request in flight, or it answers 402.")
         return 0
+    if args.max_cost is None:
+        print(f"Refusing to start: a live run makes up to {n_calls} PAID API calls. "
+              "Pass --max-cost USD (e.g. --max-cost 5), or use --dry-run for a free estimate.")
+        return 1
 
+    print(f"LIVE RUN (spends money): up to {n_calls} calls = {len(specs)} models x {len(tasks)} tasks x "
+          f"{args.trials} trials; no new calls after ${args.max_cost:.2f}. Cached answers are free.")
     load_dotenv(ROOT / ".env")
     api_key = os.environ.get("OPENROUTER_API_KEY")
     if not api_key:
@@ -139,7 +154,8 @@ def main(argv: list[str]) -> int:
     ap.add_argument("--task", nargs="*", help="only these task ids, e.g. task_01 task_05")
     ap.add_argument("--trials", type=int, default=3)
     ap.add_argument("--concurrency", type=int, default=4)
-    ap.add_argument("--max-cost", type=float, default=None, help="stop starting new calls after this many USD")
+    ap.add_argument("--max-cost", type=float, default=None,
+                    help="required for live runs: stop starting new calls after this many USD")
     ap.add_argument("--no-cache", action="store_true")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--assume-completion-tokens", type=int, default=8000)

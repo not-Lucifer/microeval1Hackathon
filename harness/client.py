@@ -2,7 +2,10 @@
 
 API failures are never model failures: after ``max_attempts`` the result carries
 ``error`` and the trial is recorded as API_ERROR (excluded from pass-rate denominators).
-Client errors that retrying cannot fix (400/401/403/404, e.g. a wrong model id) fail fast.
+Client errors that retrying cannot fix (400/401/403/404, e.g. a wrong model id) fail fast,
+and 402 (not enough OpenRouter credits) also tells the runner to stop the whole run.
+OpenRouter reserves credit for the full max_tokens of a request before it starts, so a low
+balance makes every request fail with 402 even if the answer would have been short.
 A reply with finish_reason "error" (OpenRouter: the provider failed mid-generation) is an
 API error too, not a model answer.
 """
@@ -10,6 +13,7 @@ from __future__ import annotations
 
 import asyncio
 import random
+import re
 import time
 from dataclasses import dataclass, field
 from typing import Any, Optional
@@ -55,6 +59,15 @@ class CompletionResult:
     model_returned: Optional[str] = None
     error: Optional[str] = None
     attempts: int = 0
+    out_of_credits: bool = False  # HTTP 402: every further call would fail too, so the run stops
+
+
+def describe_error(exc: Exception) -> str:
+    """Error text for transcripts, with account identifiers redacted. OpenRouter's 402 message
+    links to the key's dashboard page (keys/<id>); key-like strings are masked as well."""
+    text = f"{type(exc).__name__}: {exc}"
+    text = re.sub(r"(keys/)[A-Za-z0-9_\-]+", r"\1<redacted>", text)
+    return re.sub(r"sk-[A-Za-z0-9_\-]{8,}", "sk-<redacted>", text)
 
 
 def _usage_dict(resp: Any) -> dict:
@@ -115,9 +128,13 @@ class OpenRouterClient:
                 )
             except (openai.BadRequestError, openai.AuthenticationError, openai.PermissionDeniedError,
                     openai.NotFoundError) as exc:
-                return CompletionResult(error=f"{type(exc).__name__}: {exc}", attempts=attempt)
+                return CompletionResult(error=describe_error(exc), attempts=attempt)
+            except openai.APIStatusError as exc:
+                if exc.status_code == 402:  # not enough credits: retrying cannot help
+                    return CompletionResult(error=describe_error(exc), attempts=attempt, out_of_credits=True)
+                last_error = describe_error(exc)
             except Exception as exc:  # rate limits, 5xx, timeouts, network, odd responses: retry
-                last_error = f"{type(exc).__name__}: {exc}"
+                last_error = describe_error(exc)
             if attempt < self.max_attempts:
                 await asyncio.sleep(min(60.0, 2.0**attempt) + random.uniform(0, 1))
         return CompletionResult(error=last_error, attempts=self.max_attempts)
