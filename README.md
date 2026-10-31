@@ -1,6 +1,6 @@
 # Automata-Synth-Eval
 
-> **Status: draft, not yet submittable.** Tasks, references, graders, tests and the harness exist; no model has been run yet.
+> **Status: draft, not yet submittable.** Task set v2, references, graders, tests and the harness exist. The v1 calibration pilot is in `pilot_v1/`; v2 runs are pending.
 > Sections marked **AUTHOR TO WRITE** are deliberately left to the author.
 
 **What it tests.** Whether frontier LLMs, reasoning *without tools*, can synthesize, determinize, minimize and check finite automata, regular expressions and context-free grammars. Every answer is graded by exact formal-language algorithms (product-BFS equivalence, partition-refinement minimization, shortest-witness search, bounded CFG checking). There is no LLM judge.
@@ -37,16 +37,20 @@ All numbers come from `python scripts/verify_specs.py`.
 
 | ID | Task | Answer | Reference facts | Grader |
 |---|---|---|---|---|
-| 01 | `#0(w) ≡ 1 (mod 3)` ∧ no `010` ∧ not ending `11` over {0,1} | minimal complete DFA | 10 states (naive product 14) | exact |
-| 02 | Lookahead obligations: every `a` (not right after `b`) needs a `c` within 3 symbols | minimal complete DFA | 6 states (W+3 in general) | exact |
-| 03 | Right quotient L(M1)/L(M2) of two given 5-state DFAs | minimal complete DFA | 4 states | exact |
-| 04 | Base-3 value ≡ 4 (mod 7) ∧ even number of 2s | minimal complete DFA | 14 states | exact |
-| 05 | `(ba)*b+a(ba)+a` vs `(ba)?b+a(ba)+a`: shortest word in the symmetric difference | witness | unique shortest witness, length 10 | exact |
-| 06 | 5-state ε-NFA → minimal DFA | minimal complete DFA | 11 reachable subsets → 7 states | exact |
-| 07 | Two-bracket Dyck words, depth ≤ 3, no `(`-group directly inside a `[`-group | CNF grammar | language is regular (12-state DFA) | bounded, N = 16 |
-| 08 | `{aⁱbʲaᵏ : i,k ≥ 1, i+k = 2j}` | CNF grammar | 100 words up to length 30 | bounded, N = 30 |
+| 01 | `#0(w) ≡ 1 (mod 3)` ∧ no `0101` ∧ third-to-last symbol is 1, over {0,1} | minimal complete DFA | 21 states (naive product 30) | exact |
+| 02 | Two obligations: every `a` (not right after `b`) needs a `c` within 4 symbols; every `b` needs an `a` within 3 | minimal complete DFA | 16 states | exact |
+| 03 | Left quotient {y : xy ∈ L(M1) for some x ∈ L(M2)} of a given 5-state and 3-state DFA | minimal complete DFA | 3 start states → 14 subsets → 13 states | exact |
+| 04 | Base-3 value, **least significant digit first**, ≡ 4 (mod 7) ∧ even number of 2s | minimal complete DFA | 14 states (obvious construction: 84) | exact |
+| 05 | `(ab)*a+b(ab)+a+(ba)+(ba)+a` vs `(ab)?a+b(ab)+a+(ba)+(ba)+a`: shortest word in the symmetric difference | witness | unique shortest witness, length 16 | exact |
+| 06 | 7-state ε-NFA → minimal DFA | minimal complete DFA | 17 reachable subsets → 16 states | exact |
+| 07 | Two-bracket words of any depth: a `[`-group holds no `(`-group; every `(`-group, and the word, has an even number of `[`-children | CNF grammar | not regular; 13,778 words of length 16 | bounded, N = 16 |
+| 08 | `{aⁱbʲaᵏ : i,k ≥ 1, 2i + k = 3j}` | CNF grammar | 92 words up to length 36 | bounded, N = 36 |
 
 **AUTHOR TO WRITE**: one paragraph per task saying why it is hard, in your own words.
+
+### Calibration: why these are the second version of the tasks
+
+A first version (v1) of the same eight task families was piloted on 2026-10-31 with paid and free API models and with ChatGPT's free web app (`pilot_v1/results/summary.md`). The API models passed almost every v1 task they reached; the only failures were Task 08 truncations and ChatGPT with Think off. An eval of what AI cannot do yet needs headroom, so every instance was replaced by a harder one in the same family, with the same answer format and grader. The difficulty comes from structure (interacting deadlines, a reversed digit order whose obvious DFA is 6 times too big, a determinization step, counting inside a grammar), not only size. v1 and its transcripts are kept at git tag `pilot-v1` (`git checkout pilot-v1 && python run_eval.py --regrade transcripts/` reproduces every pilot grade). The current code refuses to grade a transcript whose prompt differs from the current task.
 
 ## How grading works
 
@@ -81,6 +85,7 @@ The CFG check enumerates, per nonterminal, every string it derives up to the len
 - Offline: `python run_eval.py --regrade transcripts/` re-parses and re-grades every saved transcript and rebuilds `results/`. It exits 1 if any grade differs from the stored one.
 - Live: results vary run to run; models, settings and dates are recorded in every transcript.
 - Instances are deterministic: `python scripts/generate_instances.py --check` confirms that `tasks/` and `reference/` match the seeded generators.
+- The v1 pilot (`pilot_v1/`): `git checkout pilot-v1`, then `python run_eval.py --regrade transcripts/` (0 grades differ), then `git checkout main`.
 - Cost and runtime: **TO FILL from the runs.**
 
 ## Spec-validation case study: the original Task 08

@@ -1,9 +1,9 @@
 {
   "answer_schema": "witness",
   "difficulty_knobs": {
-    "harder_alternative": {
-      "r1": "(ba)*ba?a(ba)+b(aa|b)b",
-      "r2": "(ba)?ba?a(ba)+b(aa|b)b"
+    "alternative": {
+      "r1": "(aab)*a(ab)*a+bbab",
+      "r2": "(aab)?a(ab)*a+bbab"
     },
     "shortest_witness_length": "computed by verify_specs.py"
   },
@@ -18,8 +18,8 @@
         "a",
         "b"
       ],
-      "r1": "(ba)*b+a(ba)+a",
-      "r2": "(ba)?b+a(ba)+a"
+      "r1": "(ab)*a+b(ab)+a+(ba)+(ba)+a",
+      "r2": "(ab)?a+b(ab)+a+(ba)+(ba)+a"
     },
     "type": "witness_exact"
   },
@@ -27,15 +27,17 @@
   "metadata": {
     "expected_failure_modes": [
       "claims or implies equivalence after testing short words",
-      "names a word matched by both (e.g. babababaa)",
-      "distinguishing but not shortest"
+      "names a word matched by both",
+      "distinguishing but not shortest",
+      "symbols other than a and b in the answer"
     ],
     "family": "quantifier edit X* -> X? before a tail that can re-absorb copies of X",
     "real_world": "Reviewing a regex change in a firewall, log-filter or input-validation rule: 'is this edit behaviour-preserving, and if not, on which input does it differ?'",
     "seed": null,
     "status": "DRAFTED BY CLAUDE CODE - author must review and rewrite in their own words",
-    "why_hard": "R1 and R2 differ by a one-character edit (* to ?) and agree on every short word (verify_specs.py computes the exact length). The obvious witness (two copies of 'ba' followed by the tail) is matched by both, because the tail b+a(ba)+ re-absorbs 'ba' copies; only a 'bb' pins the parse. Testing short words mentally finds nothing."
+    "why_hard": "R1 and R2 differ by a one-character edit (* to ?) and agree on every word shorter than the witness (verify_specs.py computes the exact length). Extra 'ab' copies at the front are re-absorbed by the tail, so the obvious guesses are matched by both; only a word with two long a-runs in the right places pins the parse. Testing short words mentally finds nothing."
   },
-  "prompt": "TASK: shortest word on which two regular expressions disagree\n\nAlphabet: Σ = {a, b}. Regular expressions use exactly this syntax and nothing else:\n  a, b     the single symbols\n  ()       the empty word ε\n  RS       concatenation (written by juxtaposition)\n  R|S      union\n  R*       zero or more repetitions of R\n  R+       one or more repetitions of R\n  R?       zero or one occurrence of R\n  (R)      grouping\nPrecedence: the postfix operators *, +, ? bind tightest, then concatenation, then |. There is no whitespace. A regular expression matches a word only if it matches the WHOLE word.\n\n  R1 = (ba)*b+a(ba)+a\n  R2 = (ba)?b+a(ba)+a\n\nIt is guaranteed that R1 and R2 do not match the same set of words.\nFind a SHORTEST word w over Σ that is matched by exactly one of R1 and R2 (w is in the symmetric difference of the two languages, and no shorter word is). If several shortest words exist, any one of them is accepted.\n\nWHAT TO SUBMIT\nOne JSON object {\"witness\": \"<word>\"} where <word> is a string over {a, b} (use \"\" for the empty word ε).\n\nHOW IT IS GRADED (exactly; the true minimum length is computed with automata)\nScore 1.0 if the word is matched by exactly one of R1 and R2 AND no shorter word has that property; 0.5 if it is matched by exactly one of them but is longer than necessary; 0 otherwise (also 0 if it contains symbols other than a and b).\n\nFORMAT EXAMPLE (for an unrelated problem over {x, y})\n```json\n{\"witness\": \"xxy\"}\n```",
+  "prompt": "TASK: shortest word on which two regular expressions disagree\n\nAlphabet: Σ = {a, b}. Regular expressions use exactly this syntax and nothing else:\n  a, b     the single symbols\n  ()       the empty word ε\n  RS       concatenation (written by juxtaposition)\n  R|S      union\n  R*       zero or more repetitions of R\n  R+       one or more repetitions of R\n  R?       zero or one occurrence of R\n  (R)      grouping\nPrecedence: the postfix operators *, +, ? bind tightest, then concatenation, then |. There is no whitespace. A regular expression matches a word only if it matches the WHOLE word.\n\n  R1 = (ab)*a+b(ab)+a+(ba)+(ba)+a\n  R2 = (ab)?a+b(ab)+a+(ba)+(ba)+a\n\nIt is guaranteed that R1 and R2 do not match the same set of words.\nFind a SHORTEST word w over Σ that is matched by exactly one of R1 and R2 (w is in the symmetric difference of the two languages, and no shorter word is). If several shortest words exist, any one of them is accepted.\n\nWHAT TO SUBMIT\nOne JSON object {\"witness\": \"<word>\"} where <word> is a string over {a, b} (use \"\" for the empty word ε).\n\nHOW IT IS GRADED (exactly; the true minimum length is computed with automata)\nScore 1.0 if the word is matched by exactly one of R1 and R2 AND no shorter word has that property; 0.5 if it is matched by exactly one of them but is longer than necessary; 0 otherwise (also 0 if it contains symbols other than a and b).\n\nFORMAT EXAMPLE (for an unrelated problem over {x, y})\n```json\n{\"witness\": \"xxy\"}\n```",
+  "task_set": "v2",
   "title": "Regex pair agreeing on all short words: shortest distinguishing word"
 }

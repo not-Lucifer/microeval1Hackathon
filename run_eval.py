@@ -63,13 +63,16 @@ def load_model_specs(path: Path, only: list[str] | None):
 
 def regrade(transcripts_dir: Path, write: bool, results_dir: Path = RESULTS_DIR) -> int:
     """Re-parse and re-grade every transcript; report any grade that changed.
-    Returns the number of changed grades (0 = stored grades reproduced exactly)."""
-    from harness.metrics import load_transcripts, summarize, write_reports
+    Returns the number of grades that changed or could not be recomputed because the
+    transcript answers another version of its task (0 = stored grades reproduced exactly)."""
+    from harness.metrics import STALE_NOTE, load_transcripts, split_stale, summarize, write_reports
     from harness.prompts import tasks_by_id
     from harness.runner import evaluate_output, transcript_path, write_json
 
     tasks = tasks_by_id()
-    transcripts = load_transcripts(transcripts_dir)
+    transcripts, stale = split_stale(load_transcripts(transcripts_dir), tasks)
+    if stale:
+        print(f"NOT GRADED: {len(stale)} transcript(s) {STALE_NOTE}")
     changed = 0
     for t in transcripts:
         if t["grade"]["failure_code"] == "API_ERROR":
@@ -90,7 +93,7 @@ def regrade(transcripts_dir: Path, write: bool, results_dir: Path = RESULTS_DIR)
     write_reports(card, results_dir)
     print(f"regraded {len(transcripts)} transcripts; {changed} grade(s) differ from the stored ones")
     print(f"wrote {results_dir / 'scorecard.json'} and {results_dir / 'summary.md'}")
-    return changed
+    return changed + len(stale)
 
 
 def live(args) -> int:
@@ -99,8 +102,8 @@ def live(args) -> int:
     from harness.cache import ResponseCache
     from harness.client import OpenRouterClient
     from harness.cost import CostTracker, estimate, observed_cost_per_call
-    from harness.metrics import load_transcripts, summarize, write_reports
-    from harness.prompts import load_tasks
+    from harness.metrics import load_current_transcripts, load_transcripts, summarize, write_reports
+    from harness.prompts import load_tasks, tasks_by_id
     from harness.runner import run_trials
 
     tasks = load_tasks(args.task)
@@ -156,7 +159,7 @@ def live(args) -> int:
             await client.aclose()  # avoids "event loop is closed" noise on Windows
 
     asyncio.run(run_all())
-    write_reports(summarize(load_transcripts(TRANSCRIPTS_DIR)), RESULTS_DIR)
+    write_reports(summarize(load_current_transcripts(TRANSCRIPTS_DIR, tasks_by_id())), RESULTS_DIR)
     print(f"spent ${cost.total_usd:.2f} (+{cost.unknown_calls} calls with unknown cost) in {cost.requests} "
           f"requests; wrote {RESULTS_DIR / 'summary.md'}")
     return 0
@@ -165,7 +168,7 @@ def live(args) -> int:
 def manual(args) -> int:
     """--new-manual NAME and --import-manual DIR (free chat-app route, see docs/RUNNING_FOR_FREE.md)."""
     from harness.manual import import_manual, new_manual_model
-    from harness.metrics import load_transcripts, summarize, write_reports
+    from harness.metrics import load_current_transcripts, summarize, write_reports
     from harness.prompts import load_tasks, tasks_by_id
 
     if args.new_manual:
@@ -179,7 +182,7 @@ def manual(args) -> int:
     for t in written:
         g = t["grade"]
         print(f"{t['model']:28} {t['task_id']} trial {t['trial']}: score {g['score']} {g['failure_code'] or ''}")
-    write_reports(summarize(load_transcripts(TRANSCRIPTS_DIR)), RESULTS_DIR)
+    write_reports(summarize(load_current_transcripts(TRANSCRIPTS_DIR, tasks_by_id())), RESULTS_DIR)
     print(f"imported {len(written)} replies; wrote {RESULTS_DIR / 'summary.md'}")
     return 1 if problems else 0
 

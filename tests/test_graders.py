@@ -9,7 +9,7 @@ from automata.cfg import Grammar
 from automata.dfa import DFA, accepts
 from graders.failure_codes import FailureCode as F
 from graders.grader import grade_answer, load_reference, reference_dfa
-from graders.oracles import t07_member, t08_enumerate, t08_member
+from graders.oracles import t07_member, t08_enumerate, t08_member, t08_shortest_longer_than
 
 TASKS = {t["id"]: t for t in load_task_files()}
 DFA_TASKS = [tid for tid, t in TASKS.items() if t["grader"]["type"] == "dfa_exact"]
@@ -165,19 +165,20 @@ def test_schema_violations_are_parse_errors(bad):
 @pytest.mark.parametrize(
     "witness, expected",
     [
-        ("bababbabaa", (1.0, None)),
-        ("babababaa", (0.0, F.WITNESS_NOT_DISTINGUISHING)),  # the obvious guess: matched by both
+        ("ababaababaababaa", (1.0, None)),
+        ("ababababababaa", (0.0, F.WITNESS_NOT_DISTINGUISHING)),  # the obvious guess: matched by both
         ("ab", (0.0, F.WITNESS_NOT_DISTINGUISHING)),  # matched by neither
         ("", (0.0, F.WITNESS_NOT_DISTINGUISHING)),
-        ("bababbbabaa", (0.5, F.WITNESS_NOT_SHORTEST)),  # distinguishing, length 11
-        ("bababbabac", (0.0, F.INVALID_WITNESS)),
+        ("ababaaababaababaa", (0.5, F.WITNESS_NOT_SHORTEST)),  # distinguishing, length 17
+        ("ababaababaababac", (0.0, F.INVALID_WITNESS)),
+        ("ababa ababaababaa", (0.0, F.INVALID_WITNESS)),  # a space, as in a v1 pilot reply
     ],
 )
 def test_witness_grader(witness, expected):
     score, code, res = grade("task_05", {"witness": witness})
     assert (score, code) == expected
     if code is not None:
-        assert res.counterexample == "bababbabaa"  # a correct shortest witness, for diagnosis
+        assert res.counterexample == "ababaababaababaa"  # a correct shortest witness, for diagnosis
 
 
 @pytest.mark.parametrize("bad", [{"witness": 5}, {"word": "ab"}, ["ab"]])
@@ -206,10 +207,11 @@ def test_dropping_any_production_undergenerates(tid):
 @pytest.mark.parametrize(
     "tid, extra, shortest_len",
     [
-        ("task_07", {"lhs": "B2", "rhs": ["LP", "RP"]}, 4),  # allows [()]
-        ("task_07", {"lhs": "A1", "rhs": ["LP", "X2"]}, 8),  # allows depth 4
+        ("task_07", {"lhs": "Bs", "rhs": ["LP", "RP"]}, 6),  # ( inside [: [()][]
+        ("task_07", {"lhs": "Ev", "rhs": ["LB", "RB"]}, 2),  # odd number of top-level [-groups: []
+        ("task_07", {"lhs": "X", "rhs": ["Od", "RP"]}, 4),  # odd number of [-children: ([])
         ("task_08", {"lhs": "S", "rhs": ["TA", "TA"]}, 2),  # aa
-        ("task_08", {"lhs": "A1", "rhs": ["TA", "TB"]}, 5),  # A1 -> ab: S -> A1 B1 gives abbaa
+        ("task_08", {"lhs": "L1", "rhs": ["AA", "BB"]}, 7),  # L1 -> aabb (ratio 1:1): a L1 b a = aaabbba
     ],
 )
 def test_overgenerating_production(tid, extra, shortest_len):
@@ -224,9 +226,9 @@ def test_overgenerating_production(tid, extra, shortest_len):
 @pytest.mark.parametrize(
     "tid, extra",
     [
-        ("task_07", {"lhs": "A3", "rhs": ["A2"]}),  # unit production
+        ("task_07", {"lhs": "Ev", "rhs": ["P"]}),  # unit production
         ("task_08", {"lhs": "S", "rhs": []}),  # epsilon production
-        ("task_08", {"lhs": "S", "rhs": ["a", "B1"]}),  # mixed
+        ("task_08", {"lhs": "S", "rhs": ["a", "R1"]}),  # mixed
         ("task_08", {"lhs": "S", "rhs": ["TA", "TB", "TA"]}),  # too long
     ],
 )
@@ -248,15 +250,17 @@ def chain(nonterminal: str, word: str, tag: str) -> list[dict]:
 
 
 TERMS = [{"lhs": "T_a", "rhs": ["a"]}, {"lhs": "T_b", "rhs": ["b"]}]
+N8 = TASKS["task_08"]["grader"]["params"]["max_len"]
 
 
 def test_finite_list_of_all_words_up_to_n_fails():
-    """Anti-gaming: listing every word of L up to N = 30 must not pass."""
-    words = sorted(w for s in t08_enumerate(30).values() for w in s)
+    """Anti-gaming: listing every word of L up to N must not pass."""
+    words = sorted(w for s in t08_enumerate(N8).values() for w in s)
     prods = TERMS + [p for i, w in enumerate(words) for p in chain("S", w, f"W{i}")]
     score, code, res = grade("task_08", {"start": "S", "productions": prods})
     assert (score, code) == (0.0, F.UNDERGENERATES)
-    assert res.details["finite_language"] is True and len(res.counterexample) == 33
+    assert res.details["finite_language"] is True
+    assert len(res.counterexample) == len(t08_shortest_longer_than(N8)) == N8 + 1
 
 
 def doubling_chain(k: int) -> list[dict]:
@@ -275,7 +279,7 @@ def test_grader_memory_does_not_depend_on_long_strings():
 
 
 def test_finite_grammar_with_huge_longest_word():
-    words = sorted(w for s in t08_enumerate(30).values() for w in s)
+    words = sorted(w for s in t08_enumerate(N8).values() for w in s)
     prods = TERMS + [{"lhs": "TA", "rhs": ["a"]}] + [p for i, w in enumerate(words) for p in chain("S", w, f"W{i}")]
     score, code, res = grade("task_08", {"start": "S", "productions": prods + doubling_chain(200)})
     assert (score, code) == (0.0, F.UNDERGENERATES)
@@ -284,10 +288,10 @@ def test_finite_grammar_with_huge_longest_word():
 
 
 def test_bounded_guarantee_is_honest():
-    """Documents the limitation: an error that only shows beyond N (= 30) is NOT caught.
-    The extra word a^33 is outside L but longer than N, so the grammar passes."""
+    """Documents the limitation: an error that only shows beyond N is NOT caught.
+    The extra word a^(N+1) is outside L but longer than N, so the grammar passes."""
     m = ref_answer("task_08")
-    m["productions"] += TERMS + chain("S", "a" * 33, "LONG")
+    m["productions"] += TERMS + chain("S", "a" * (N8 + 1), "LONG")
     assert grade("task_08", m)[:2] == (1.0, None)
-    assert not t08_member("a" * 33)
+    assert not t08_member("a" * (N8 + 1))
     assert Grammar.model_validate(m)  # still a well-formed grammar

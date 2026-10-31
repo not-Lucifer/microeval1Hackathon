@@ -75,7 +75,8 @@ def test_reference_grammars_match_language():
     for w in all_words(["a", "b"], 12):
         if w:
             assert cyk(t08_reference_grammar(), ["a", "b"], w) == t08_member(w), w
-    assert cyk(t07_reference_grammar(), BR, "(([]))") and t07_member("(([]))")
+    assert cyk(t07_reference_grammar(), BR, "([][])") and t07_member("([][])")
+    assert not cyk(t07_reference_grammar(), BR, "([])") and not t07_member("([])")
 
 
 def test_finite_grammar_is_rejected_even_if_correct_up_to_n():

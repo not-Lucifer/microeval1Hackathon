@@ -14,7 +14,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from harness.metrics import load_transcripts, summarize, write_reports  # noqa: E402
+from harness.metrics import STALE_NOTE, load_transcripts, split_stale, summarize, write_reports  # noqa: E402
+from harness.prompts import tasks_by_id  # noqa: E402
 
 
 def main() -> int:
@@ -23,10 +24,13 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--transcripts", default=str(ROOT / "transcripts"))
     args = ap.parse_args()
-    card = summarize(load_transcripts(Path(args.transcripts)))
+    current, stale = split_stale(load_transcripts(Path(args.transcripts)), tasks_by_id())
+    if stale:
+        print(f"LEFT OUT: {len(stale)} transcript(s) {STALE_NOTE}")
+    card = summarize(current)
     write_reports(card, ROOT / "results")
     print(f"{card['n_transcripts']} transcripts -> results/scorecard.json, results/summary.md")
-    return 0
+    return 1 if stale else 0
 
 
 if __name__ == "__main__":

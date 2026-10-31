@@ -12,9 +12,9 @@ from harness import client as client_module
 from harness.cache import ResponseCache
 from harness.client import STOP_FREE_DAILY, STOP_NO_CREDITS, CompletionResult, ModelSpec, OpenRouterClient
 from harness.cost import CostTracker, estimate, settings_key
-from harness.metrics import load_transcripts, render_markdown, summarize
+from harness.metrics import load_transcripts, render_markdown, split_stale, summarize
 from harness.parsing import extract_final_json
-from harness.prompts import load_tasks
+from harness.prompts import load_tasks, tasks_by_id
 from harness.runner import run_trials
 
 # --------------------------------------------------------------------------- parsing
@@ -124,7 +124,7 @@ def test_cache_avoids_repeat_calls_but_not_api_errors(tmp_path):
     client = FakeClient(scripted_replies())
     run(tmp_path, client)
     assert len(client.calls) == 8
-    retry = FakeClient({("bad-model", "task_05"): [ok({"witness": "bababbabaa"})]})
+    retry = FakeClient({("bad-model", "task_05"): [ok(load_reference("task_05")["answer"])]})
     run(tmp_path, retry)
     assert [c[0] for c in retry.calls] == ["bad-model"]  # only the API_ERROR trial was retried
 
@@ -154,6 +154,24 @@ def test_regrade_reproduces_stored_grades(tmp_path):
         data["grade"]["score"] = 0.123
         path.write_text(json.dumps(data), encoding="utf-8")
         assert run_eval.regrade(tmp_path / "transcripts", write=False, results_dir=tmp_path / "results") == 1
+
+
+def test_regrade_refuses_answers_to_another_task_version(tmp_path, capsys):
+    run(tmp_path, FakeClient(scripted_replies()))
+    path = next((tmp_path / "transcripts").rglob("trial_1.json"))
+    data = json.loads(path.read_text(encoding="utf-8"))
+    data["prompt"] = "an older version of this task"
+    path.write_text(json.dumps(data), encoding="utf-8")
+    assert run_eval.regrade(tmp_path / "transcripts", write=False, results_dir=tmp_path / "results") == 1
+    assert "NOT GRADED: 1 transcript(s)" in capsys.readouterr().out
+    card = json.loads((tmp_path / "results" / "scorecard.json").read_text(encoding="utf-8"))
+    assert card["n_transcripts"] == 7  # the stale one is not counted
+
+
+def test_v1_pilot_transcripts_never_count_against_the_current_tasks():
+    pilot = load_transcripts(run_eval.ROOT / "pilot_v1" / "transcripts")
+    current, stale = split_stale(pilot, tasks_by_id())
+    assert pilot and current == [] and len(stale) == len(pilot)
 
 
 @pytest.mark.parametrize("entry, expected", [({"name": "m", "openrouter_id": None}, 0), ({"name": "m", "openrouter_id": "lab/m"}, 1)])

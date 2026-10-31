@@ -1,0 +1,1055 @@
+{
+  "models": {
+    "baseline-nonreasoning": {
+      "api_errors": [
+        "task_01/trial_1",
+        "task_01/trial_2",
+        "task_01/trial_3",
+        "task_01/trial_4",
+        "task_02/trial_1",
+        "task_02/trial_2",
+        "task_02/trial_3",
+        "task_02/trial_4",
+        "task_03/trial_1",
+        "task_03/trial_2",
+        "task_03/trial_3",
+        "task_03/trial_4",
+        "task_04/trial_1",
+        "task_04/trial_2",
+        "task_04/trial_3",
+        "task_04/trial_4",
+        "task_05/trial_1",
+        "task_05/trial_2",
+        "task_05/trial_3",
+        "task_05/trial_4",
+        "task_06/trial_1",
+        "task_06/trial_2",
+        "task_06/trial_3",
+        "task_06/trial_4",
+        "task_07/trial_1",
+        "task_07/trial_2",
+        "task_07/trial_3",
+        "task_07/trial_4",
+        "task_08/trial_1",
+        "task_08/trial_2",
+        "task_08/trial_3",
+        "task_08/trial_4"
+      ],
+      "calls_with_unknown_cost": 0,
+      "completion_tokens": 0,
+      "cost_usd": 0,
+      "dates": [
+        "2026-10-31"
+      ],
+      "failure_code_histogram": {},
+      "mean_score": null,
+      "mean_score_sd_across_trial_indices": null,
+      "pass_at_k": null,
+      "pass_hat_k": null,
+      "pass_rate": null,
+      "settings": {
+        "max_tokens": 32000,
+        "openrouter_id": "x-ai/grok-4.7",
+        "provider": null,
+        "reasoning": null,
+        "seed": null,
+        "temperature": 0
+      },
+      "tasks": {},
+      "total_latency_s": 0,
+      "trials_per_task": 0,
+      "truncated": 0,
+      "valid_trials": 0
+    },
+    "chatgpt-free": {
+      "api_errors": [],
+      "calls_with_unknown_cost": 0,
+      "completion_tokens": 0,
+      "cost_usd": 0.0,
+      "dates": [
+        "2026-10-31"
+      ],
+      "failure_code_histogram": {
+        "INVALID_WITNESS": 1,
+        "NOT_EQUIVALENT": 2,
+        "PASS": 8,
+        "UNDERGENERATES": 1
+      },
+      "mean_score": 0.6667,
+      "mean_score_sd_across_trial_indices": 0.2125,
+      "pass_at_k": 0.625,
+      "pass_hat_k": 0.5,
+      "pass_rate": 0.6667,
+      "settings": {
+        "app": "ChatGPT, free plan, web",
+        "max_tokens": null,
+        "model_shown": "no model name shown (free plan default)",
+        "new_chat_per_trial": true,
+        "no_tools_confirmed": true,
+        "notes": "Replies pasted exactly as ChatGPT gave them: each reply was only the JSON answer, with no text before it. Pilot run on task set v1.",
+        "openrouter_id": null,
+        "provider": null,
+        "reasoning": "default (Think off)",
+        "seed": null,
+        "source": "manual chat app",
+        "temperature": null
+      },
+      "tasks": {
+        "task_01": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            null
+          ],
+          "mean_score": 1.0,
+          "passes": 1,
+          "scores": [
+            1.0
+          ],
+          "trials": 1
+        },
+        "task_02": {
+          "counterexamples": [
+            "aaaac"
+          ],
+          "failure_codes": [
+            "NOT_EQUIVALENT"
+          ],
+          "mean_score": 0.0,
+          "passes": 0,
+          "scores": [
+            0.0
+          ],
+          "trials": 1
+        },
+        "task_03": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            null
+          ],
+          "mean_score": 1.0,
+          "passes": 1,
+          "scores": [
+            1.0
+          ],
+          "trials": 1
+        },
+        "task_04": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            null
+          ],
+          "mean_score": 1.0,
+          "passes": 1,
+          "scores": [
+            1.0
+          ],
+          "trials": 1
+        },
+        "task_05": {
+          "counterexamples": [
+            "bababbabaa"
+          ],
+          "failure_codes": [
+            "INVALID_WITNESS"
+          ],
+          "mean_score": 0.0,
+          "passes": 0,
+          "scores": [
+            0.0
+          ],
+          "trials": 1
+        },
+        "task_06": {
+          "counterexamples": [
+            "baaaabb"
+          ],
+          "failure_codes": [
+            "NOT_EQUIVALENT"
+          ],
+          "mean_score": 0.0,
+          "passes": 0,
+          "scores": [
+            0.0
+          ],
+          "trials": 1
+        },
+        "task_07": {
+          "counterexamples": [
+            null,
+            null,
+            null
+          ],
+          "failure_codes": [
+            null,
+            null,
+            null
+          ],
+          "mean_score": 1.0,
+          "passes": 3,
+          "scores": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "trials": 3
+        },
+        "task_08": {
+          "counterexamples": [
+            null,
+            null,
+            "aabbaa"
+          ],
+          "failure_codes": [
+            null,
+            null,
+            "UNDERGENERATES"
+          ],
+          "mean_score": 0.6667,
+          "passes": 2,
+          "scores": [
+            1.0,
+            1.0,
+            0.0
+          ],
+          "trials": 3
+        }
+      },
+      "total_latency_s": 0,
+      "trials_per_task": 3,
+      "truncated": 0,
+      "valid_trials": 12
+    },
+    "frontier-a": {
+      "api_errors": [
+        "task_01/trial_2",
+        "task_01/trial_3",
+        "task_01/trial_4",
+        "task_02/trial_2",
+        "task_02/trial_3",
+        "task_02/trial_4",
+        "task_03/trial_2",
+        "task_03/trial_3",
+        "task_03/trial_4",
+        "task_04/trial_2",
+        "task_04/trial_3",
+        "task_04/trial_4",
+        "task_05/trial_2",
+        "task_05/trial_3",
+        "task_05/trial_4",
+        "task_06/trial_2",
+        "task_06/trial_3",
+        "task_06/trial_4",
+        "task_07/trial_2",
+        "task_07/trial_3",
+        "task_07/trial_4",
+        "task_08/trial_2",
+        "task_08/trial_3",
+        "task_08/trial_4"
+      ],
+      "calls_with_unknown_cost": 0,
+      "completion_tokens": 80680,
+      "cost_usd": 0.0412,
+      "dates": [
+        "2026-10-31"
+      ],
+      "failure_code_histogram": {
+        "PASS": 7,
+        "TRUNCATED": 1
+      },
+      "mean_score": 0.875,
+      "mean_score_sd_across_trial_indices": null,
+      "pass_at_k": 0.875,
+      "pass_hat_k": 0.875,
+      "pass_rate": 0.875,
+      "settings": {
+        "max_tokens": 32000,
+        "openrouter_id": "anthropic/claude-haiku-5.5",
+        "provider": null,
+        "reasoning": {
+          "effort": "high"
+        },
+        "seed": null,
+        "temperature": 0
+      },
+      "tasks": {
+        "task_01": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            null
+          ],
+          "mean_score": 1.0,
+          "passes": 1,
+          "scores": [
+            1.0
+          ],
+          "trials": 1
+        },
+        "task_02": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            null
+          ],
+          "mean_score": 1.0,
+          "passes": 1,
+          "scores": [
+            1.0
+          ],
+          "trials": 1
+        },
+        "task_03": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            null
+          ],
+          "mean_score": 1.0,
+          "passes": 1,
+          "scores": [
+            1.0
+          ],
+          "trials": 1
+        },
+        "task_04": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            null
+          ],
+          "mean_score": 1.0,
+          "passes": 1,
+          "scores": [
+            1.0
+          ],
+          "trials": 1
+        },
+        "task_05": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            null
+          ],
+          "mean_score": 1.0,
+          "passes": 1,
+          "scores": [
+            1.0
+          ],
+          "trials": 1
+        },
+        "task_06": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            null
+          ],
+          "mean_score": 1.0,
+          "passes": 1,
+          "scores": [
+            1.0
+          ],
+          "trials": 1
+        },
+        "task_07": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            null
+          ],
+          "mean_score": 1.0,
+          "passes": 1,
+          "scores": [
+            1.0
+          ],
+          "trials": 1
+        },
+        "task_08": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            "TRUNCATED"
+          ],
+          "mean_score": 0.0,
+          "passes": 0,
+          "scores": [
+            0.0
+          ],
+          "trials": 1
+        }
+      },
+      "total_latency_s": 372.5,
+      "trials_per_task": 1,
+      "truncated": 1,
+      "valid_trials": 8
+    },
+    "frontier-a-effort-low": {
+      "api_errors": [
+        "task_01/trial_1",
+        "task_02/trial_1",
+        "task_03/trial_1",
+        "task_04/trial_1",
+        "task_05/trial_1",
+        "task_06/trial_1",
+        "task_07/trial_1",
+        "task_08/trial_1"
+      ],
+      "calls_with_unknown_cost": 0,
+      "completion_tokens": 0,
+      "cost_usd": 0,
+      "dates": [
+        "2026-10-31"
+      ],
+      "failure_code_histogram": {},
+      "mean_score": null,
+      "mean_score_sd_across_trial_indices": null,
+      "pass_at_k": null,
+      "pass_hat_k": null,
+      "pass_rate": null,
+      "settings": {
+        "max_tokens": 32000,
+        "openrouter_id": "anthropic/claude-haiku-5.5",
+        "provider": null,
+        "reasoning": {
+          "effort": "low"
+        },
+        "seed": null,
+        "temperature": 0
+      },
+      "tasks": {},
+      "total_latency_s": 0,
+      "trials_per_task": 0,
+      "truncated": 0,
+      "valid_trials": 0
+    },
+    "frontier-a-effort-medium": {
+      "api_errors": [
+        "task_01/trial_1",
+        "task_02/trial_1",
+        "task_03/trial_1",
+        "task_04/trial_1",
+        "task_05/trial_1",
+        "task_06/trial_1",
+        "task_07/trial_1",
+        "task_08/trial_1"
+      ],
+      "calls_with_unknown_cost": 0,
+      "completion_tokens": 0,
+      "cost_usd": 0,
+      "dates": [
+        "2026-10-31"
+      ],
+      "failure_code_histogram": {},
+      "mean_score": null,
+      "mean_score_sd_across_trial_indices": null,
+      "pass_at_k": null,
+      "pass_hat_k": null,
+      "pass_rate": null,
+      "settings": {
+        "max_tokens": 32000,
+        "openrouter_id": "anthropic/claude-haiku-5.5",
+        "provider": null,
+        "reasoning": {
+          "effort": "medium"
+        },
+        "seed": null,
+        "temperature": 0
+      },
+      "tasks": {},
+      "total_latency_s": 0,
+      "trials_per_task": 0,
+      "truncated": 0,
+      "valid_trials": 0
+    },
+    "frontier-b": {
+      "api_errors": [
+        "task_01/trial_2",
+        "task_01/trial_3",
+        "task_01/trial_4",
+        "task_02/trial_2",
+        "task_02/trial_3",
+        "task_02/trial_4",
+        "task_03/trial_2",
+        "task_03/trial_3",
+        "task_03/trial_4",
+        "task_04/trial_1",
+        "task_04/trial_2",
+        "task_04/trial_3",
+        "task_04/trial_4",
+        "task_05/trial_1",
+        "task_05/trial_2",
+        "task_05/trial_3",
+        "task_05/trial_4",
+        "task_06/trial_1",
+        "task_06/trial_2",
+        "task_06/trial_3",
+        "task_06/trial_4",
+        "task_07/trial_1",
+        "task_07/trial_2",
+        "task_07/trial_3",
+        "task_07/trial_4",
+        "task_08/trial_1",
+        "task_08/trial_2",
+        "task_08/trial_3",
+        "task_08/trial_4"
+      ],
+      "calls_with_unknown_cost": 0,
+      "completion_tokens": 12738,
+      "cost_usd": 0.0157,
+      "dates": [
+        "2026-10-31"
+      ],
+      "failure_code_histogram": {
+        "PASS": 3
+      },
+      "mean_score": 1.0,
+      "mean_score_sd_across_trial_indices": null,
+      "pass_at_k": 1.0,
+      "pass_hat_k": 1.0,
+      "pass_rate": 1.0,
+      "settings": {
+        "max_tokens": 32000,
+        "openrouter_id": "openai/gpt-5.6-luna",
+        "provider": null,
+        "reasoning": {
+          "effort": "high"
+        },
+        "seed": null,
+        "temperature": 0
+      },
+      "tasks": {
+        "task_01": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            null
+          ],
+          "mean_score": 1.0,
+          "passes": 1,
+          "scores": [
+            1.0
+          ],
+          "trials": 1
+        },
+        "task_02": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            null
+          ],
+          "mean_score": 1.0,
+          "passes": 1,
+          "scores": [
+            1.0
+          ],
+          "trials": 1
+        },
+        "task_03": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            null
+          ],
+          "mean_score": 1.0,
+          "passes": 1,
+          "scores": [
+            1.0
+          ],
+          "trials": 1
+        }
+      },
+      "total_latency_s": 149.0,
+      "trials_per_task": 1,
+      "truncated": 0,
+      "valid_trials": 3
+    },
+    "frontier-c": {
+      "api_errors": [
+        "task_01/trial_1",
+        "task_01/trial_2",
+        "task_01/trial_3",
+        "task_01/trial_4",
+        "task_02/trial_1",
+        "task_02/trial_2",
+        "task_02/trial_3",
+        "task_02/trial_4",
+        "task_03/trial_1",
+        "task_03/trial_2",
+        "task_03/trial_3",
+        "task_03/trial_4",
+        "task_04/trial_1",
+        "task_04/trial_2",
+        "task_04/trial_3",
+        "task_04/trial_4",
+        "task_05/trial_1",
+        "task_05/trial_2",
+        "task_05/trial_3",
+        "task_05/trial_4",
+        "task_06/trial_1",
+        "task_06/trial_2",
+        "task_06/trial_3",
+        "task_06/trial_4",
+        "task_07/trial_1",
+        "task_07/trial_2",
+        "task_07/trial_3",
+        "task_07/trial_4",
+        "task_08/trial_1",
+        "task_08/trial_2",
+        "task_08/trial_3",
+        "task_08/trial_4"
+      ],
+      "calls_with_unknown_cost": 0,
+      "completion_tokens": 0,
+      "cost_usd": 0,
+      "dates": [
+        "2026-10-31"
+      ],
+      "failure_code_histogram": {},
+      "mean_score": null,
+      "mean_score_sd_across_trial_indices": null,
+      "pass_at_k": null,
+      "pass_hat_k": null,
+      "pass_rate": null,
+      "settings": {
+        "max_tokens": 32000,
+        "openrouter_id": "google/gemini-3.8-flash",
+        "provider": null,
+        "reasoning": {
+          "effort": "high"
+        },
+        "seed": null,
+        "temperature": 0
+      },
+      "tasks": {},
+      "total_latency_s": 0,
+      "trials_per_task": 0,
+      "truncated": 0,
+      "valid_trials": 0
+    },
+    "gemma-4-31b-free": {
+      "api_errors": [
+        "task_01/trial_1",
+        "task_02/trial_1",
+        "task_03/trial_1",
+        "task_04/trial_1",
+        "task_05/trial_1",
+        "task_06/trial_1",
+        "task_07/trial_1",
+        "task_08/trial_1"
+      ],
+      "calls_with_unknown_cost": 0,
+      "completion_tokens": 0,
+      "cost_usd": 0,
+      "dates": [
+        "2026-10-31"
+      ],
+      "failure_code_histogram": {},
+      "mean_score": null,
+      "mean_score_sd_across_trial_indices": null,
+      "pass_at_k": null,
+      "pass_hat_k": null,
+      "pass_rate": null,
+      "settings": {
+        "max_tokens": 32000,
+        "openrouter_id": "google/gemma-4-31b-it:free",
+        "provider": null,
+        "reasoning": {
+          "effort": "high"
+        },
+        "seed": null,
+        "temperature": 0
+      },
+      "tasks": {},
+      "total_latency_s": 0,
+      "trials_per_task": 0,
+      "truncated": 0,
+      "valid_trials": 0
+    },
+    "inkling-free": {
+      "api_errors": [
+        "task_01/trial_1",
+        "task_02/trial_1",
+        "task_03/trial_1",
+        "task_04/trial_1",
+        "task_05/trial_1",
+        "task_06/trial_1",
+        "task_07/trial_1",
+        "task_08/trial_1"
+      ],
+      "calls_with_unknown_cost": 0,
+      "completion_tokens": 0,
+      "cost_usd": 0,
+      "dates": [
+        "2026-10-31"
+      ],
+      "failure_code_histogram": {},
+      "mean_score": null,
+      "mean_score_sd_across_trial_indices": null,
+      "pass_at_k": null,
+      "pass_hat_k": null,
+      "pass_rate": null,
+      "settings": {
+        "max_tokens": 64000,
+        "openrouter_id": "thinkingmachines/inkling:free",
+        "provider": null,
+        "reasoning": {
+          "effort": "high"
+        },
+        "seed": null,
+        "temperature": 0
+      },
+      "tasks": {},
+      "total_latency_s": 0,
+      "trials_per_task": 0,
+      "truncated": 0,
+      "valid_trials": 0
+    },
+    "nemotron-3-ultra-free": {
+      "api_errors": [
+        "task_08/trial_1"
+      ],
+      "calls_with_unknown_cost": 0,
+      "completion_tokens": 112380,
+      "cost_usd": 0.0,
+      "dates": [
+        "2026-10-31"
+      ],
+      "failure_code_histogram": {
+        "PASS": 7
+      },
+      "mean_score": 1.0,
+      "mean_score_sd_across_trial_indices": null,
+      "pass_at_k": 1.0,
+      "pass_hat_k": 1.0,
+      "pass_rate": 1.0,
+      "settings": {
+        "max_tokens": 64000,
+        "openrouter_id": "nvidia/nemotron-3-ultra-550b-a55b:free",
+        "provider": null,
+        "reasoning": {
+          "effort": "high"
+        },
+        "seed": null,
+        "temperature": 0
+      },
+      "tasks": {
+        "task_01": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            null
+          ],
+          "mean_score": 1.0,
+          "passes": 1,
+          "scores": [
+            1.0
+          ],
+          "trials": 1
+        },
+        "task_02": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            null
+          ],
+          "mean_score": 1.0,
+          "passes": 1,
+          "scores": [
+            1.0
+          ],
+          "trials": 1
+        },
+        "task_03": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            null
+          ],
+          "mean_score": 1.0,
+          "passes": 1,
+          "scores": [
+            1.0
+          ],
+          "trials": 1
+        },
+        "task_04": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            null
+          ],
+          "mean_score": 1.0,
+          "passes": 1,
+          "scores": [
+            1.0
+          ],
+          "trials": 1
+        },
+        "task_05": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            null
+          ],
+          "mean_score": 1.0,
+          "passes": 1,
+          "scores": [
+            1.0
+          ],
+          "trials": 1
+        },
+        "task_06": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            null
+          ],
+          "mean_score": 1.0,
+          "passes": 1,
+          "scores": [
+            1.0
+          ],
+          "trials": 1
+        },
+        "task_07": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            null
+          ],
+          "mean_score": 1.0,
+          "passes": 1,
+          "scores": [
+            1.0
+          ],
+          "trials": 1
+        }
+      },
+      "total_latency_s": 2999.4,
+      "trials_per_task": 1,
+      "truncated": 0,
+      "valid_trials": 7
+    },
+    "small-open": {
+      "api_errors": [
+        "task_05/trial_4",
+        "task_06/trial_2",
+        "task_06/trial_3",
+        "task_06/trial_4",
+        "task_07/trial_2",
+        "task_07/trial_3",
+        "task_07/trial_4",
+        "task_08/trial_2",
+        "task_08/trial_3",
+        "task_08/trial_4"
+      ],
+      "calls_with_unknown_cost": 0,
+      "completion_tokens": 332793,
+      "cost_usd": 0.1304,
+      "dates": [
+        "2026-10-31"
+      ],
+      "failure_code_histogram": {
+        "PASS": 21,
+        "TRUNCATED": 1
+      },
+      "mean_score": 0.9545,
+      "mean_score_sd_across_trial_indices": 0.0541,
+      "pass_at_k": 0.875,
+      "pass_hat_k": 0.875,
+      "pass_rate": 0.9545,
+      "settings": {
+        "max_tokens": 32000,
+        "openrouter_id": "deepseek/deepseek-v4.1-flash",
+        "provider": null,
+        "reasoning": null,
+        "seed": null,
+        "temperature": 0
+      },
+      "tasks": {
+        "task_01": {
+          "counterexamples": [
+            null,
+            null,
+            null,
+            null
+          ],
+          "failure_codes": [
+            null,
+            null,
+            null,
+            null
+          ],
+          "mean_score": 1.0,
+          "passes": 4,
+          "scores": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "trials": 4
+        },
+        "task_02": {
+          "counterexamples": [
+            null,
+            null,
+            null,
+            null
+          ],
+          "failure_codes": [
+            null,
+            null,
+            null,
+            null
+          ],
+          "mean_score": 1.0,
+          "passes": 4,
+          "scores": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "trials": 4
+        },
+        "task_03": {
+          "counterexamples": [
+            null,
+            null,
+            null,
+            null
+          ],
+          "failure_codes": [
+            null,
+            null,
+            null,
+            null
+          ],
+          "mean_score": 1.0,
+          "passes": 4,
+          "scores": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "trials": 4
+        },
+        "task_04": {
+          "counterexamples": [
+            null,
+            null,
+            null,
+            null
+          ],
+          "failure_codes": [
+            null,
+            null,
+            null,
+            null
+          ],
+          "mean_score": 1.0,
+          "passes": 4,
+          "scores": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "trials": 4
+        },
+        "task_05": {
+          "counterexamples": [
+            null,
+            null,
+            null
+          ],
+          "failure_codes": [
+            null,
+            null,
+            null
+          ],
+          "mean_score": 1.0,
+          "passes": 3,
+          "scores": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "trials": 3
+        },
+        "task_06": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            null
+          ],
+          "mean_score": 1.0,
+          "passes": 1,
+          "scores": [
+            1.0
+          ],
+          "trials": 1
+        },
+        "task_07": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            null
+          ],
+          "mean_score": 1.0,
+          "passes": 1,
+          "scores": [
+            1.0
+          ],
+          "trials": 1
+        },
+        "task_08": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            "TRUNCATED"
+          ],
+          "mean_score": 0.0,
+          "passes": 0,
+          "scores": [
+            0.0
+          ],
+          "trials": 1
+        }
+      },
+      "total_latency_s": 3380.1,
+      "trials_per_task": 4,
+      "truncated": 1,
+      "valid_trials": 22
+    }
+  },
+  "n_transcripts": 212
+}

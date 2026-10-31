@@ -13,12 +13,12 @@ from automata.regex import parse
 from graders.answers import ANSWER_MODELS, GrammarAnswer
 from graders.grader import reference_dfa
 from graders.oracles import ORACLES
-from reference.build import t02_member, t04_member
+from reference.build import t01_member, t02_member, t04_member
 
 TASKS = load_task_files()
 REQUIRED_KEYS = {"id", "family", "title", "prompt", "answer_schema", "grader", "examples", "metadata"}
 INDEPENDENT_MEMBERS = {
-    "task_01": lambda w: w.count("0") % 3 == 1 and "010" not in w and not w.endswith("11"),
+    "task_01": t01_member,
     "task_02": t02_member,
     "task_04": t04_member,
 }

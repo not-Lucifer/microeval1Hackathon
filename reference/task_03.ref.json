@@ -3,34 +3,84 @@
     "accepting": [
       "q0",
       "q1",
-      "q2"
+      "q2",
+      "q3",
+      "q4",
+      "q5",
+      "q8",
+      "q9"
     ],
     "start": "q0",
     "states": [
       "q0",
       "q1",
       "q2",
-      "q3"
+      "q3",
+      "q4",
+      "q5",
+      "q6",
+      "q7",
+      "q8",
+      "q9",
+      "q10",
+      "q11",
+      "q12"
     ],
     "transitions": {
       "q0": {
         "a": "q1",
-        "b": "q2"
+        "b": "q0"
       },
       "q1": {
-        "a": "q3",
+        "a": "q2",
         "b": "q3"
+      },
+      "q10": {
+        "a": "q9",
+        "b": "q8"
+      },
+      "q11": {
+        "a": "q12",
+        "b": "q10"
+      },
+      "q12": {
+        "a": "q9",
+        "b": "q10"
       },
       "q2": {
-        "a": "q2",
-        "b": "q1"
+        "a": "q3",
+        "b": "q4"
       },
       "q3": {
+        "a": "q5",
+        "b": "q4"
+      },
+      "q4": {
+        "a": "q6",
+        "b": "q7"
+      },
+      "q5": {
+        "a": "q2",
+        "b": "q8"
+      },
+      "q6": {
+        "a": "q9",
+        "b": "q3"
+      },
+      "q7": {
         "a": "q1",
         "b": "q3"
+      },
+      "q8": {
+        "a": "q10",
+        "b": "q11"
+      },
+      "q9": {
+        "a": "q8",
+        "b": "q8"
       }
     }
   },
-  "how_built": "automata.nfa.right_quotient (backward product reachability), then minimize",
+  "how_built": "automata.nfa.left_quotient (forward product reachability for the start set, then subsets of M1's states), then minimize",
   "task_id": "task_03"
 }

@@ -39,6 +39,7 @@ graders/     task-level scoring: dfa_grader.py witness_grader.py cfg_grader.py g
              answers.py (answer schemas) oracles.py (T07/T08 language definitions) result.py
 harness/     client.py parsing.py prompts.py runner.py cache.py cost.py metrics.py manual.py (chat-app import)
 manual/      <model>/info.yaml + task_XX/trial_N.txt pasted chat-app replies (prompts/ is generated, git-ignored)
+pilot_v1/    transcripts, ChatGPT replies and results of the task set v1 pilot (re-gradable at git tag pilot-v1)
 tasks/       task_01..08 JSON: prompt + metadata ONLY (never answers) -- GENERATED, do not hand-edit
 reference/   build.py (constructions + seeded generators) and task_XX.ref.json (never loaded by the harness)
 scripts/     generate_instances.py verify_specs.py check_task08_noncf.py search_t05_pairs.py
@@ -63,19 +64,20 @@ Task prompts live in `scripts/generate_instances.py`; edit there, regenerate, an
 11. **Reproducibility:** deterministic generators (fixed seeds), pinned deps, saved transcripts, an offline `--regrade` mode so judges can reproduce scores without spending money.
 12. **Never claim a result you have not run.** Numbers in README come from `results/` via `scripts/report.py`, not from memory or hope.
 
-## Frozen task set (details in docs/PROJECT_GUIDE.md §5)
+## Frozen task set v2 (details in docs/PROJECT_GUIDE.md §5)
+v1 (easier instances of the same families) was replaced after the 2026-10-31 pilot; it is kept at git tag `pilot-v1` and in `pilot_v1/`. **v2 is frozen**: only spec/grader bug fixes, logged in OPEN_QUESTIONS.
 | ID | Family | Answer type | Grader |
 |---|---|---|---|
-| 01 | Triple-product DFA (mod-3 counter ∧ no `010` ∧ not ending `11`) | minimal complete DFA | exact |
-| 02 | Lookahead-obligation DFA (window W, precisely defined) | minimal complete DFA | exact |
-| 03 | Right quotient L(M1)/L(M2) of two given DFAs | minimal complete DFA | exact |
-| 04 | Base-3 value ≡ 4 (mod 7) ∧ even number of 2s | minimal complete DFA | exact |
-| 05 | Regex pair agreeing up to length 8 → shortest distinguishing string | witness string | exact |
-| 06 | ε-NFA (5 states) → minimal DFA | minimal complete DFA | exact |
-| 07 | Bounded-depth two-bracket Dyck variant | CNF CFG | bounded (N≈14–16) |
-| 08 | **Replaced** — `{a^i b^j a^k : i,k ≥ 1, i+k = 2j}` | CNF CFG | bounded (N≈24–30) |
+| 01 | Triple-product DFA (mod-3 counter ∧ no `0101` ∧ third-to-last symbol is 1) | minimal complete DFA | exact |
+| 02 | Two interacting lookahead obligations (a→c within 4 unless after b; b→a within 3) | minimal complete DFA | exact |
+| 03 | **Left** quotient {y : xy ∈ L(M1), x ∈ L(M2)} of two given DFAs (5 + 3 states) | minimal complete DFA | exact |
+| 04 | Base-3, **least significant digit first**, value ≡ 4 (mod 7) ∧ even number of 2s | minimal complete DFA | exact |
+| 05 | Regex pair agreeing below length 16 → shortest distinguishing string | witness string | exact |
+| 06 | ε-NFA (7 states) → minimal DFA | minimal complete DFA | exact |
+| 07 | Unbounded two-bracket words with parity (even `[`-children) and parent rules | CNF CFG | bounded (N = 16) |
+| 08 | `{a^i b^j a^k : i,k ≥ 1, 2i + k = 3j}` | CNF CFG | bounded (N = 36) |
 
-**Task 08 original (`i>k`) is NOT context-free** (pumping-lemma argument + brute-force check) — no reference solution can exist, so it must not be used. See PROJECT_GUIDE §2.
+**The pre-v1 Task 08 original (`i+k=2j, i>k`) is NOT context-free** (pumping-lemma argument + brute-force check) — no reference solution can exist, so it must not be used. See PROJECT_GUIDE §2.
 
 ## Scoring convention
 `1.0` = exactly correct (and minimal where required) · `0.5` = language-correct but non-minimal (DFA tasks) / valid but non-shortest witness (Task 05) · `0.0` otherwise. **Pass for pass@k / pass^k means score == 1.0.** Failure codes live in `graders/failure_codes.py` (e.g. `PARSE_ERROR`, `INCOMPLETE_DFA`, `NOT_EQUIVALENT`, `NON_MINIMAL_STATE_BLOAT`, `WITNESS_NOT_DISTINGUISHING`, `WITNESS_NOT_SHORTEST`, `CNF_VIOLATION`, `OVERGENERATES`, `UNDERGENERATES`, `TRUNCATED`, `API_ERROR`). Every failure stores a shortest counterexample string when one exists.
@@ -105,7 +107,8 @@ Task prompts live in `scripts/generate_instances.py`; edit there, regenerate, an
 - 2026-10-31: first live run hit OpenRouter 402 (out of credits) on 143 calls; ~$0.19 spent. Live runs now require `--max-cost`, a 402 stops the run, key ids are redacted, `--dry-run` uses recorded cost per call. 1733 tests green. Open: T08 truncation at 32k tokens and low headroom (OPEN_QUESTIONS 34-35).
 - 2026-10-31: author has **no budget for paid runs**. Use only the free routes: `models.free.yaml` (OpenRouter `:free`, 50 requests/day, failed attempts count) and chat apps via `--new-manual`/`--import-manual`. Never suggest a paid run without being asked. Guide: `docs/RUNNING_FOR_FREE.md`.
 - 2026-10-31: free pilot. Only Nemotron answered (7/7 pass); `inkling:free` is app-only (403, replaced by `dots-3-note-preview:free`), Gemma's free provider was busy (429). The runner now skips a refused or repeatedly failing model for the rest of a run (OPEN_QUESTIONS 37). ChatGPT web replies pasted for T01-T08 trial 1 + T07/T08 trials 2-3, not yet imported (info.yaml empty; T05 space, OPEN_QUESTIONS 38).
-- Next: author decides on difficulty (OPEN_QUESTIONS 35) BEFORE trials 2-3 (changing a task invalidates its earlier answers), then the remaining free trials and chat-app runs.
+- 2026-10-31: author chose to replace the tasks (OPEN_QUESTIONS 39-48). Pilot committed and tagged `pilot-v1`, moved to `pilot_v1/`. Task set v2 built: minimal sizes 21 / 16 / 13 / 14 states, T05 witness 16, T06 17 subsets → 16, T07 N = 16, T08 N = 36. Old answers can no longer be graded against new tasks (stale-transcript guard). 1907 tests green; `verify_specs.py` all OK.
+- Next: v2 runs, all trials count: free models (`models.free.yaml`, 24 requests per trial round), ChatGPT (`--new-manual chatgpt-free --trials 3`), then failure analysis, README author sections, REVIEW_LOG ticks, video, zip.
 
 ## Working agreement
 - Start non-trivial work in plan mode; state the plan, then execute phase by phase (see `docs/KICKOFF_PROMPTS.md`).

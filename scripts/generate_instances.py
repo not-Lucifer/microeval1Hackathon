@@ -127,13 +127,18 @@ def dfa_answer(dfa: DFA) -> dict:
     return {"states": d.states, "start": d.start, "accepting": d.accepting, "transitions": d.transitions}
 
 
-# --------------------------------------------------------------------------- tasks
+# --------------------------------------------------------------------------- tasks (set v2)
+# v1 (easier instances of the same eight families) is kept at git tag pilot-v1; the pilot
+# that motivated v2 is in pilot_v1/.
+
+TASK_SET = "v2"
 
 
 def task_01() -> tuple[dict, dict]:
     alphabet = ["0", "1"]
-    ins = ["0", "01", "1101", "0000"]
-    outs = [("", "C1 fails"), ("00", "C1 fails"), ("011", "C3 fails"), ("01000", "C2 fails")]
+    ins = ["101", "110", "1101", "00100"]
+    outs = [("10", "shorter than 3, so C3 fails"), ("100", "two 0s, so only C1 fails"),
+            ("011", "third-to-last symbol is 0, so only C3 fails"), ("0101100", "contains 0101, so only C2 fails")]
     prompt = f"""\
 TASK: minimal DFA for a combined lexical rule
 
@@ -142,10 +147,10 @@ For a word w, #0(w) denotes the number of occurrences of the symbol 0 in w.
 
 L is the set of words w over Σ that satisfy ALL three conditions:
   (C1) #0(w) ≡ 1 (mod 3), i.e. the number of 0s is 1, 4, 7, 10, ...
-  (C2) w does not contain 010 as a contiguous substring.
-  (C3) w does not end with 11.
+  (C2) w does not contain 0101 as a contiguous substring (occurrences may overlap: 010101 contains it twice).
+  (C3) w has length at least 3 and its third symbol from the end is 1 (for w = x1 x2 ... xn this is x(n-2)).
 
-Edge cases: ε is not in L (it has zero 0s). Words of length 0 or 1 do not end with 11.
+Edge cases: ε is not in L. No word of length 0, 1 or 2 is in L, because of (C3).
 {examples_text(ins, outs)}
 
 Give the minimal complete DFA for L.
@@ -153,42 +158,50 @@ Give the minimal complete DFA for L.
 {DFA_ANSWER_SPEC.replace("<ALPHABET>", fmt_set(alphabet))}"""
     task = {
         "id": "task_01",
+        "task_set": TASK_SET,
         "family": "product_dfa",
-        "title": "Triple-product DFA: mod-3 counter, forbidden 010, not ending 11",
+        "title": "Triple-product DFA: mod-3 counter, forbidden 0101, third-to-last symbol is 1",
         "prompt": prompt,
         "answer_schema": "dfa",
         "grader": {"type": "dfa_exact", "params": {"alphabet": alphabet, "require_complete": True, "require_minimal": True}},
         "examples": {"in": ins, "out": [w for w, _ in outs]},
-        "difficulty_knobs": {"modulus": 3, "forbidden_pattern": "010"},
+        "difficulty_knobs": {"modulus": 3, "forbidden_pattern": build.T01_FORBIDDEN, "suffix_window": 3},
         "metadata": {
-            "why_hard": "Three invariants (a counter mod 3, a sliding window for the forbidden pattern, and the last two symbols) must be tracked in one product automaton, a trap state is needed, and then equivalent product states must be merged.",
-            "real_world": "Lexer/validator rules that combine a counting constraint with forbidden and required substrings.",
-            "expected_failure_modes": ["missing trap state", "dropped transition when 010 completes", "unmerged equivalent product states (non-minimal)", "wrong counter update"],
+            "why_hard": "Three invariants in one product automaton: a counter mod 3, a self-overlapping forbidden pattern (0101 overlaps itself in 01, so after 010 a 1 is fatal but a 0 falls back), and a 3-symbol window for the third-to-last symbol. The careful product has more states than the minimal DFA (verify_specs.py gives both numbers); the equivalent ones must be merged, and a trap state is needed.",
+            "real_world": "Lexer/validator rules that combine a counting constraint with forbidden substrings and a fixed-position suffix condition.",
+            "expected_failure_modes": ["wrong fallback after a partial 0101 match", "third-to-last window off by one", "unmerged equivalent product states (non-minimal)", "missing trap state", "wrong counter update"],
             "seed": None,
             "status": DRAFT_NOTE,
         },
     }
     ref = {"task_id": "task_01", "answer": dfa_answer(build.t01_construction()),
-           "how_built": "reference.build.t01_construction (counter x last-two-symbols x DEAD), then automata.dfa.minimize"}
+           "how_built": "reference.build.t01_construction (counter x last-three-symbols x DEAD), then automata.dfa.minimize"}
     return task, ref
 
 
-def task_02(window: int = 3) -> tuple[dict, dict]:
+def task_02() -> tuple[dict, dict]:
     alphabet = ["a", "b", "c"]
-    ins = ["", "ac", "aac", "abbc", "ba", "bab", "abac"]
-    outs = [("a", "obligation at 0 unmet"), ("abbbc", "c comes 4 positions later"),
-            ("cab", "obligation at 1 unmet"), ("abbac", "obligation at 0 unmet; the a at 3 is exempt")]
+    wa, wb = build.T02_WINDOW_A, build.T02_WINDOW_B
+    ins = ["", "c", "ba", "acba", "abcba", "aaaac"]
+    outs = [("a", "the a at 0 never sees a c"), ("b", "the b at 0 never sees an a"),
+            ("bca", "the a at 2 is not directly after b and never sees a c"),
+            ("abbc", "the b at 1 sees no a among the next 3 symbols"),
+            ("abca", "the a at 3 is not directly after b and never sees a c")]
     prompt = f"""\
-TASK: minimal DFA for a deadline ("lookahead obligation") rule
+TASK: minimal DFA for two interacting deadline ("lookahead obligation") rules
 
 Alphabet: Σ = {fmt_set(alphabet)}. Words are finite strings over Σ; ε denotes the empty word.
 Positions in a word w are numbered from 0: w = w[0] w[1] ... w[n-1], where n = |w|.
 
-Obligations. Every position i with w[i] = a creates an obligation, EXCEPT when i > 0 and w[i-1] = b (an a immediately preceded by b creates no obligation). An a at position 0 always creates an obligation.
-An obligation created at position i is satisfied if and only if there is a position j with i+1 <= j <= i+{window} and j < n such that w[j] = c. (A c must appear among the next {window} symbols; the window is cut off by the end of the word.)
-L is the set of words in which every obligation is satisfied. In particular ε is in L, and every word without obligations is in L.
+Rule A (every a needs a c). Every position i with w[i] = a creates an A-obligation, EXCEPT when i > 0 and w[i-1] = b (an a immediately preceded by b creates no A-obligation). An a at position 0 always creates one.
+An A-obligation created at position i is satisfied if and only if there is a position j with i+1 <= j <= i+{wa} and j < n such that w[j] = c.
 
-Notes: a single c can satisfy several pending obligations at once. Only the symbol immediately before an a decides whether that a is exempt.
+Rule B (every b needs an a). Every position i with w[i] = b creates a B-obligation (no exceptions).
+A B-obligation created at position i is satisfied if and only if there is a position j with i+1 <= j <= i+{wb} and j < n such that w[j] = a.
+
+L is the set of words in which every obligation (of both kinds) is satisfied. In particular ε is in L. The windows are cut off by the end of the word: an obligation must be satisfied inside the word.
+
+Notes: a single c can satisfy several pending A-obligations at once, and a single a can satisfy several pending B-obligations at once. Only the symbol immediately before an a decides whether that a creates an A-obligation.
 {examples_text(ins, outs)}
 
 Give the minimal complete DFA for L.
@@ -196,35 +209,36 @@ Give the minimal complete DFA for L.
 {DFA_ANSWER_SPEC.replace("<ALPHABET>", fmt_set(alphabet))}"""
     task = {
         "id": "task_02",
+        "task_set": TASK_SET,
         "family": "lookahead_dfa",
-        "title": f"Lookahead-obligation DFA (window W={window})",
+        "title": f"Two interacting lookahead obligations (a needs c within {wa}, b needs a within {wb})",
         "prompt": prompt,
         "answer_schema": "dfa",
         "grader": {"type": "dfa_exact", "params": {"alphabet": alphabet, "require_complete": True, "require_minimal": True}},
         "examples": {"in": ins, "out": [w for w, _ in outs]},
-        "difficulty_knobs": {"window_W": window, "minimal_size_formula_for_this_definition": "W + 3 (see verify_specs.py)"},
+        "difficulty_knobs": {"window_A": wa, "window_B": wb},
         "metadata": {
-            "why_hard": "Obligations overlap: a later c satisfies every pending a, but the earliest deadline governs; the b-exemption applies only to the immediately following a; obligations still open at the end of the word reject.",
-            "real_world": "Protocol/monitor rules of the form 'every request must be acknowledged within W steps unless ...' (runtime verification, timeouts).",
-            "expected_failure_modes": ["tracking the latest instead of the earliest deadline", "exemption applied too broadly", "accepting words that end with an open obligation", "missing trap state"],
+            "why_hard": "Two deadlines must be tracked at the same time (the earliest pending A-deadline and the earliest pending B-deadline), plus whether the last symbol was b. The rules feed each other: a b demands an a soon, and an a directly after b is exempt from rule A, while an a later in the window is not. Obligations still open at the end of the word reject.",
+            "real_world": "Runtime monitors for protocols with several timeouts ('every request is acknowledged within 4 steps, every retry is followed by a request within 3 steps').",
+            "expected_failure_modes": ["tracking the latest instead of the earliest deadline", "one shared deadline for both rules", "exemption applied to an a that is not directly after b", "accepting words that end with an open obligation", "unmerged states (non-minimal)"],
             "seed": None,
             "status": DRAFT_NOTE,
         },
     }
-    ref = {"task_id": "task_02", "answer": dfa_answer(build.t02_construction(window)),
-           "how_built": f"reference.build.t02_construction(window={window}) (earliest deadline x previous-symbol-was-b x DEAD), then minimize"}
+    ref = {"task_id": "task_02", "answer": dfa_answer(build.t02_construction()),
+           "how_built": "reference.build.t02_construction (earliest A-deadline x earliest B-deadline x previous-symbol-was-b x DEAD), then minimize"}
     return task, ref
 
 
 def task_03() -> tuple[dict, dict]:
     m1, m2, seed = build.t03_generate()
     prompt = f"""\
-TASK: minimal DFA for a right quotient
+TASK: minimal DFA for a left quotient
 
 Alphabet: Σ = {{a, b}}. Two complete DFAs M1 and M2 over Σ are given below.
-The right quotient of L(M1) by L(M2) is
-  L = L(M1) / L(M2) = {{ x in Σ* : there exists y in L(M2) such that the concatenation xy is in L(M1) }}.
-Both x and y may be the empty word ε.
+The LEFT quotient of L(M1) by L(M2) is
+  L = {{ y in Σ* : there exists x in L(M2) such that the concatenation xy is in L(M1) }}.
+So x is a PREFIX taken from L(M2), and y is the rest of a word of L(M1). Both x and y may be the empty word ε.
 
 M1: start state {m1.start}; accepting states {fmt_set(m1.accepting)}
 {dfa_table(m1)}
@@ -239,37 +253,39 @@ Give the minimal complete DFA for L.
 {DFA_ANSWER_SPEC.replace("<ALPHABET>", "{a, b}")}"""
     task = {
         "id": "task_03",
-        "family": "right_quotient",
-        "title": "Right quotient L(M1)/L(M2) of two given 5-state DFAs",
+        "task_set": TASK_SET,
+        "family": "left_quotient",
+        "title": f"Left quotient of L(M1) by L(M2) for a given {build.T03_SIZES[0]}-state and {build.T03_SIZES[1]}-state DFA",
         "prompt": prompt,
         "answer_schema": "dfa",
         "grader": {"type": "dfa_exact", "params": {"alphabet": ["a", "b"], "require_complete": True, "require_minimal": True}},
         "instance": {"m1": m1.model_dump(), "m2": m2.model_dump()},
         "examples": {"in": [], "out": []},
-        "difficulty_knobs": {"dfa_size": 5},
+        "difficulty_knobs": {"m1_states": build.T03_SIZES[0], "m2_states": build.T03_SIZES[1]},
         "metadata": {
-            "why_hard": "The quotient must be computed, not guessed: keep M1's transitions and make q accepting iff some y in L(M2) leads q into M1's accepting states, which needs a product-reachability argument; then minimize. Easy to confuse with left quotient or with L(M1) itself.",
-            "real_world": "Prefix/residual reasoning used in parsers, input validation ('can this prefix still be completed?') and protocol analysis.",
-            "expected_failure_modes": ["describing the language in English and guessing", "left instead of right quotient", "forgetting y = ε", "not minimizing"],
+            "why_hard": "Two steps, both by hand: (1) find the set S of M1 states that words of L(M2) can lead to (reachability in the product of M1 and M2); (2) L is M1 started in ANY state of S, so it must be determinized by subsets of M1's states and then minimized. The generator guarantees that S has several states but not all, that the left and right quotients differ, and that minimization merges states.",
+            "real_world": "'After any valid header, which bodies are acceptable?': residual languages in parsers, protocol analysis and input validation.",
+            "expected_failure_modes": ["computing the right quotient instead", "starting from M1's start state instead of the set S", "missing x = ε", "no determinization (treating S as one state)", "not minimizing"],
             "seed": seed,
             "status": DRAFT_NOTE,
         },
     }
     ref = {"task_id": "task_03", "answer": dfa_answer(build.t03_reference(m1, m2)),
-           "how_built": "automata.nfa.right_quotient (backward product reachability), then minimize"}
+           "how_built": "automata.nfa.left_quotient (forward product reachability for the start set, then subsets of M1's states), then minimize"}
     return task, ref
 
 
 def task_04(modulus: int = 7, target: int = 4) -> tuple[dict, dict]:
     alphabet = ["0", "1", "2"]
-    ins = ["11", "0011", "221"]
-    outs = [("", "value 0"), ("1", "value 1"), ("102", "value 11 ≡ 4 but one 2"), ("22", "value 8 ≡ 1")]
+    ins = ["11", "1100", "122"]
+    outs = [("", "value 0"), ("1", "value 1"), ("201", "value 2 + 0 + 9 = 11 ≡ 4, but one 2"),
+            ("22", "value 2 + 6 = 8 ≡ 1"), ("221", "value 2 + 6 + 9 = 17 ≡ 3")]
     prompt = f"""\
-TASK: minimal DFA for base-3 divisibility with a parity side-condition
+TASK: minimal DFA for base-3 divisibility, digits read least significant first
 
-Alphabet: Σ = {fmt_set(alphabet)} (base-3 digits). A word w = d1 d2 ... dn is read as a base-3 number, most significant digit first:
-  value(w) = d1·3^(n-1) + d2·3^(n-2) + ... + dn.
-Leading zeros are allowed (0012 has value 5). The empty word ε has value 0.
+Alphabet: Σ = {fmt_set(alphabet)} (base-3 digits). A word w = d0 d1 ... d(n-1) is read as a base-3 number with the LEAST significant digit FIRST:
+  value(w) = d0 + d1·3 + d2·3^2 + ... + d(n-1)·3^(n-1).
+Trailing zeros are allowed and do not change the value (2100 has value 2 + 1·3 = 5). The empty word ε has value 0.
 
 L is the set of words w such that BOTH
   (C1) value(w) ≡ {target} (mod {modulus}), and
@@ -277,28 +293,29 @@ L is the set of words w such that BOTH
 
 {examples_text(ins, outs)}
 
-Give the minimal complete DFA for L.
+Give the minimal complete DFA for L (it reads w from left to right, i.e. starting with d0).
 
 {DFA_ANSWER_SPEC.replace("<ALPHABET>", fmt_set(alphabet))}"""
     task = {
         "id": "task_04",
-        "family": "base3_mod7",
-        "title": f"Base-3 value ≡ {target} (mod {modulus}) and an even number of 2s",
+        "task_set": TASK_SET,
+        "family": "base3_lsb_mod7",
+        "title": f"Base-3 value ≡ {target} (mod {modulus}), least significant digit first, and an even number of 2s",
         "prompt": prompt,
         "answer_schema": "dfa",
         "grader": {"type": "dfa_exact", "params": {"alphabet": alphabet, "require_complete": True, "require_minimal": True}},
         "examples": {"in": ins, "out": [w for w, _ in outs]},
-        "difficulty_knobs": {"modulus": modulus, "target_residue": target},
+        "difficulty_knobs": {"modulus": modulus, "target_residue": target, "digit_order": "least significant first"},
         "metadata": {
-            "why_hard": "Every one of the 42 transitions needs the arithmetic r' = (3r + d) mod 7 plus a parity flip on d = 2; nothing can be merged, so any single arithmetic slip changes the language.",
-            "real_world": "Streaming checksum / divisibility checks and hardware controllers specified as state machines.",
-            "expected_failure_modes": ["using 2r or r + d instead of 3r + d", "least-significant-digit-first reading", "parity not flipped on 2", "wrong start or accepting state"],
+            "why_hard": "The obvious construction tracks (value so far mod 7, 3^k mod 7, parity of 2s); it is correct but far from minimal (verify_specs.py gives its size). The minimal DFA needs an insight: track the residue that the digits still to come must have; reading digit d turns s into (s - d)·5 mod 7 (5 is the inverse of 3), and the word is accepted when s = 0 and the parity is even. The obvious answer therefore scores only 0.5.",
+            "real_world": "Streaming checks on numbers that arrive least significant digit first (serial arithmetic, little-endian data), where the state budget of a hardware controller matters.",
+            "expected_failure_modes": ["most-significant-first arithmetic (r' = 3r + d)", "correct but non-minimal (value x power x parity) construction", "wrong start or accepting state in the reversed construction", "parity not flipped on 2"],
             "seed": None,
             "status": DRAFT_NOTE,
         },
     }
     ref = {"task_id": "task_04", "answer": dfa_answer(build.t04_construction(modulus, target)),
-           "how_built": "reference.build.t04_construction (residue x parity), then minimize"}
+           "how_built": "reference.build.t04_construction (residue the remaining digits must have x parity), then minimize"}
     return task, ref
 
 
@@ -327,6 +344,7 @@ Find a SHORTEST word w over Σ that is matched by exactly one of R1 and R2 (w is
 {WITNESS_ANSWER_SPEC}"""
     task = {
         "id": "task_05",
+        "task_set": TASK_SET,
         "family": "regex_witness",
         "title": "Regex pair agreeing on all short words: shortest distinguishing word",
         "prompt": prompt,
@@ -335,12 +353,12 @@ Find a SHORTEST word w over Σ that is matched by exactly one of R1 and R2 (w is
         "examples": {"in": [], "out": []},
         "difficulty_knobs": {
             "shortest_witness_length": "computed by verify_specs.py",
-            "harder_alternative": {"r1": build.T05_HARDER_PAIR.r1, "r2": build.T05_HARDER_PAIR.r2},
+            "alternative": {"r1": build.T05_ALT_PAIR.r1, "r2": build.T05_ALT_PAIR.r2},
         },
         "metadata": {
-            "why_hard": "R1 and R2 differ by a one-character edit (* to ?) and agree on every short word (verify_specs.py computes the exact length). The obvious witness (two copies of 'ba' followed by the tail) is matched by both, because the tail b+a(ba)+ re-absorbs 'ba' copies; only a 'bb' pins the parse. Testing short words mentally finds nothing.",
+            "why_hard": "R1 and R2 differ by a one-character edit (* to ?) and agree on every word shorter than the witness (verify_specs.py computes the exact length). Extra 'ab' copies at the front are re-absorbed by the tail, so the obvious guesses are matched by both; only a word with two long a-runs in the right places pins the parse. Testing short words mentally finds nothing.",
             "real_world": "Reviewing a regex change in a firewall, log-filter or input-validation rule: 'is this edit behaviour-preserving, and if not, on which input does it differ?'",
-            "expected_failure_modes": ["claims or implies equivalence after testing short words", "names a word matched by both (e.g. babababaa)", "distinguishing but not shortest"],
+            "expected_failure_modes": ["claims or implies equivalence after testing short words", "names a word matched by both", "distinguishing but not shortest", "symbols other than a and b in the answer"],
             "seed": None,
             "family": pair.family,
             "status": DRAFT_NOTE,
@@ -368,18 +386,19 @@ Let L = L(N). Give the minimal complete DFA for L.
 {DFA_ANSWER_SPEC.replace("<ALPHABET>", "{a, b}")}"""
     task = {
         "id": "task_06",
+        "task_set": TASK_SET,
         "family": "enfa_minimal_dfa",
-        "title": "5-state ε-NFA → minimal DFA",
+        "title": f"{build.T06_NFA_STATES}-state ε-NFA → minimal DFA",
         "prompt": prompt,
         "answer_schema": "dfa",
         "grader": {"type": "dfa_exact", "params": {"alphabet": ["a", "b"], "require_complete": True, "require_minimal": True}},
         "instance": {"nfa": nfa.model_dump()},
         "examples": {"in": [], "out": []},
-        "difficulty_knobs": {"nfa_states": 5, "reachable_subsets": build.T06_SUBSETS},
+        "difficulty_knobs": {"nfa_states": build.T06_NFA_STATES, "reachable_subsets": "computed by verify_specs.py"},
         "metadata": {
-            "why_hard": "The subset construction with ε-closures reaches 11 subsets (including the empty set); every step needs a correct ε-closure, the start state is the closure of q0 (not q0), and indistinguishable subsets must then be merged.",
+            "why_hard": "The subset construction with ε-closures reaches many subsets (verify_specs.py gives the number, including the empty set); every step needs a correct ε-closure, the start state is the closure of q0 (not q0), and the few indistinguishable subsets must then be found and merged.",
             "real_world": "Compiling regex/lexer specifications and protocol models (NFA -> DFA) by hand or in review.",
-            "expected_failure_modes": ["ε-closure errors", "start state taken as {q0} instead of its closure", "no merging of equivalent subsets", "missing empty-set trap"],
+            "expected_failure_modes": ["ε-closure errors", "start state taken as {q0} instead of its closure", "a subset missed or duplicated", "no merging of equivalent subsets", "missing empty-set trap"],
             "seed": seed,
             "status": DRAFT_NOTE,
         },
@@ -391,20 +410,22 @@ Let L = L(N). Give the minimal complete DFA for L.
 
 def task_07(max_len: int = 16) -> tuple[dict, dict]:
     terminals = ["(", ")", "[", "]"]
-    ins = ["()", "[]()", "([])", "(([]))", "[[[]]]"]
-    outs = [("", "empty"), ("(]", "not well-nested"), ("[()]", "a (-group whose parent is a [-group"),
-            ("[[()]]", "same reason"), ("(((())))", "depth 4")]
+    ins = ["()", "[][]", "([][])", "[[][]][]", "(()())[][]"]
+    outs = [("", "empty"), ("(]", "not well-nested"), ("[]", "one top-level [-group, rule 4"),
+            ("([])", "a (-group with one [-child, rule 3"), ("[()][]", "a (-group as the child of a [-group, rule 2"),
+            ("[[]]", "one top-level [-group, rule 4")]
     prompt = f"""\
 TASK: context-free grammar (in Chomsky normal form) for a constrained bracket language
 
 Alphabet: the four symbols ( ) [ ] (round and square brackets).
-A word is WELL-NESTED if its symbols can be paired so that every ( is paired with a later ), every [ with a later ], and pairs are properly nested (no crossing, as in ([)]). A paired opening and closing symbol together with everything between them is a GROUP; it is a (-group or a [-group according to its opening symbol. The DEPTH of a group is 1 plus the number of groups that strictly contain it, so top-level groups have depth 1. The PARENT of a group is the smallest group that strictly contains it; top-level groups have no parent.
+A word is WELL-NESTED if its symbols can be paired so that every ( is paired with a later ), every [ with a later ], and pairs are properly nested (no crossing, as in ([)]). A paired opening and closing symbol together with everything between them is a GROUP; it is a (-group or a [-group according to its opening symbol. The PARENT of a group is the smallest group that strictly contains it; groups with no parent are TOP-LEVEL groups. The CHILDREN of a group G are the groups whose parent is G.
 
 L is the set of words w such that:
   (1) w is non-empty and well-nested;
-  (2) no group has depth greater than 3;
-  (3) no (-group has a [-group as its parent.
-(-groups may appear at top level or with a (-group as parent. [-groups may have any parent, subject to (2).
+  (2) no [-group has a (-group as a child;
+  (3) every (-group has an even number of [-groups among its children (zero counts as even);
+  (4) the number of top-level [-groups of w is even.
+Only children count in (3) and (4): groups nested more deeply do not. There is no limit on the nesting depth.
 
 {examples_text(ins, outs)}
 
@@ -413,38 +434,40 @@ Give a grammar in Chomsky normal form that generates exactly L.
 {CFG_ANSWER_SPEC.replace("<TERMINALS>", "( ) [ ]").replace("<N>", str(max_len))}"""
     task = {
         "id": "task_07",
-        "family": "bounded_dyck_cfg",
-        "title": "Bounded-depth two-bracket Dyck variant (CNF grammar)",
+        "task_set": TASK_SET,
+        "family": "parity_dyck_cfg",
+        "title": "Two-bracket words with parity and parent rules (CNF grammar)",
         "prompt": prompt,
         "answer_schema": "cnf_grammar",
-        "grader": {"type": "cfg_bounded", "params": {"alphabet": terminals, "max_len": max_len, "language": "bounded_dyck"}},
+        "grader": {"type": "cfg_bounded", "params": {"alphabet": terminals, "max_len": max_len, "language": "parity_dyck"}},
         "examples": {"in": ins, "out": [w for w, _ in outs]},
-        "difficulty_knobs": {"max_depth": 3, "bound_N": max_len},
+        "difficulty_knobs": {"bound_N": max_len},
         "metadata": {
-            "why_hard": "The unconstrained Dyck grammar is easy; enforcing depth <= 3 and the parent rule needs depth-indexed nonterminals split by parent type, and CNF conversion must not break them. The language is regular (12-state minimal DFA) but a CFG answer is required.",
-            "real_world": "Grammars for nested configuration/markup formats with nesting limits and context rules (e.g. which element may contain which).",
-            "expected_failure_modes": ["unbounded nesting (overgenerates at depth 4)", "( allowed inside [", "non-CNF productions", "missing sequences of groups (undergenerates)"],
+            "why_hard": "The language is not regular (nesting is unbounded), and the rules apply at every level: a sequence of children must carry the parity of its [-groups, (-groups and the word itself follow the parity rule while [-groups may only hold [-groups, and in CNF every empty-content case ((), [], an empty run of children) must be expanded by hand without ε-productions or unit productions.",
+            "real_world": "Grammars for nested markup/configuration formats with content models ('this element may only contain these children, and they come in pairs').",
+            "expected_failure_modes": ["parity checked only at top level", "parity counted over all descendants instead of children", "( allowed inside [", "lost cases when removing ε (empty groups, odd/even switch)", "non-CNF productions"],
             "seed": None,
-            "bound_N_justification": "Constraints interact within one group (depth-4 attempt: length 8) and between adjacent groups; N = 16 covers two adjacent depth-4 attempts and every combination of a depth-3 group with siblings.",
+            "bound_N_justification": "Every rule already interacts in words of length 4-8 (e.g. ([][]), [[][]][]); N = 16 covers three nesting levels with sibling sequences around them, and the exhaustive check takes well under a second.",
             "status": DRAFT_NOTE,
         },
     }
     ref = {"task_id": "task_07", "answer": build.t07_reference_grammar().model_dump(),
-           "how_built": "reference.build.t07_reference_grammar (depth-indexed A_h / B_h nonterminals)"}
+           "how_built": "reference.build.t07_reference_grammar (P/B groups, Ev/Od parity-indexed child sequences)"}
     return task, ref
 
 
-def task_08(max_len: int = 30) -> tuple[dict, dict]:
+def task_08(max_len: int = 36) -> tuple[dict, dict]:
     terminals = ["a", "b"]
-    ins = ["aba", "aabbaa", "aaabba", "abbaaa"]
-    outs = [("", "empty"), ("ab", "k = 0"), ("aabba", "i + k = 3, 2j = 4"), ("abab", "not of the form a^i b^j a^k")]
+    ins = ["aba", "aabbaa", "abbaaaa", "aaabbbaaa"]
+    outs = [("", "empty"), ("baaa", "i = 0"), ("abba", "2·1 + 1 = 3 but 3j = 6"),
+            ("aabbaaa", "2·2 + 3 = 7 but 3j = 6"), ("abab", "not of the form a^i b^j a^k")]
     prompt = f"""\
 TASK: context-free grammar (in Chomsky normal form) for a linear-ratio language
 
 Alphabet: {{a, b}}. For an integer n >= 0, a^n denotes the word of n copies of a (similarly b^n); a^0 is the empty word.
 
-L = {{ a^i b^j a^k : i >= 1, k >= 1, j >= 0, and i + k = 2j }}.
-(So every word in L is a block of a's, then a block of b's, then a block of a's, where the two a-blocks are non-empty and together are exactly twice as long as the b-block.)
+L = {{ a^i b^j a^k : i >= 1, k >= 1, j >= 0, and 2i + k = 3j }}.
+(So every word in L is a block of a's, then a block of b's, then a block of a's, where both a-blocks are non-empty and twice the length of the first a-block plus the length of the second a-block equals three times the length of the b-block.)
 
 {examples_text(ins, outs)}
 
@@ -453,36 +476,37 @@ Give a grammar in Chomsky normal form that generates exactly L.
 {CFG_ANSWER_SPEC.replace("<TERMINALS>", "a b").replace("<N>", str(max_len))}"""
     task = {
         "id": "task_08",
+        "task_set": TASK_SET,
         "family": "ratio_cfg",
-        "title": "Linear-ratio language a^i b^j a^k with i + k = 2j (CNF grammar)",
+        "title": "Linear-ratio language a^i b^j a^k with 2i + k = 3j (CNF grammar)",
         "prompt": prompt,
         "answer_schema": "cnf_grammar",
-        "grader": {"type": "cfg_bounded", "params": {"alphabet": terminals, "max_len": max_len, "language": "ratio_aba"}},
+        "grader": {"type": "cfg_bounded", "params": {"alphabet": terminals, "max_len": max_len, "language": "ratio_2i_k_3j"}},
         "examples": {"in": ins, "out": [w for w, _ in outs]},
         "difficulty_knobs": {"bound_N": max_len},
         "metadata": {
-            "why_hard": "The constraint i + k = 2j couples both a-blocks to the b-block. It decomposes into two independent nested blocks only after splitting by parity (i, k both even: (aa)^n b^n b^t (aa)^t; both odd: a (aa)^n b^n b b^t (aa)^t a); CNF conversion must preserve this.",
-            "real_world": "Grammars for formats with counted/length-linked fields; checking whether a counting constraint is context-free at all.",
-            "expected_failure_modes": ["one-to-one a/b matching (i + k = j)", "missing the odd-parity case", "overgeneration by independent a-blocks", "non-CNF productions"],
+            "why_hard": "Each leading a is worth 2, each trailing a 1, each b costs 3, so the b-block must be split between the two a-blocks, and one or two b's are shared by both sides. The split depends on i mod 3 (three cases: L1 R1, a L b R a, aa L bb R aa with L = (aaa)^m (bb)^m and R = b^t (aaa)^t); the CNF conversion must keep every case and every empty/non-empty combination.",
+            "real_world": "Grammars for formats with counted, length-linked fields; deciding how a counting constraint can be written as nested matching.",
+            "expected_failure_modes": ["i + k = 2j or other wrong ratio", "missing one of the three remainder cases", "wrong residue pairing between the two a-blocks", "overgeneration by independent a-blocks", "non-CNF productions"],
             "seed": None,
-            "bound_N_justification": "The language is sparse (100 words up to length 30), so N = 30 is cheap and covers nesting depth up to 5 in each parity case.",
-            "replaces": "original T08 {a^i b^j a^k : i + k = 2j, i > k >= 1} is not context-free; see scripts/check_task08_noncf.py",
+            "bound_N_justification": "The language is sparse (verify_specs.py counts the words up to N), so N = 36 is cheap and covers several nesting levels on both sides in each of the three cases.",
+            "replaces": "the original pre-v1 T08 {a^i b^j a^k : i + k = 2j, i > k >= 1} is not context-free; see scripts/check_task08_noncf.py",
             "status": DRAFT_NOTE,
         },
     }
     ref = {"task_id": "task_08", "answer": build.t08_reference_grammar().model_dump(),
-           "how_built": "reference.build.t08_reference_grammar (hand CNF conversion of the PROJECT_GUIDE grammar)"}
+           "how_built": "reference.build.t08_reference_grammar (hand CNF conversion of the three-case grammar in its docstring)"}
     return task, ref
 
 
 TASK_BUILDERS = {
     "task_01_product_dfa": task_01,
     "task_02_lookahead_dfa": task_02,
-    "task_03_right_quotient": task_03,
-    "task_04_base3_mod7": task_04,
+    "task_03_left_quotient": task_03,
+    "task_04_base3_lsb_mod7": task_04,
     "task_05_regex_witness": task_05,
     "task_06_enfa_minimal_dfa": task_06,
-    "task_07_bounded_dyck_cfg": task_07,
+    "task_07_parity_dyck_cfg": task_07,
     "task_08_ratio_cfg": task_08,
 }
 

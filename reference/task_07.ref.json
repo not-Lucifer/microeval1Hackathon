@@ -26,162 +26,127 @@
         ]
       },
       {
-        "lhs": "A1",
+        "lhs": "P",
         "rhs": [
           "LP",
           "RP"
         ]
       },
       {
-        "lhs": "A1",
+        "lhs": "P",
+        "rhs": [
+          "LP",
+          "X"
+        ]
+      },
+      {
+        "lhs": "X",
+        "rhs": [
+          "Ev",
+          "RP"
+        ]
+      },
+      {
+        "lhs": "B",
         "rhs": [
           "LB",
           "RB"
         ]
       },
       {
-        "lhs": "A1",
+        "lhs": "B",
         "rhs": [
-          "A1",
-          "A1"
+          "LB",
+          "Y"
         ]
       },
       {
-        "lhs": "B1",
+        "lhs": "Y",
+        "rhs": [
+          "Bs",
+          "RB"
+        ]
+      },
+      {
+        "lhs": "Bs",
         "rhs": [
           "LB",
           "RB"
         ]
       },
       {
-        "lhs": "B1",
+        "lhs": "Bs",
         "rhs": [
-          "B1",
-          "B1"
+          "LB",
+          "Y"
         ]
       },
       {
-        "lhs": "A2",
+        "lhs": "Bs",
+        "rhs": [
+          "B",
+          "Bs"
+        ]
+      },
+      {
+        "lhs": "Ev",
         "rhs": [
           "LP",
           "RP"
         ]
       },
       {
-        "lhs": "A2",
-        "rhs": [
-          "LB",
-          "RB"
-        ]
-      },
-      {
-        "lhs": "A2",
-        "rhs": [
-          "A2",
-          "A2"
-        ]
-      },
-      {
-        "lhs": "B2",
-        "rhs": [
-          "LB",
-          "RB"
-        ]
-      },
-      {
-        "lhs": "B2",
-        "rhs": [
-          "B2",
-          "B2"
-        ]
-      },
-      {
-        "lhs": "A2",
+        "lhs": "Ev",
         "rhs": [
           "LP",
-          "X2"
+          "X"
         ]
       },
       {
-        "lhs": "X2",
+        "lhs": "Ev",
         "rhs": [
-          "A1",
-          "RP"
+          "P",
+          "Ev"
         ]
       },
       {
-        "lhs": "A2",
+        "lhs": "Ev",
         "rhs": [
-          "LB",
-          "Y2"
+          "B",
+          "Od"
         ]
       },
       {
-        "lhs": "Y2",
-        "rhs": [
-          "B1",
-          "RB"
-        ]
-      },
-      {
-        "lhs": "B2",
-        "rhs": [
-          "LB",
-          "Y2"
-        ]
-      },
-      {
-        "lhs": "A3",
-        "rhs": [
-          "LP",
-          "RP"
-        ]
-      },
-      {
-        "lhs": "A3",
+        "lhs": "Od",
         "rhs": [
           "LB",
           "RB"
         ]
       },
       {
-        "lhs": "A3",
-        "rhs": [
-          "A3",
-          "A3"
-        ]
-      },
-      {
-        "lhs": "A3",
-        "rhs": [
-          "LP",
-          "X3"
-        ]
-      },
-      {
-        "lhs": "X3",
-        "rhs": [
-          "A2",
-          "RP"
-        ]
-      },
-      {
-        "lhs": "A3",
+        "lhs": "Od",
         "rhs": [
           "LB",
-          "Y3"
+          "Y"
         ]
       },
       {
-        "lhs": "Y3",
+        "lhs": "Od",
         "rhs": [
-          "B2",
-          "RB"
+          "B",
+          "Ev"
+        ]
+      },
+      {
+        "lhs": "Od",
+        "rhs": [
+          "P",
+          "Od"
         ]
       }
     ],
-    "start": "A3"
+    "start": "Ev"
   },
-  "how_built": "reference.build.t07_reference_grammar (depth-indexed A_h / B_h nonterminals)",
+  "how_built": "reference.build.t07_reference_grammar (P/B groups, Ev/Od parity-indexed child sequences)",
   "task_id": "task_07"
 }

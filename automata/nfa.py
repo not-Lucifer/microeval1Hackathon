@@ -1,4 +1,4 @@
-"""ε-NFAs: ε-closure, subset construction, direct simulation, and the right-quotient helper.
+"""ε-NFAs: ε-closure, subset construction, direct simulation, and the quotient constructions.
 
 ε-moves are stored under the symbol ``""`` (the empty word), e.g.
 ``transitions["q0"][""] == ["q1"]`` means q0 --ε--> q1.
@@ -145,3 +145,55 @@ def right_quotient(m1: DFA, m2: DFA) -> DFA:
                 good.add(prev)
                 queue.append(prev)
     return a.model_copy(update={"accepting": [q for q in a.states if (q, b.start) in good]})
+
+
+def states_reached_by_language(m1: DFA, m2: DFA) -> frozenset[str]:
+    """The M1 states q such that some word x of L(M2) (x = ε included) leads M1's start to q:
+    the pairs (q, r) with r accepting in M2 that are reachable from (start1, start2) in the
+    product graph, by forward BFS. O(|Q1|·|Q2|·|Σ|)."""
+    a, b = complete(m1), complete(m2)
+    if set(a.alphabet) != set(b.alphabet):
+        raise ValueError("alphabets differ")
+    seen = {(a.start, b.start)}
+    queue = deque(seen)
+    while queue:
+        p, r = queue.popleft()
+        for s in a.alphabet:
+            pair = (a.transitions[p][s], b.transitions[r][s])
+            if pair not in seen:
+                seen.add(pair)
+                queue.append(pair)
+    return frozenset(p for p, r in seen if r in b.accepting)
+
+
+def left_quotient(m1: DFA, m2: DFA) -> DFA:
+    """DFA for the left quotient { y : there is x in L(M2) with xy in L(M1) }.
+
+    Construction: S = states_reached_by_language(m1, m2). L is the language of M1 started
+    in ANY state of S, so determinize by subsets of M1's states starting from S; a subset is
+    accepting iff it contains an accepting state of M1. The empty subset (S empty, i.e.
+    L(M2) is empty) is a trap. O(|Q1|·|Q2|·|Σ|) for S, then O(2^|Q1|·|Q1|·|Σ|) worst case."""
+    a = complete(m1)
+    start = states_reached_by_language(m1, m2)
+
+    def name(subset: frozenset[str]) -> str:
+        return "{" + ",".join(q for q in a.states if q in subset) + "}"
+
+    names = {start: name(start)}
+    queue_sets = deque([start])
+    transitions: dict[str, dict[str, str]] = {}
+    accepting = []
+    while queue_sets:
+        subset = queue_sets.popleft()
+        if subset & set(a.accepting):
+            accepting.append(names[subset])
+        row = {}
+        for s in a.alphabet:
+            nxt = frozenset(a.transitions[q][s] for q in subset)
+            if nxt not in names:
+                names[nxt] = name(nxt)
+                queue_sets.append(nxt)
+            row[s] = names[nxt]
+        transitions[names[subset]] = row
+    return DFA(states=list(names.values()), alphabet=list(a.alphabet), start=names[start],
+               accepting=accepting, transitions=transitions)

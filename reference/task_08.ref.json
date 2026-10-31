@@ -2,139 +2,6 @@
   "answer": {
     "productions": [
       {
-        "lhs": "S",
-        "rhs": [
-          "A1",
-          "B1"
-        ]
-      },
-      {
-        "lhs": "S",
-        "rhs": [
-          "TA",
-          "M1"
-        ]
-      },
-      {
-        "lhs": "M1",
-        "rhs": [
-          "TB",
-          "TA"
-        ]
-      },
-      {
-        "lhs": "S",
-        "rhs": [
-          "TA",
-          "M2"
-        ]
-      },
-      {
-        "lhs": "M2",
-        "rhs": [
-          "A1",
-          "M1"
-        ]
-      },
-      {
-        "lhs": "S",
-        "rhs": [
-          "TA",
-          "M3"
-        ]
-      },
-      {
-        "lhs": "M3",
-        "rhs": [
-          "TB",
-          "M4"
-        ]
-      },
-      {
-        "lhs": "M4",
-        "rhs": [
-          "B1",
-          "TA"
-        ]
-      },
-      {
-        "lhs": "S",
-        "rhs": [
-          "TA",
-          "M5"
-        ]
-      },
-      {
-        "lhs": "M5",
-        "rhs": [
-          "A1",
-          "M3"
-        ]
-      },
-      {
-        "lhs": "A1",
-        "rhs": [
-          "TA",
-          "E1"
-        ]
-      },
-      {
-        "lhs": "E1",
-        "rhs": [
-          "TA",
-          "TB"
-        ]
-      },
-      {
-        "lhs": "A1",
-        "rhs": [
-          "TA",
-          "F1"
-        ]
-      },
-      {
-        "lhs": "F1",
-        "rhs": [
-          "TA",
-          "G1"
-        ]
-      },
-      {
-        "lhs": "G1",
-        "rhs": [
-          "A1",
-          "TB"
-        ]
-      },
-      {
-        "lhs": "B1",
-        "rhs": [
-          "TB",
-          "AA"
-        ]
-      },
-      {
-        "lhs": "B1",
-        "rhs": [
-          "TB",
-          "I1"
-        ]
-      },
-      {
-        "lhs": "I1",
-        "rhs": [
-          "B1",
-          "AA"
-        ]
-      },
-      {
-        "lhs": "AA",
-        "rhs": [
-          "TA",
-          "TA"
-        ]
-      },
-      {
         "lhs": "TA",
         "rhs": [
           "a"
@@ -145,10 +12,206 @@
         "rhs": [
           "b"
         ]
+      },
+      {
+        "lhs": "AA",
+        "rhs": [
+          "TA",
+          "TA"
+        ]
+      },
+      {
+        "lhs": "AAA",
+        "rhs": [
+          "TA",
+          "AA"
+        ]
+      },
+      {
+        "lhs": "BB",
+        "rhs": [
+          "TB",
+          "TB"
+        ]
+      },
+      {
+        "lhs": "L1",
+        "rhs": [
+          "AAA",
+          "BB"
+        ]
+      },
+      {
+        "lhs": "L1",
+        "rhs": [
+          "AAA",
+          "X1"
+        ]
+      },
+      {
+        "lhs": "X1",
+        "rhs": [
+          "L1",
+          "BB"
+        ]
+      },
+      {
+        "lhs": "R1",
+        "rhs": [
+          "TB",
+          "AAA"
+        ]
+      },
+      {
+        "lhs": "R1",
+        "rhs": [
+          "TB",
+          "Y1"
+        ]
+      },
+      {
+        "lhs": "Y1",
+        "rhs": [
+          "R1",
+          "AAA"
+        ]
+      },
+      {
+        "lhs": "S",
+        "rhs": [
+          "L1",
+          "R1"
+        ]
+      },
+      {
+        "lhs": "S",
+        "rhs": [
+          "TA",
+          "C1"
+        ]
+      },
+      {
+        "lhs": "C1",
+        "rhs": [
+          "TB",
+          "TA"
+        ]
+      },
+      {
+        "lhs": "S",
+        "rhs": [
+          "TA",
+          "C2"
+        ]
+      },
+      {
+        "lhs": "C2",
+        "rhs": [
+          "L1",
+          "C1"
+        ]
+      },
+      {
+        "lhs": "S",
+        "rhs": [
+          "TA",
+          "C3"
+        ]
+      },
+      {
+        "lhs": "C3",
+        "rhs": [
+          "TB",
+          "C4"
+        ]
+      },
+      {
+        "lhs": "C4",
+        "rhs": [
+          "R1",
+          "TA"
+        ]
+      },
+      {
+        "lhs": "S",
+        "rhs": [
+          "TA",
+          "C5"
+        ]
+      },
+      {
+        "lhs": "C5",
+        "rhs": [
+          "L1",
+          "C3"
+        ]
+      },
+      {
+        "lhs": "S",
+        "rhs": [
+          "AA",
+          "D1"
+        ]
+      },
+      {
+        "lhs": "D1",
+        "rhs": [
+          "BB",
+          "AA"
+        ]
+      },
+      {
+        "lhs": "S",
+        "rhs": [
+          "AA",
+          "D2"
+        ]
+      },
+      {
+        "lhs": "D2",
+        "rhs": [
+          "L1",
+          "D1"
+        ]
+      },
+      {
+        "lhs": "S",
+        "rhs": [
+          "AA",
+          "D3"
+        ]
+      },
+      {
+        "lhs": "D3",
+        "rhs": [
+          "BB",
+          "D4"
+        ]
+      },
+      {
+        "lhs": "D4",
+        "rhs": [
+          "R1",
+          "AA"
+        ]
+      },
+      {
+        "lhs": "S",
+        "rhs": [
+          "AA",
+          "D5"
+        ]
+      },
+      {
+        "lhs": "D5",
+        "rhs": [
+          "L1",
+          "D3"
+        ]
       }
     ],
     "start": "S"
   },
-  "how_built": "reference.build.t08_reference_grammar (hand CNF conversion of the PROJECT_GUIDE grammar)",
+  "how_built": "reference.build.t08_reference_grammar (hand CNF conversion of the three-case grammar in its docstring)",
   "task_id": "task_08"
 }

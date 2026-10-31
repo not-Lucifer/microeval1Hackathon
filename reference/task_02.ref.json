@@ -1,8 +1,7 @@
 {
   "answer": {
     "accepting": [
-      "q0",
-      "q2"
+      "q0"
     ],
     "start": "q0",
     "states": [
@@ -11,7 +10,17 @@
       "q2",
       "q3",
       "q4",
-      "q5"
+      "q5",
+      "q6",
+      "q7",
+      "q8",
+      "q9",
+      "q10",
+      "q11",
+      "q12",
+      "q13",
+      "q14",
+      "q15"
     ],
     "transitions": {
       "q0": {
@@ -21,31 +30,81 @@
       },
       "q1": {
         "a": "q3",
-        "b": "q3",
-        "c": "q0"
-      },
-      "q2": {
-        "a": "q0",
-        "b": "q2",
-        "c": "q0"
-      },
-      "q3": {
-        "a": "q4",
         "b": "q4",
         "c": "q0"
       },
-      "q4": {
-        "a": "q5",
-        "b": "q5",
+      "q10": {
+        "a": "q0",
+        "b": "q15",
+        "c": "q15"
+      },
+      "q11": {
+        "a": "q1",
+        "b": "q15",
+        "c": "q15"
+      },
+      "q12": {
+        "a": "q15",
+        "b": "q15",
         "c": "q0"
       },
-      "q5": {
-        "a": "q5",
+      "q13": {
+        "a": "q15",
+        "b": "q15",
+        "c": "q6"
+      },
+      "q14": {
+        "a": "q15",
+        "b": "q15",
+        "c": "q11"
+      },
+      "q15": {
+        "a": "q15",
+        "b": "q15",
+        "c": "q15"
+      },
+      "q2": {
+        "a": "q0",
         "b": "q5",
-        "c": "q5"
+        "c": "q6"
+      },
+      "q3": {
+        "a": "q7",
+        "b": "q8",
+        "c": "q0"
+      },
+      "q4": {
+        "a": "q7",
+        "b": "q9",
+        "c": "q6"
+      },
+      "q5": {
+        "a": "q0",
+        "b": "q10",
+        "c": "q11"
+      },
+      "q6": {
+        "a": "q1",
+        "b": "q10",
+        "c": "q11"
+      },
+      "q7": {
+        "a": "q12",
+        "b": "q13",
+        "c": "q0"
+      },
+      "q8": {
+        "a": "q12",
+        "b": "q14",
+        "c": "q6"
+      },
+      "q9": {
+        "a": "q12",
+        "b": "q15",
+        "c": "q11"
       }
     }
   },
-  "how_built": "reference.build.t02_construction(window=3) (earliest deadline x previous-symbol-was-b x DEAD), then minimize",
+  "how_built": "reference.build.t02_construction (earliest A-deadline x earliest B-deadline x previous-symbol-was-b x DEAD), then minimize",
   "task_id": "task_02"
 }

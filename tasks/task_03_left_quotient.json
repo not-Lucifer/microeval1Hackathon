@@ -1,0 +1,111 @@
+{
+  "answer_schema": "dfa",
+  "difficulty_knobs": {
+    "m1_states": 5,
+    "m2_states": 3
+  },
+  "examples": {
+    "in": [],
+    "out": []
+  },
+  "family": "left_quotient",
+  "grader": {
+    "params": {
+      "alphabet": [
+        "a",
+        "b"
+      ],
+      "require_complete": true,
+      "require_minimal": true
+    },
+    "type": "dfa_exact"
+  },
+  "id": "task_03",
+  "instance": {
+    "m1": {
+      "accepting": [
+        "p0",
+        "p2"
+      ],
+      "alphabet": [
+        "a",
+        "b"
+      ],
+      "start": "p0",
+      "states": [
+        "p0",
+        "p1",
+        "p2",
+        "p3",
+        "p4"
+      ],
+      "transitions": {
+        "p0": {
+          "a": "p2",
+          "b": "p2"
+        },
+        "p1": {
+          "a": "p0",
+          "b": "p3"
+        },
+        "p2": {
+          "a": "p3",
+          "b": "p4"
+        },
+        "p3": {
+          "a": "p0",
+          "b": "p2"
+        },
+        "p4": {
+          "a": "p1",
+          "b": "p3"
+        }
+      }
+    },
+    "m2": {
+      "accepting": [
+        "r1"
+      ],
+      "alphabet": [
+        "a",
+        "b"
+      ],
+      "start": "r0",
+      "states": [
+        "r0",
+        "r1",
+        "r2"
+      ],
+      "transitions": {
+        "r0": {
+          "a": "r2",
+          "b": "r1"
+        },
+        "r1": {
+          "a": "r2",
+          "b": "r1"
+        },
+        "r2": {
+          "a": "r0",
+          "b": "r2"
+        }
+      }
+    }
+  },
+  "metadata": {
+    "expected_failure_modes": [
+      "computing the right quotient instead",
+      "starting from M1's start state instead of the set S",
+      "missing x = ε",
+      "no determinization (treating S as one state)",
+      "not minimizing"
+    ],
+    "real_world": "'After any valid header, which bodies are acceptable?': residual languages in parsers, protocol analysis and input validation.",
+    "seed": 3126,
+    "status": "DRAFTED BY CLAUDE CODE - author must review and rewrite in their own words",
+    "why_hard": "Two steps, both by hand: (1) find the set S of M1 states that words of L(M2) can lead to (reachability in the product of M1 and M2); (2) L is M1 started in ANY state of S, so it must be determinized by subsets of M1's states and then minimized. The generator guarantees that S has several states but not all, that the left and right quotients differ, and that minimization merges states."
+  },
+  "prompt": "TASK: minimal DFA for a left quotient\n\nAlphabet: Σ = {a, b}. Two complete DFAs M1 and M2 over Σ are given below.\nThe LEFT quotient of L(M1) by L(M2) is\n  L = { y in Σ* : there exists x in L(M2) such that the concatenation xy is in L(M1) }.\nSo x is a PREFIX taken from L(M2), and y is the rest of a word of L(M1). Both x and y may be the empty word ε.\n\nM1: start state p0; accepting states {p0, p2}\n  state | a  | b\n  p0    | p2 | p2\n  p1    | p0 | p3\n  p2    | p3 | p4\n  p3    | p0 | p2\n  p4    | p1 | p3\n\nM2: start state r0; accepting states {r1}\n  state | a  | b\n  r0    | r2 | r1\n  r1    | r2 | r1\n  r2    | r0 | r2\n\n(Each table row gives the next state on a and on b.)\n\nGive the minimal complete DFA for L.\n\nWHAT TO SUBMIT\nA deterministic finite automaton (DFA) for L, written as one JSON object with these keys:\n  \"states\"      : list of distinct state names (strings)\n  \"start\"       : the start state (one of \"states\")\n  \"accepting\"   : list of accepting states (a subset of \"states\"; may be empty)\n  \"transitions\" : object mapping EVERY state to an object that maps EVERY symbol of {a, b} to exactly one next state\n\nHOW IT IS GRADED (exactly, by algorithms; nothing is sampled)\n1. Complete: every state must have exactly one transition for every symbol of {a, b}. If some inputs can never lead to acceptance, include an explicit trap (dead) state.\n2. Correct: the DFA must accept exactly the words of L, including the right decision for the empty word ε (checked by an exact equivalence algorithm).\n3. Minimal: it must have the fewest states of any complete DFA that accepts L. Every state you list counts, including unreachable states and the trap state.\nState names and the order of states do not matter.\nScore: 1.0 if complete, correct and minimal; 0.5 if complete and correct but with more states than necessary; 0 otherwise.\n\nFORMAT EXAMPLE (for an unrelated language over {x, y}: words with an odd number of x)\n```json\n{\"states\": [\"even\", \"odd\"], \"start\": \"even\", \"accepting\": [\"odd\"],\n \"transitions\": {\"even\": {\"x\": \"odd\", \"y\": \"even\"}, \"odd\": {\"x\": \"even\", \"y\": \"odd\"}}}\n```",
+  "task_set": "v2",
+  "title": "Left quotient of L(M1) by L(M2) for a given 5-state and 3-state DFA"
+}

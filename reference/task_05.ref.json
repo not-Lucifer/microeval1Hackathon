@@ -1,6 +1,6 @@
 {
   "answer": {
-    "witness": "bababbabaa"
+    "witness": "ababaababaababaa"
   },
   "how_built": "shortlex-least word of the symmetric difference via BFS on the product of the two minimal DFAs",
   "task_id": "task_05"

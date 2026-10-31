@@ -30,6 +30,7 @@ Any model with a code interpreter can solve these tasks by writing ~40 lines of 
 ## 2. Review of the original idea doc (corrections already applied below)
 
 The original plan is strong but contained issues that would have cost points. Findings were **checked by script** (`scripts/verify_specs.py` must reproduce them).
+These findings shaped task set **v1**. After the 2026-10-31 pilot every instance was replaced by a harder **v2** of the same family (§5); the numbers in this table describe v1 and are kept as history (v1 is at git tag `pilot-v1`).
 
 | # | Issue in original | Evidence | Resolution in this guide |
 |---|---|---|---|
@@ -168,67 +169,63 @@ automata-synth-eval/
 
 ---
 
+### Task set v2 (current) and why it replaced v1
+
+The first version of the eight tasks (v1, 2026-10-30) was calibrated on 2026-10-31 (§9.2): every model answering through the API passed almost every v1 task it reached, and the only failures were Task 08 truncations and ChatGPT's free plan with Think off (`pilot_v1/results/summary.md`). The author therefore replaced every instance with a harder one in the **same family, answer type and grader** (`docs/OPEN_QUESTIONS.md` #35 and #39-#48). The difficulty comes from added structure an expert recognises as hard (interacting conditions, a reversed reading order, a determinization step, counting inside a grammar), not only from size. v1 is kept at git tag `pilot-v1`. **v2 is frozen**: later changes only fix a spec or grader bug, logged in `OPEN_QUESTIONS.md`.
+
+All numbers below come from `python scripts/verify_specs.py`.
+
 ### T01 — Triple-product DFA
-- **Alphabet** `{0,1}`. **Language** `L = { w : #₀(w) ≡ 1 (mod 3), w does not contain 010 as a substring, w does not end with 11 }`. (ε ∉ L since #₀(ε)=0.)
-- **Answer:** minimal complete DFA.
-- **Expected size:** **10 states** (computed; the naive product has 14 reachable states and 4 collapse). The author must be able to explain *which* 4 states collapse: the start state ε and the state after a lone `1` are equivalent to (counter=0, suffix `11`) because acceptance needs counter 1 and none of them can start a `010` straddle; and the three counter-copies of the dead state merge into one trap.
-- **Why hard (mechanism, to be rewritten by author):** three simultaneous invariants (counter, last-two-symbols window, forbidden pattern/dead state) must be merged, then equivalent product states must be merged; models drop transitions or forget the trap.
-- **Grader:** `dfa_exact`.
-- **Difficulty knob:** modulus (3→4/5), forbidden pattern length.
+- **Alphabet** `{0,1}`. **Language** `L = { w : #₀(w) ≡ 1 (mod 3), w does not contain 0101, |w| ≥ 3 and the third symbol from the end is 1 }`. (ε ∉ L.)
+- **Answer:** minimal complete DFA. **Expected size:** **21 states**; the product of the mod-3 counter with the minimal DFA for the pattern and suffix conditions has **30** reachable states, so 9 merge.
+- **Why hard:** three invariants at once; `0101` overlaps itself (after `010`, a `0` falls back to `0`, a `1` is fatal); a 3-symbol window for the suffix condition; merging; a trap state.
+- **Grader:** `dfa_exact`. (v1: no `010`, not ending `11`, 10 states.)
 
-### T02 — Lookahead-obligation DFA
-- **Alphabet** `{a,b,c}`. **Precise language:** for a string `w` (0-indexed), every position `i` with `w[i]=a` **creates an obligation** unless `i>0` and `w[i-1]=b`. An obligation at `i` is **satisfied** iff some `j ∈ {i+1,…,i+W}` with `j < |w|` has `w[j]=c`. `w ∈ L` iff all obligations are satisfied. (An `a` at position 0 creates an obligation; an obligation unmet at end-of-string rejects; ε ∈ L.) **W = 3 by default.**
-- **Expected size:** **6 states at W=3** (computed). May be too easy → **calibrate**: compute minimal sizes for W=3..6 in `verify_specs.py`, choose the W (or add a second condition) so the best pilot model is not ~100%.
-- **Why hard:** overlapping obligations — a later `c` satisfies *all* pending `a`s but the *earliest* deadline governs; `ba` suppresses only the immediately following `a`.
-- **Grader:** `dfa_exact`.
+### T02 — Two interacting lookahead obligations
+- **Alphabet** `{a,b,c}`, positions from 0. **Rule A:** every `a` at position i creates an A-obligation unless `i > 0` and `w[i-1] = b`; it is satisfied iff some `j ∈ {i+1,…,i+4}`, `j < |w|`, has `w[j] = c`. **Rule B:** every `b` creates a B-obligation, satisfied iff some `j ∈ {i+1,…,i+3}`, `j < |w|`, has `w[j] = a`. `w ∈ L` iff all obligations are satisfied (ε ∈ L).
+- **Expected size:** **16 states**. Reference state = (earliest A-deadline, earliest B-deadline, last symbol was b) + DEAD.
+- **Why hard:** two deadlines at once, and the rules feed each other (a `b` demands an `a`; an `a` directly after `b` is exempt from rule A, a later one is not).
+- **Grader:** `dfa_exact`. (v1: rule A alone, window 3, 6 states.)
 
-### T03 — Right quotient of two given DFAs
-- **Input in prompt:** two explicit 5-state DFAs `M1, M2` over `{a,b}` as transition tables (generated from a seed; constraints below).
-- **Task:** minimal complete DFA for `L(M1)/L(M2) = { x : ∃ y ∈ L(M2) with xy ∈ L(M1) }`.
-- **Construction (reference):** keep M1's transitions; new accepting set = `{ q : L(M1 from q) ∩ L(M2) ≠ ∅ }`, computed by reachability in the product `M1_q × M2`. Then minimize.
-- **Generator constraints (asserted):** `L(M2) ≠ ∅`, quotient ≠ `L(M1)`, quotient not trivially `∅`/`Σ*`, minimal quotient DFA has ≥ 3 states, M1 and M2 each already minimal and complete.
-- **Why hard:** models guess the language in English instead of computing; confuse right quotient with left quotient/complement.
-- **Grader:** `dfa_exact`.
+### T03 — Left quotient of two given DFAs
+- **Input:** seeded complete minimal DFAs M1 (5 states) and M2 (3 states) over `{a,b}` (seed in the task file).
+- **Task:** minimal complete DFA for the left quotient `{ y : ∃ x ∈ L(M2), xy ∈ L(M1) }` (the prompt spells this out and never uses the `\` notation, which could be read as set difference).
+- **Construction (reference):** S = M1 states reachable by a word of L(M2) (forward BFS in M1×M2, `automata/nfa.py::states_reached_by_language`); then subsets of M1's states starting from S (`left_quotient`); then minimize. **Instance:** |S| = **3**, **14** reachable subsets, minimal DFA **13** states.
+- **Generator constraints (asserted):** M1, M2 minimal and complete; L(M2) ≠ ∅; 2 ≤ |S| < 5 (determinization needed, and M2 matters); quotient ≠ L(M1), ≠ the right quotient, ≠ ∅, ≠ Σ*; minimal size in 12..16 and below the subset count.
+- **Why hard:** reachability *and* determinization *and* minimization by hand. (v1: right quotient, 5+5 states, 4-state answer.)
 
-### T04 — Base-3 divisibility with a parity side-condition
-- **Alphabet** `{0,1,2}` = base-3 digits, **most significant digit first**. Leading zeros allowed. Value of ε is 0. **Language:** `value(w) ≡ 4 (mod 7)` **and** the number of `2` symbols in `w` is even.
-- **Expected size:** **14 states** (computed: 7 × 2, all reachable, all distinguishable). No merging possible, so errors are *transition arithmetic* errors (`r' = (3r + d) mod 7`), not minimization errors.
-- **Grader:** `dfa_exact`. **Knob:** modulus 7→11/13.
+### T04 — Base-3, least significant digit first, with a parity side-condition
+- **Alphabet** `{0,1,2}`; `value(d0 d1 … d(n-1)) = d0 + d1·3 + … + d(n-1)·3^(n-1)` (least significant digit first; trailing zeros allowed; value(ε) = 0). **Language:** `value(w) ≡ 4 (mod 7)` and an even number of `2`s. This is exactly the reversal of the v1 language.
+- **Expected size:** **14 states**. The obvious construction (value mod 7, 3^k mod 7, parity) has **84** reachable states (it minimizes to the same 14).
+- **Reference insight:** state = the residue the digits still to come must have: start 4; digit d maps s to (s − d)·3⁻¹ = (s − d)·5 mod 7; accept at s = 0 with even parity.
+- **Why hard:** the correct obvious answer is far from minimal (0.5); the minimal one needs the reversal insight. (v1: most significant first, 14 states.)
 
 ### T05 — Regex equivalence trap → shortest witness
-- **Input:** two regexes `R1, R2` over `{a,b}` in the **stated grammar**: literals `a`,`b`; union `|`; concatenation by juxtaposition; postfix `*`, `+`, `?`; parentheses; `()` is ε; full-string match. (Document the grammar precisely in the prompt; parser in `automata/regex.py` must accept exactly it.)
-- **Generator constraint (asserted):** `L(R1) Δ L(R2)` is non-empty and its shortest element has length **≥ 9** (so the regexes agree on all strings up to length 8); target lengths 9–12. Construct pairs by hand-designed families (e.g. counters/“every k-th position” conditions) and verify with product BFS.
-- **Task:** output **any** shortest string in the symmetric difference.
-- **Scoring:** 1.0 = in the symmetric difference and of minimal length; 0.5 = in the symmetric difference but longer; 0.0 otherwise.
-- **Why hard:** models test short strings mentally (lengths 1–5), conclude "equivalent", or name a string that both accept. Failure codes: `WITNESS_NOT_DISTINGUISHING`, `WITNESS_NOT_SHORTEST`.
-- **Grader:** `witness_grader` (exact: BFS on the product of the two compiled DFAs gives the true minimal length).
+- **Input:** `R1 = (ab)*a+b(ab)+a+(ba)+(ba)+a`, `R2 = (ab)?a+b(ab)+a+(ba)+(ba)+a` (same grammar as before).
+- **Facts:** they agree on every word shorter than **16**; the shortest witness `ababaababaababaa` is **unique** (brute force over all words up to length 16). Hand proof (a-run sequences) in `reference/build.py`. Alternative of the same family kept as a knob: `(aab)*a(ab)*a+bbab` vs `(aab)?a(ab)*a+bbab` (unique witness, length **14**).
+- **Search:** `scripts/search_t05_pairs.py` (seed 23) reproduces both pairs.
+- **Scoring:** 1.0 shortest, 0.5 distinguishing but longer, 0 otherwise (also for symbols other than a and b). (v1: witness length 10.)
 
-### T06 — ε-NFA determinization blow-up → minimal DFA
-- **Input:** a 5-state ε-NFA over `{a,b}` (transition table including ε-moves).
-- **Generator constraints (asserted):** subset construction (with ε-closures) has exactly **11 reachable subset-states**; record the minimal complete DFA size (computed, not assumed; it is ≤ 11).
-- **Task:** minimal complete DFA. **Grader:** `dfa_exact`.
-- **Why hard:** ε-closure errors mid-generation; forgetting that start state = closure of start; forgetting to merge indistinguishable subsets afterwards.
+### T06 — ε-NFA determinization → minimal DFA
+- **Input:** a seeded 7-state ε-NFA over `{a,b}`.
+- **Generator constraints (asserted):** 16..20 reachable subsets (∅ counts when reachable), ≥ 3 ε-moves, start ε-closure ≥ 2 states, 12 ≤ minimal size < subsets. **Instance:** **17** subsets → **16** states.
+- **Why hard:** a longer ε-closure/subset computation, then finding the few equivalent subsets. (v1: 5 states, 11 subsets → 7.)
 
-### T07 — Bounded-depth two-bracket Dyck variant (CFG answer)
-- **Alphabet** `{ ( , ) , [ , ] }`. Strings are well-nested (each `(` closes with `)`, each `[` with `]`), **non-empty**. A *group* is a matched pair with its contents; depth of a group = 1 + number of enclosing groups. **Constraints:** (1) no group has depth > 3; (2) **no `(`-group is the immediate child of a `[`-group** (i.e. the innermost enclosing group of every `(` group is not a `[` group). `[`-groups may be children of anything; top-level `(` groups are fine.
-- **Examples to place in the prompt (assert with tests):** valid — `()`, `([])`, `[[[]]]`, `(([]))`, `[]()`; invalid — `[()]` (paren directly in bracket), `[[()]]` (same), `(((())))` (depth 4), `(]`, `` (empty).
-- **Answer:** a CFG in **Chomsky normal form** (ε excluded) generating exactly this language.
-- **Facts:** the language is regular (depth is bounded); computed minimal complete DFA has **12 states** (ε excluded). Counts of valid strings by even length 2,4,6,8,10: **2, 7, 29, 126, 558** (brute-force verified) — use as unit-test oracle.
-- **Grader:** `cfg_grader`, bounded to N=14–16 (enumerate model-grammar language up to N via DP with a cap; compare against the truth DFA; check all ground-truth strings ≤ N derivable).
-- **Why hard:** models write the unconstrained Dyck grammar and bolt constraints on informally; CNF needs depth-indexed nonterminals (e.g. `S1,S2,S3` × parent-type).
+### T07 — Bracket words with parity and parent rules (CFG answer)
+- **Alphabet** `{ ( , ) , [ , ] }`. Non-empty well-nested words such that (2) no `[`-group has a `(`-group as a child; (3) every `(`-group has an even number of `[`-children; (4) the word has an even number of top-level `[`-groups. Only children count; depth is unbounded, so the language is **not regular**.
+- **Facts:** counts by length 2, 4, …, 16: **1, 3, 11, 43, 175, 734, 3151, 13778**. The reference CNF grammar (21 rules: groups P/B, child sequences Ev/Od with even/odd numbers of `[`-groups) passes the bounded check at N = 16.
+- **Grader:** `cfg_bounded`, **N = 16**. (v1: depth ≤ 3 and the parent rule; regular.)
 
-### T08 — Linear-ratio CFG (**replaces the original T08**)
-- **Alphabet** `{a,b}`. **Language** `L = { aⁱ bʲ aᵏ : i ≥ 1, k ≥ 1, i + k = 2j }`. Answer: CNF CFG.
-- **Reference grammar (not CNF; author must convert and verify):**
+### T08 — Linear-ratio CFG
+- **Alphabet** `{a,b}`. **Language** `L = { aⁱ bʲ aᵏ : i ≥ 1, k ≥ 1, 2i + k = 3j }`. Answer: CNF CFG.
+- **Reference grammar (author must be able to explain it):**
   ```
-  S  → A1 B1 | a A b B a
-  A1 → a a A b          A → a a A b | ε
-  B1 → b B a a          B → b B a a | ε
+  S → L1 R1 | a L b R a | aa L bb R aa        (by i mod 3: 0, 1, 2)
+  L → aaa L bb | ε      R → b R aaa | ε       (L1, R1 = the non-empty versions)
   ```
-  Computed check: generates exactly the language for all strings up to length 14 (16 strings). Even-parity case = `A1 B1` (i=2n, k=2t, n,t≥1); odd-parity case = `a A b B a`.
-- **Grader:** `cfg_grader` bounded to N=24–30 (the language is sparse, so larger N is cheap).
-- **Why hard:** the model must discover that the ratio constraint decomposes into two independent nested blocks by parity, then CNF-convert without breaking it.
-- **Original T08 (`i>k`) is non-CF:** keep `check_task08_noncf.py` and mention in the README as a case study of spec validation ("my first draft of this task was impossible; the grader's reference-solution requirement caught it").
+  Each leading `a` is worth 2, each trailing `a` 1, each `b` costs 3; for i ≡ 1 one `b` is shared by both sides, for i ≡ 2 two are. CNF conversion: 30 rules (`reference/build.py`).
+- **Facts:** **63** words up to length 30, **92** up to length 36. **Grader:** `cfg_bounded`, **N = 36**. (v1: i + k = 2j, N = 30.)
+- **The pre-v1 original (`i+k=2j, i>k`) is non-CF:** keep `check_task08_noncf.py` and the README case study.
 
 ---
 

@@ -8,7 +8,7 @@ as a paid API run. Only the way the answer is obtained differs, and every transc
 | A. OpenRouter `:free` models | open-weight (NVIDIA, Thinking Machines, Google) | $0; 50 requests/day | `run_eval.py --models models.free.yaml --max-cost 0` |
 | B. Free chat apps, pasted by hand | frontier models in ChatGPT / Claude.ai / Gemini | $0; ~24 pastes per model | `run_eval.py --new-manual NAME`, then `--import-manual manual/` |
 
-Use A for the pilot and the "open model" rows; use B for at least one frontier model (the
+Use A for the "open model" rows; use B for at least one frontier model (the
 hackathon checklist asks for one).
 
 ---
@@ -101,12 +101,14 @@ can re-grade them with `--regrade` but cannot re-run them through an API.
 
 ## Plan that fits the free quota (deadline Nov 9, 10:45 IST)
 
+The pilot on task set v1 is done (`pilot_v1/`) and the tasks were replaced by v2. Every v2 trial
+counts, so there is no second calibration round.
+
 | Day | Route A (≤ 45 requests/day) | Route B (any time) |
 |---|---|---|
-| Oct 31 / Nov 1 | **Pilot:** 3 free models x 8 tasks x 1 trial = 24 requests | 1 trial per task in one app (8 pastes) |
-| next day | Decide difficulty changes **with the pilot data before more runs**. Changing a task changes its prompt, and old answers to it no longer count | — |
-| +1 day | Trials 2-3 for two models (32 requests) | finish 3 trials in app 1 |
-| +2 days | Trials 2-3 for the third model (16 requests) + reruns | optional second app |
+| Nov 1 | Trial 1 for the 3 free models (24 requests) | `--new-manual chatgpt-free --trials 3`; trial 1 of every task (8 pastes) |
+| Nov 2 | Trials 2-3 for the model(s) that answered (16 per model) | trials 2-3 (16 pastes) |
+| Nov 3-4 | remaining trials + reruns of API errors | optional second app (e.g. another free chat app) |
 | Nov 5-8 | analysis, README, video, zip | |
 
 Commit transcripts after each run (`git add transcripts results manual`, then commit). They are

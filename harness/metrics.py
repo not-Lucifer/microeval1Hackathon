@@ -19,8 +19,30 @@ API_ERROR = "API_ERROR"
 TRUNCATED = "TRUNCATED"
 
 
+STALE_NOTE = ("answer a different version of their task (the stored prompt differs from tasks/), so they "
+              "are left out; the task set v1 pilot transcripts are graded at git tag pilot-v1")
+
+
 def load_transcripts(root: Path) -> list[dict]:
     return [json.loads(p.read_text(encoding="utf-8")) for p in sorted(root.rglob("trial_*.json"))]
+
+
+def split_stale(transcripts: list[dict], tasks: dict[str, dict]) -> tuple[list[dict], list[dict]]:
+    """(transcripts that answer their task's current prompt, the others). An answer to an older
+    version of a task must never be graded or counted against the current version."""
+    current, stale = [], []
+    for t in transcripts:
+        task = tasks.get(t["task_id"])
+        (current if task is not None and t["prompt"] == task["prompt"] else stale).append(t)
+    return current, stale
+
+
+def load_current_transcripts(root: Path, tasks: dict[str, dict], log=print) -> list[dict]:
+    """load_transcripts without stale ones; says how many were left out."""
+    current, stale = split_stale(load_transcripts(root), tasks)
+    if stale:
+        log(f"{len(stale)} transcript(s) {STALE_NOTE}")
+    return current
 
 
 def summarize(transcripts: list[dict]) -> dict:
