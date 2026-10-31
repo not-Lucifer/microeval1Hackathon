@@ -1,0 +1,62 @@
+{
+  "states": [
+    "A0B0P0", "A0B0P1", "A0B1P0", "A0B1P1", "A0B2P0", "A0B2P1", "A0B3P0", "A0B3P1",
+    "A1B0P0", "A1B0P1", "A1B1P0", "A1B1P1", "A1B2P0", "A1B2P1", "A1B3P0", "A1B3P1",
+    "A2B0P0", "A2B0P1", "A2B1P0", "A2B1P1", "A2B2P0", "A2B2P1", "A2B3P0", "A2B3P1",
+    "A3B0P0", "A3B0P1", "A3B1P0", "A3B1P1", "A3B2P0", "A3B2P1", "A3B3P0", "A3B3P1",
+    "A4B0P0", "A4B0P1", "A4B1P0", "A4B1P1", "A4B2P0", "A4B2P1", "A4B3P0", "A4B3P1",
+    "DEAD"
+  ],
+  "start": "A0B0P0",
+  "accepting": [
+    "A0B0P0"
+  ],
+  "transitions": {
+    "A0B0P0": {"a": "A4B0P0", "b": "A0B3P1", "c": "A0B0P0"},
+    "A0B0P1": {"a": "A0B0P0", "b": "A0B3P1", "c": "A0B0P0"},
+    "A0B1P0": {"a": "A4B0P0", "b": "A0B3P1", "c": "A0B0P0"},
+    "A0B1P1": {"a": "A0B0P0", "b": "A0B3P1", "c": "A0B0P0"},
+    "A0B2P0": {"a": "A4B0P0", "b": "A0B3P1", "c": "A0B0P0"},
+    "A0B2P1": {"a": "A0B1P0", "b": "A0B3P1", "c": "A0B1P0"},
+    "A0B3P0": {"a": "A4B0P0", "b": "A0B3P1", "c": "A0B0P0"},
+    "A0B3P1": {"a": "A0B0P0", "b": "A0B3P1", "c": "A0B2P0"},
+
+    "A1B0P0": {"a": "A4B0P0", "b": "A0B3P1", "c": "A0B0P0"},
+    "A1B0P1": {"a": "A0B0P0", "b": "A0B3P1", "c": "A0B0P0"},
+    "A1B1P0": {"a": "A4B0P0", "b": "A0B3P1", "c": "A0B0P0"},
+    "A1B1P1": {"a": "A0B0P0", "b": "A0B3P1", "c": "A0B0P0"},
+    "A1B2P0": {"a": "A4B0P0", "b": "A0B3P1", "c": "A0B0P0"},
+    "A1B2P1": {"a": "A0B1P0", "b": "A0B3P1", "c": "A0B1P0"},
+    "A1B3P0": {"a": "A4B0P0", "b": "A0B3P1", "c": "A0B0P0"},
+    "A1B3P1": {"a": "A0B0P0", "b": "A0B3P1", "c": "A0B2P0"},
+
+    "A2B0P0": {"a": "A4B0P0", "b": "A1B3P1", "c": "A0B0P0"},
+    "A2B0P1": {"a": "A1B0P0", "b": "A1B3P1", "c": "A1B0P0"},
+    "A2B1P0": {"a": "A4B0P0", "b": "A1B3P1", "c": "A0B0P0"},
+    "A2B1P1": {"a": "A1B0P0", "b": "A1B3P1", "c": "A1B0P0"},
+    "A2B2P0": {"a": "A4B0P0", "b": "A1B3P1", "c": "A0B0P0"},
+    "A2B2P1": {"a": "A1B1P0", "b": "A1B3P1", "c": "A1B1P0"},
+    "A2B3P0": {"a": "A4B0P0", "b": "A1B3P1", "c": "A0B0P0"},
+    "A2B3P1": {"a": "A1B0P0", "b": "A1B3P1", "c": "A1B2P0"},
+
+    "A3B0P0": {"a": "A4B0P0", "b": "A2B3P1", "c": "A0B0P0"},
+    "A3B0P1": {"a": "A2B0P0", "b": "A2B3P1", "c": "A2B0P0"},
+    "A3B1P0": {"a": "A4B0P0", "b": "A2B3P1", "c": "A0B0P0"},
+    "A3B1P1": {"a": "A2B0P0", "b": "A2B3P1", "c": "A2B0P0"},
+    "A3B2P0": {"a": "A4B0P0", "b": "A2B3P1", "c": "A0B0P0"},
+    "A3B2P1": {"a": "A2B1P0", "b": "A2B3P1", "c": "A2B1P0"},
+    "A3B3P0": {"a": "A4B0P0", "b": "A2B3P1", "c": "A0B0P0"},
+    "A3B3P1": {"a": "A2B0P0", "b": "A2B3P1", "c": "A2B2P0"},
+
+    "A4B0P0": {"a": "A4B0P0", "b": "A3B3P1", "c": "A0B0P0"},
+    "A4B0P1": {"a": "A3B0P0", "b": "A3B3P1", "c": "A3B0P0"},
+    "A4B1P0": {"a": "A4B0P0", "b": "A3B3P1", "c": "A0B0P0"},
+    "A4B1P1": {"a": "A3B0P0", "b": "A3B3P1", "c": "A3B0P0"},
+    "A4B2P0": {"a": "A4B0P0", "b": "A3B3P1", "c": "A0B0P0"},
+    "A4B2P1": {"a": "A3B1P0", "b": "A3B3P1", "c": "A3B1P0"},
+    "A4B3P0": {"a": "A4B0P0", "b": "A3B3P1", "c": "A0B0P0"},
+    "A4B3P1": {"a": "A3B0P0", "b": "A3B3P1", "c": "A3B2P0"},
+
+    "DEAD": {"a": "DEAD", "b": "DEAD", "c": "DEAD"}
+  }
+}

@@ -1,4 +1,533 @@
 {
-  "models": {},
-  "n_transcripts": 0
+  "models": {
+    "chatgpt-free": {
+      "api_errors": [],
+      "calls_with_unknown_cost": 0,
+      "completion_tokens": 0,
+      "cost_usd": 0.0,
+      "dates": [
+        "2026-11-01"
+      ],
+      "failure_code_histogram": {
+        "NON_MINIMAL_STATE_BLOAT": 3,
+        "NOT_EQUIVALENT": 9,
+        "OVERGENERATES": 1,
+        "PASS": 6,
+        "UNDERGENERATES": 2,
+        "WITNESS_NOT_DISTINGUISHING": 3
+      },
+      "mean_score": 0.3125,
+      "mean_score_sd_across_trial_indices": 0.1531,
+      "pass_at_k": 0.5,
+      "pass_hat_k": 0.0,
+      "pass_rate": 0.25,
+      "settings": {
+        "app": "ChatGPT, free plan, web",
+        "max_tokens": null,
+        "model_shown": "no model name shown (free plan default)",
+        "new_chat_per_trial": true,
+        "no_tools_confirmed": true,
+        "notes": "Replies pasted exactly as ChatGPT gave them: each reply was only the JSON answer, with no text before it. Task set v2, trials 1-3.",
+        "openrouter_id": null,
+        "provider": null,
+        "reasoning": "default (Think off)",
+        "seed": null,
+        "source": "manual chat app",
+        "temperature": null
+      },
+      "tasks": {
+        "task_01": {
+          "counterexamples": [
+            null,
+            "100",
+            "001"
+          ],
+          "failure_codes": [
+            "NON_MINIMAL_STATE_BLOAT",
+            "NOT_EQUIVALENT",
+            "NOT_EQUIVALENT"
+          ],
+          "mean_score": 0.1667,
+          "passes": 0,
+          "scores": [
+            0.5,
+            0.0,
+            0.0
+          ],
+          "trials": 3
+        },
+        "task_02": {
+          "counterexamples": [
+            null,
+            "bcba",
+            "bcc"
+          ],
+          "failure_codes": [
+            "NON_MINIMAL_STATE_BLOAT",
+            "NOT_EQUIVALENT",
+            "NOT_EQUIVALENT"
+          ],
+          "mean_score": 0.1667,
+          "passes": 0,
+          "scores": [
+            0.5,
+            0.0,
+            0.0
+          ],
+          "trials": 3
+        },
+        "task_03": {
+          "counterexamples": [
+            "abab",
+            null,
+            "a"
+          ],
+          "failure_codes": [
+            "NOT_EQUIVALENT",
+            null,
+            "NOT_EQUIVALENT"
+          ],
+          "mean_score": 0.3333,
+          "passes": 1,
+          "scores": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "trials": 3
+        },
+        "task_04": {
+          "counterexamples": [
+            null,
+            null,
+            null
+          ],
+          "failure_codes": [
+            "NON_MINIMAL_STATE_BLOAT",
+            null,
+            null
+          ],
+          "mean_score": 0.8333,
+          "passes": 2,
+          "scores": [
+            0.5,
+            1.0,
+            1.0
+          ],
+          "trials": 3
+        },
+        "task_05": {
+          "counterexamples": [
+            "ababaababaababaa",
+            "ababaababaababaa",
+            "ababaababaababaa"
+          ],
+          "failure_codes": [
+            "WITNESS_NOT_DISTINGUISHING",
+            "WITNESS_NOT_DISTINGUISHING",
+            "WITNESS_NOT_DISTINGUISHING"
+          ],
+          "mean_score": 0.0,
+          "passes": 0,
+          "scores": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "trials": 3
+        },
+        "task_06": {
+          "counterexamples": [
+            "ba",
+            "aabbabaab",
+            "aabbabaab"
+          ],
+          "failure_codes": [
+            "NOT_EQUIVALENT",
+            "NOT_EQUIVALENT",
+            "NOT_EQUIVALENT"
+          ],
+          "mean_score": 0.0,
+          "passes": 0,
+          "scores": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "trials": 3
+        },
+        "task_07": {
+          "counterexamples": [
+            null,
+            null,
+            "[]"
+          ],
+          "failure_codes": [
+            null,
+            null,
+            "OVERGENERATES"
+          ],
+          "mean_score": 0.6667,
+          "passes": 2,
+          "scores": [
+            1.0,
+            1.0,
+            0.0
+          ],
+          "trials": 3
+        },
+        "task_08": {
+          "counterexamples": [
+            "aaabbbaaa",
+            null,
+            "aba"
+          ],
+          "failure_codes": [
+            "UNDERGENERATES",
+            null,
+            "UNDERGENERATES"
+          ],
+          "mean_score": 0.3333,
+          "passes": 1,
+          "scores": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "trials": 3
+        }
+      },
+      "total_latency_s": 0,
+      "trials_per_task": 3,
+      "truncated": 0,
+      "valid_trials": 24
+    },
+    "dots-3-note-free": {
+      "api_errors": [],
+      "calls_with_unknown_cost": 0,
+      "completion_tokens": 436486,
+      "cost_usd": 0.0,
+      "dates": [
+        "2026-10-31"
+      ],
+      "failure_code_histogram": {
+        "PASS": 3,
+        "TRUNCATED": 5
+      },
+      "mean_score": 0.375,
+      "mean_score_sd_across_trial_indices": null,
+      "pass_at_k": 0.375,
+      "pass_hat_k": 0.375,
+      "pass_rate": 0.375,
+      "settings": {
+        "max_tokens": 64000,
+        "openrouter_id": "dots-studio/dots-3-note-preview:free",
+        "provider": null,
+        "reasoning": {
+          "effort": "high"
+        },
+        "seed": null,
+        "temperature": 0
+      },
+      "tasks": {
+        "task_01": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            "TRUNCATED"
+          ],
+          "mean_score": 0.0,
+          "passes": 0,
+          "scores": [
+            0.0
+          ],
+          "trials": 1
+        },
+        "task_02": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            "TRUNCATED"
+          ],
+          "mean_score": 0.0,
+          "passes": 0,
+          "scores": [
+            0.0
+          ],
+          "trials": 1
+        },
+        "task_03": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            null
+          ],
+          "mean_score": 1.0,
+          "passes": 1,
+          "scores": [
+            1.0
+          ],
+          "trials": 1
+        },
+        "task_04": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            null
+          ],
+          "mean_score": 1.0,
+          "passes": 1,
+          "scores": [
+            1.0
+          ],
+          "trials": 1
+        },
+        "task_05": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            "TRUNCATED"
+          ],
+          "mean_score": 0.0,
+          "passes": 0,
+          "scores": [
+            0.0
+          ],
+          "trials": 1
+        },
+        "task_06": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            null
+          ],
+          "mean_score": 1.0,
+          "passes": 1,
+          "scores": [
+            1.0
+          ],
+          "trials": 1
+        },
+        "task_07": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            "TRUNCATED"
+          ],
+          "mean_score": 0.0,
+          "passes": 0,
+          "scores": [
+            0.0
+          ],
+          "trials": 1
+        },
+        "task_08": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            "TRUNCATED"
+          ],
+          "mean_score": 0.0,
+          "passes": 0,
+          "scores": [
+            0.0
+          ],
+          "trials": 1
+        }
+      },
+      "total_latency_s": 4575.4,
+      "trials_per_task": 1,
+      "truncated": 5,
+      "valid_trials": 8
+    },
+    "gemma-4-31b-free": {
+      "api_errors": [
+        "task_01/trial_1",
+        "task_02/trial_1"
+      ],
+      "calls_with_unknown_cost": 0,
+      "completion_tokens": 0,
+      "cost_usd": 0,
+      "dates": [
+        "2026-10-31"
+      ],
+      "failure_code_histogram": {},
+      "mean_score": null,
+      "mean_score_sd_across_trial_indices": null,
+      "pass_at_k": null,
+      "pass_hat_k": null,
+      "pass_rate": null,
+      "settings": {
+        "max_tokens": 32000,
+        "openrouter_id": "google/gemma-4-31b-it:free",
+        "provider": null,
+        "reasoning": {
+          "effort": "high"
+        },
+        "seed": null,
+        "temperature": 0
+      },
+      "tasks": {},
+      "total_latency_s": 0,
+      "trials_per_task": 0,
+      "truncated": 0,
+      "valid_trials": 0
+    },
+    "nemotron-3-ultra-free": {
+      "api_errors": [],
+      "calls_with_unknown_cost": 0,
+      "completion_tokens": 321163,
+      "cost_usd": 0.0,
+      "dates": [
+        "2026-10-31"
+      ],
+      "failure_code_histogram": {
+        "NON_MINIMAL_STATE_BLOAT": 1,
+        "PASS": 5,
+        "TRUNCATED": 2
+      },
+      "mean_score": 0.6875,
+      "mean_score_sd_across_trial_indices": null,
+      "pass_at_k": 0.625,
+      "pass_hat_k": 0.625,
+      "pass_rate": 0.625,
+      "settings": {
+        "max_tokens": 64000,
+        "openrouter_id": "nvidia/nemotron-3-ultra-550b-a55b:free",
+        "provider": null,
+        "reasoning": {
+          "effort": "high"
+        },
+        "seed": null,
+        "temperature": 0
+      },
+      "tasks": {
+        "task_01": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            "TRUNCATED"
+          ],
+          "mean_score": 0.0,
+          "passes": 0,
+          "scores": [
+            0.0
+          ],
+          "trials": 1
+        },
+        "task_02": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            "NON_MINIMAL_STATE_BLOAT"
+          ],
+          "mean_score": 0.5,
+          "passes": 0,
+          "scores": [
+            0.5
+          ],
+          "trials": 1
+        },
+        "task_03": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            null
+          ],
+          "mean_score": 1.0,
+          "passes": 1,
+          "scores": [
+            1.0
+          ],
+          "trials": 1
+        },
+        "task_04": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            null
+          ],
+          "mean_score": 1.0,
+          "passes": 1,
+          "scores": [
+            1.0
+          ],
+          "trials": 1
+        },
+        "task_05": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            null
+          ],
+          "mean_score": 1.0,
+          "passes": 1,
+          "scores": [
+            1.0
+          ],
+          "trials": 1
+        },
+        "task_06": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            null
+          ],
+          "mean_score": 1.0,
+          "passes": 1,
+          "scores": [
+            1.0
+          ],
+          "trials": 1
+        },
+        "task_07": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            null
+          ],
+          "mean_score": 1.0,
+          "passes": 1,
+          "scores": [
+            1.0
+          ],
+          "trials": 1
+        },
+        "task_08": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            "TRUNCATED"
+          ],
+          "mean_score": 0.0,
+          "passes": 0,
+          "scores": [
+            0.0
+          ],
+          "trials": 1
+        }
+      },
+      "total_latency_s": 11777.9,
+      "trials_per_task": 1,
+      "truncated": 2,
+      "valid_trials": 8
+    }
+  },
+  "n_transcripts": 42
 }

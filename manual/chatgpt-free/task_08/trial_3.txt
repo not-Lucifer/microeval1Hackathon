@@ -1,0 +1,79 @@
+{
+  "start": "S",
+  "productions": [
+    {"lhs":"S","rhs":["P","Q"]},
+    {"lhs":"S","rhs":["T00","A"]},
+    {"lhs":"S","rhs":["T10","A"]},
+    {"lhs":"S","rhs":["T01","A"]},
+    {"lhs":"S","rhs":["T11","A"]},
+    {"lhs":"S","rhs":["U00","A"]},
+    {"lhs":"S","rhs":["U10","A"]},
+    {"lhs":"S","rhs":["U01","A"]},
+    {"lhs":"S","rhs":["U11","A"]},
+
+    {"lhs":"P","rhs":["A","PC"]},
+    {"lhs":"PC","rhs":["A","PD"]},
+    {"lhs":"PD","rhs":["A","PE"]},
+    {"lhs":"PE","rhs":["B","B"]},
+    {"lhs":"PE","rhs":["P","PF"]},
+    {"lhs":"PF","rhs":["B","B"]},
+
+    {"lhs":"Q","rhs":["B","QC"]},
+    {"lhs":"QC","rhs":["Q","QD"]},
+    {"lhs":"QC","rhs":["A","QF"]},
+    {"lhs":"QD","rhs":["A","QE"]},
+    {"lhs":"QE","rhs":["A","A"]},
+    {"lhs":"QF","rhs":["A","A"]},
+
+    {"lhs":"T00","rhs":["A","TX00"]},
+    {"lhs":"TX00","rhs":["B","A"]},
+
+    {"lhs":"T10","rhs":["A","TX10"]},
+    {"lhs":"TX10","rhs":["P","TY10"]},
+    {"lhs":"TY10","rhs":["B","A"]},
+
+    {"lhs":"T01","rhs":["A","TX01"]},
+    {"lhs":"TX01","rhs":["B","TZ01"]},
+    {"lhs":"TZ01","rhs":["Q","A"]},
+
+    {"lhs":"T11","rhs":["A","TX11"]},
+    {"lhs":"TX11","rhs":["P","TY11"]},
+    {"lhs":"TY11","rhs":["B","TZ11"]},
+    {"lhs":"TZ11","rhs":["Q","A"]},
+
+    {"lhs":"U00","rhs":["A","UX00"]},
+    {"lhs":"UX00","rhs":["A","UY00"]},
+    {"lhs":"UY00","rhs":["B","UZ00"]},
+    {"lhs":"UZ00","rhs":["B","UV00"]},
+    {"lhs":"UV00","rhs":["A","UW00"]},
+    {"lhs":"UW00","rhs":["A","A"]},
+
+    {"lhs":"U10","rhs":["A","UX10"]},
+    {"lhs":"UX10","rhs":["A","UY10"]},
+    {"lhs":"UY10","rhs":["P","UZ10"]},
+    {"lhs":"UZ10","rhs":["B","UV10"]},
+    {"lhs":"UV10","rhs":["B","UW10"]},
+    {"lhs":"UW10","rhs":["A","UX10A"]},
+    {"lhs":"UX10A","rhs":["A","A"]},
+
+    {"lhs":"U01","rhs":["A","UX01"]},
+    {"lhs":"UX01","rhs":["A","UY01"]},
+    {"lhs":"UY01","rhs":["B","UZ01"]},
+    {"lhs":"UZ01","rhs":["B","UV01"]},
+    {"lhs":"UV01","rhs":["Q","UW01"]},
+    {"lhs":"UW01","rhs":["A","UX01A"]},
+    {"lhs":"UX01A","rhs":["A","A"]},
+
+    {"lhs":"U11","rhs":["A","UX11"]},
+    {"lhs":"UX11","rhs":["A","UY11"]},
+    {"lhs":"UY11","rhs":["P","UZ11"]},
+    {"lhs":"UZ11","rhs":["B","UV11"]},
+    {"lhs":"UV11","rhs":["B","UW11"]},
+    {"lhs":"UW11","rhs":["Q","UX11A"]},
+    {"lhs":"UX11A","rhs":["A","UY11A"]},
+    {"lhs":"UY11A","rhs":["A","A"]},
+
+    {"lhs":"A","rhs":["a"]},
+    {"lhs":"B","rhs":["b"]}
+  ]
+}

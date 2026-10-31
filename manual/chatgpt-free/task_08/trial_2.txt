@@ -1,0 +1,58 @@
+{
+  "start": "S",
+  "productions": [
+    {"lhs": "S", "rhs": ["P", "Q"]},
+
+    {"lhs": "S", "rhs": ["A", "T1"]},
+    {"lhs": "T1", "rhs": ["B", "A"]},
+
+    {"lhs": "S", "rhs": ["A", "H2"]},
+    {"lhs": "H2", "rhs": ["P", "T2"]},
+    {"lhs": "T2", "rhs": ["B", "A"]},
+
+    {"lhs": "S", "rhs": ["A", "H3"]},
+    {"lhs": "H3", "rhs": ["B", "T3"]},
+    {"lhs": "T3", "rhs": ["Q", "A"]},
+
+    {"lhs": "S", "rhs": ["A", "H4"]},
+    {"lhs": "H4", "rhs": ["P", "J4"]},
+    {"lhs": "J4", "rhs": ["B", "K4"]},
+    {"lhs": "K4", "rhs": ["Q", "A"]},
+
+    {"lhs": "S", "rhs": ["A2", "T5"]},
+    {"lhs": "T5", "rhs": ["B2", "A2"]},
+
+    {"lhs": "S", "rhs": ["A2", "H6"]},
+    {"lhs": "H6", "rhs": ["P", "T6"]},
+    {"lhs": "T6", "rhs": ["B2", "A2"]},
+
+    {"lhs": "S", "rhs": ["A2", "H7"]},
+    {"lhs": "H7", "rhs": ["B2", "T7"]},
+    {"lhs": "T7", "rhs": ["Q", "A2"]},
+
+    {"lhs": "S", "rhs": ["A2", "H8"]},
+    {"lhs": "H8", "rhs": ["P", "J8"]},
+    {"lhs": "J8", "rhs": ["B2", "K8"]},
+    {"lhs": "K8", "rhs": ["Q", "A2"]},
+
+    {"lhs": "P", "rhs": ["A", "X"]},
+    {"lhs": "X", "rhs": ["A", "Y"]},
+    {"lhs": "Y", "rhs": ["A", "Z"]},
+    {"lhs": "Z", "rhs": ["B", "B"]},
+    {"lhs": "Z", "rhs": ["P", "W"]},
+    {"lhs": "W", "rhs": ["B", "B"]},
+
+    {"lhs": "Q", "rhs": ["B", "Xq"]},
+    {"lhs": "Xq", "rhs": ["A", "V"]},
+    {"lhs": "Xq", "rhs": ["Q", "Yq"]},
+    {"lhs": "Yq", "rhs": ["A", "Zq"]},
+    {"lhs": "Zq", "rhs": ["A", "A"]},
+    {"lhs": "V", "rhs": ["A", "A"]},
+
+    {"lhs": "A2", "rhs": ["A", "A"]},
+    {"lhs": "B2", "rhs": ["B", "B"]},
+
+    {"lhs": "A", "rhs": ["a"]},
+    {"lhs": "B", "rhs": ["b"]}
+  ]
+}
