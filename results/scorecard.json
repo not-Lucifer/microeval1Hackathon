@@ -16,6 +16,174 @@
         "UNDERGENERATES": 2,
         "WITNESS_NOT_DISTINGUISHING": 3
       },
+      "failures": [
+        {
+          "failure_code": "NON_MINIMAL_STATE_BLOAT",
+          "listed_examples_missed": null,
+          "note": "right language, but 28 states (minimal: 21)",
+          "score": 0.5,
+          "task_id": "task_01",
+          "trial": 1
+        },
+        {
+          "failure_code": "NOT_EQUIVALENT",
+          "listed_examples_missed": [
+            "`101` (listed in L)",
+            "`1101` (listed in L)",
+            "`00100` (listed in L)",
+            "`100` (listed not in L)"
+          ],
+          "note": "accepts `100`, which is not in L",
+          "score": 0.0,
+          "task_id": "task_01",
+          "trial": 2
+        },
+        {
+          "failure_code": "NOT_EQUIVALENT",
+          "listed_examples_missed": [
+            "`101` (listed in L)",
+            "`110` (listed in L)",
+            "`1101` (listed in L)",
+            "`00100` (listed in L)",
+            "`011` (listed not in L)"
+          ],
+          "note": "accepts `001`, which is not in L",
+          "score": 0.0,
+          "task_id": "task_01",
+          "trial": 3
+        },
+        {
+          "failure_code": "NON_MINIMAL_STATE_BLOAT",
+          "listed_examples_missed": null,
+          "note": "right language, but 17 states (minimal: 16)",
+          "score": 0.5,
+          "task_id": "task_02",
+          "trial": 1
+        },
+        {
+          "failure_code": "NOT_EQUIVALENT",
+          "listed_examples_missed": [
+            "`abcba` (listed in L)"
+          ],
+          "note": "rejects `bcba`, which is in L",
+          "score": 0.0,
+          "task_id": "task_02",
+          "trial": 2
+        },
+        {
+          "failure_code": "NOT_EQUIVALENT",
+          "listed_examples_missed": [],
+          "note": "accepts `bcc`, which is not in L",
+          "score": 0.0,
+          "task_id": "task_02",
+          "trial": 3
+        },
+        {
+          "failure_code": "NOT_EQUIVALENT",
+          "listed_examples_missed": null,
+          "note": "rejects `abab`, which is in L",
+          "score": 0.0,
+          "task_id": "task_03",
+          "trial": 1
+        },
+        {
+          "failure_code": "NOT_EQUIVALENT",
+          "listed_examples_missed": null,
+          "note": "rejects `a`, which is in L",
+          "score": 0.0,
+          "task_id": "task_03",
+          "trial": 3
+        },
+        {
+          "failure_code": "NON_MINIMAL_STATE_BLOAT",
+          "listed_examples_missed": null,
+          "note": "right language, but 84 states (minimal: 14)",
+          "score": 0.5,
+          "task_id": "task_04",
+          "trial": 1
+        },
+        {
+          "failure_code": "WITNESS_NOT_DISTINGUISHING",
+          "listed_examples_missed": null,
+          "note": "`ε` is in neither language",
+          "score": 0.0,
+          "task_id": "task_05",
+          "trial": 1
+        },
+        {
+          "failure_code": "WITNESS_NOT_DISTINGUISHING",
+          "listed_examples_missed": null,
+          "note": "`ababaababaabaa` is in neither language",
+          "score": 0.0,
+          "task_id": "task_05",
+          "trial": 2
+        },
+        {
+          "failure_code": "WITNESS_NOT_DISTINGUISHING",
+          "listed_examples_missed": null,
+          "note": "`ε` is in neither language",
+          "score": 0.0,
+          "task_id": "task_05",
+          "trial": 3
+        },
+        {
+          "failure_code": "NOT_EQUIVALENT",
+          "listed_examples_missed": null,
+          "note": "rejects `ba`, which is in L",
+          "score": 0.0,
+          "task_id": "task_06",
+          "trial": 1
+        },
+        {
+          "failure_code": "NOT_EQUIVALENT",
+          "listed_examples_missed": null,
+          "note": "accepts `aabbabaab`, which is not in L",
+          "score": 0.0,
+          "task_id": "task_06",
+          "trial": 2
+        },
+        {
+          "failure_code": "NOT_EQUIVALENT",
+          "listed_examples_missed": null,
+          "note": "accepts `aabbabaab`, which is not in L",
+          "score": 0.0,
+          "task_id": "task_06",
+          "trial": 3
+        },
+        {
+          "failure_code": "OVERGENERATES",
+          "listed_examples_missed": [
+            "`[]` (listed not in L)",
+            "`[[]]` (listed not in L)"
+          ],
+          "note": "generates `[]`, which is not in L",
+          "score": 0.0,
+          "task_id": "task_07",
+          "trial": 3
+        },
+        {
+          "failure_code": "UNDERGENERATES",
+          "listed_examples_missed": [
+            "`aaabbbaaa` (listed in L)"
+          ],
+          "note": "cannot generate `aaabbbaaa`, which is in L",
+          "score": 0.0,
+          "task_id": "task_08",
+          "trial": 1
+        },
+        {
+          "failure_code": "UNDERGENERATES",
+          "listed_examples_missed": [
+            "`aba` (listed in L)",
+            "`aabbaa` (listed in L)",
+            "`abbaaaa` (listed in L)"
+          ],
+          "note": "cannot generate `aba`, which is in L",
+          "score": 0.0,
+          "task_id": "task_08",
+          "trial": 3
+        }
+      ],
       "mean_score": 0.3125,
       "mean_score_sd_across_trial_indices": 0.1531,
       "pass_at_k": 0.5,
@@ -214,6 +382,48 @@
         "PASS": 3,
         "TRUNCATED": 5
       },
+      "failures": [
+        {
+          "failure_code": "TRUNCATED",
+          "listed_examples_missed": null,
+          "note": "no final answer within 64000 output tokens",
+          "score": 0.0,
+          "task_id": "task_01",
+          "trial": 1
+        },
+        {
+          "failure_code": "TRUNCATED",
+          "listed_examples_missed": null,
+          "note": "no final answer within 64000 output tokens",
+          "score": 0.0,
+          "task_id": "task_02",
+          "trial": 1
+        },
+        {
+          "failure_code": "TRUNCATED",
+          "listed_examples_missed": null,
+          "note": "no final answer within 64000 output tokens",
+          "score": 0.0,
+          "task_id": "task_05",
+          "trial": 1
+        },
+        {
+          "failure_code": "TRUNCATED",
+          "listed_examples_missed": null,
+          "note": "no final answer within 64000 output tokens",
+          "score": 0.0,
+          "task_id": "task_07",
+          "trial": 1
+        },
+        {
+          "failure_code": "TRUNCATED",
+          "listed_examples_missed": null,
+          "note": "no final answer within 64000 output tokens",
+          "score": 0.0,
+          "task_id": "task_08",
+          "trial": 1
+        }
+      ],
       "mean_score": 0.375,
       "mean_score_sd_across_trial_indices": null,
       "pass_at_k": 0.375,
@@ -360,6 +570,7 @@
         "2026-10-31"
       ],
       "failure_code_histogram": {},
+      "failures": [],
       "mean_score": null,
       "mean_score_sd_across_trial_indices": null,
       "pass_at_k": null,
@@ -394,6 +605,32 @@
         "PASS": 5,
         "TRUNCATED": 2
       },
+      "failures": [
+        {
+          "failure_code": "TRUNCATED",
+          "listed_examples_missed": null,
+          "note": "no final answer within 64000 output tokens",
+          "score": 0.0,
+          "task_id": "task_01",
+          "trial": 1
+        },
+        {
+          "failure_code": "NON_MINIMAL_STATE_BLOAT",
+          "listed_examples_missed": null,
+          "note": "right language, but 17 states (minimal: 16)",
+          "score": 0.5,
+          "task_id": "task_02",
+          "trial": 1
+        },
+        {
+          "failure_code": "TRUNCATED",
+          "listed_examples_missed": null,
+          "note": "no final answer within 64000 output tokens",
+          "score": 0.0,
+          "task_id": "task_08",
+          "trial": 1
+        }
+      ],
       "mean_score": 0.6875,
       "mean_score_sd_across_trial_indices": null,
       "pass_at_k": 0.625,

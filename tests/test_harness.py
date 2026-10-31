@@ -12,7 +12,14 @@ from harness import client as client_module
 from harness.cache import ResponseCache
 from harness.client import STOP_FREE_DAILY, STOP_NO_CREDITS, CompletionResult, ModelSpec, OpenRouterClient
 from harness.cost import CostTracker, estimate, settings_key
-from harness.metrics import load_transcripts, render_markdown, split_stale, summarize
+from harness.metrics import (
+    failure_note,
+    listed_examples_missed,
+    load_transcripts,
+    render_markdown,
+    split_stale,
+    summarize,
+)
 from harness.parsing import extract_final_json
 from harness.prompts import load_tasks, tasks_by_id
 from harness.runner import run_trials
@@ -113,11 +120,56 @@ def test_end_to_end_grades_and_metrics(tmp_path):
     assert (good["pass_rate"], good["pass_at_k"], good["pass_hat_k"]) == (1.0, 1.0, 1.0)
     assert bad["valid_trials"] == 3 and bad["api_errors"] == ["task_05/trial_1"]
     assert (bad["pass_rate"], bad["truncated"]) == (0.0, 1)
-    assert "good-model" in render_markdown(card)
+    md = render_markdown(card)
+    assert "good-model" in md
+    assert "| bad-model | task_05 | 2 | 0.0 | WITNESS_NOT_DISTINGUISHING | `ab` is in neither language |  |" in md
+    assert [f["task_id"] for f in bad["failures"]] == ["task_01", "task_01", "task_05"] and good["failures"] == []
     # every transcript stores what a judge needs
     t = transcripts[0]
     for key in ("prompt", "system_prompt", "raw_output", "settings", "date", "usage", "grade", "finish_reason"):
         assert key in t
+
+
+@pytest.mark.parametrize("code, cex, details, expected", [
+    ("NOT_EQUIVALENT", "100", {"model_accepts": True}, "accepts `100`, which is not in L"),
+    ("NOT_EQUIVALENT", "", {"model_accepts": False}, "rejects `ε`, which is in L"),
+    ("NON_MINIMAL_STATE_BLOAT", None, {"states_given": 84, "states_minimal": 14},
+     "right language, but 84 states (minimal: 14)"),
+    ("INCOMPLETE_DFA", None, {"n_missing_transitions": 2}, "2 missing transitions"),
+    ("INCOMPLETE_DFA", "ab", {"n_missing_transitions": 1},
+     "1 missing transition; even with a trap state added it is wrong on `ab`"),
+    ("WITNESS_NOT_DISTINGUISHING", "abab", {"witness": "", "accepted_by_both": False}, "`ε` is in neither language"),
+    ("WITNESS_NOT_SHORTEST", "abab", {"witness_length": 18, "shortest_length": 16},
+     "distinguishes, but has length 18 (shortest: 16)"),
+    ("OVERGENERATES", "[]", {}, "generates `[]`, which is not in L"),
+    ("UNDERGENERATES", "aba", {}, "cannot generate `aba`, which is in L"),
+    ("CNF_VIOLATION", None, {"violations": ["S -> a R1 (terminal in a binary rule)"]},
+     "not in CNF: S -> a R1 (terminal in a binary rule)"),
+    ("TRUNCATED", None, {"finish_reason": "length"}, "no final answer within 64000 output tokens"),
+    ("PARSE_ERROR", None, {"error": "no JSON object found"}, "no JSON object found"),
+])
+def test_failure_note_says_what_was_wrong(code, cex, details, expected):
+    t = {"grade": {"failure_code": code, "counterexample": cex, "details": details, "score": 0.0},
+         "usage": {"completion_tokens": 64000}}
+    assert failure_note(t) == expected
+
+
+def test_listed_examples_missed_checks_the_answer_against_its_own_prompt():
+    tasks = tasks_by_id()
+    accept_all = {"states": ["q"], "start": "q", "accepting": ["q"], "transitions": {"q": {"0": "q", "1": "q"}}}
+    t01 = {"grade": {"failure_code": "NOT_EQUIVALENT"}, "parsed_answer": accept_all}
+    assert listed_examples_missed(t01, tasks["task_01"]) == [
+        f"`{w}` (listed not in L)" for w in tasks["task_01"]["examples"]["out"]]
+    grammar = load_reference("task_07")["answer"]
+    over = {**grammar, "productions": grammar["productions"] + [{"lhs": "Ev", "rhs": ["LB", "RB"]}]}
+    t07 = {"grade": {"failure_code": "OVERGENERATES"}, "parsed_answer": over}
+    # Ev -> [ ] makes "[]" a word, and also a (-group's content: ( Ev ) gives "([])"
+    assert listed_examples_missed(t07, tasks["task_07"]) == ["`[]` (listed not in L)", "`([])` (listed not in L)"]
+    # right language, a task without listed examples, or no parsed answer: not applicable
+    assert listed_examples_missed({"grade": {"failure_code": "NON_MINIMAL_STATE_BLOAT"}}, tasks["task_01"]) is None
+    assert listed_examples_missed({"grade": {"failure_code": "NOT_EQUIVALENT"}, "parsed_answer": accept_all},
+                                  tasks["task_03"]) is None
+    assert listed_examples_missed({"grade": {"failure_code": "TRUNCATED"}}, tasks["task_08"]) is None
 
 
 def test_cache_avoids_repeat_calls_but_not_api_errors(tmp_path):

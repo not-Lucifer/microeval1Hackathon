@@ -14,6 +14,11 @@ import json
 from collections import Counter, defaultdict
 from pathlib import Path
 from statistics import mean, pstdev
+from typing import Optional
+
+from automata.cfg import Grammar, cyk
+from automata.dfa import DFA, accepts
+from harness.prompts import tasks_by_id
 
 API_ERROR = "API_ERROR"
 TRUNCATED = "TRUNCATED"
@@ -45,7 +50,72 @@ def load_current_transcripts(root: Path, tasks: dict[str, dict], log=print) -> l
     return current
 
 
-def summarize(transcripts: list[dict]) -> dict:
+def _word(w: str) -> str:
+    return "`ε`" if w == "" else f"`{w}`"
+
+
+def failure_note(t: dict) -> str:
+    """One plain sentence saying what was wrong with a failed trial, built only from the facts
+    its grader stored (L is the task's target language)."""
+    g = t["grade"]
+    code, d, cex = g["failure_code"], g.get("details") or {}, g.get("counterexample")
+    if code == TRUNCATED:
+        return f"no final answer within {(t.get('usage') or {}).get('completion_tokens') or '?'} output tokens"
+    if code == "NON_MINIMAL_STATE_BLOAT":
+        return f"right language, but {d['states_given']} states (minimal: {d['states_minimal']})"
+    if code == "NOT_EQUIVALENT":
+        if d["model_accepts"]:
+            return f"accepts {_word(cex)}, which is not in L"
+        return f"rejects {_word(cex)}, which is in L"
+    if code == "INCOMPLETE_DFA":
+        wrong = f"; even with a trap state added it is wrong on {_word(cex)}" if cex is not None else ""
+        n = d["n_missing_transitions"]
+        return f"{n} missing transition{'' if n == 1 else 's'}" + wrong
+    if code == "WITNESS_NOT_DISTINGUISHING":
+        return f"{_word(d['witness'])} is in {'both languages' if d['accepted_by_both'] else 'neither language'}"
+    if code == "WITNESS_NOT_SHORTEST":
+        return f"distinguishes, but has length {d['witness_length']} (shortest: {d['shortest_length']})"
+    if code == "INVALID_WITNESS":
+        return f"{_word(d['witness'])} uses symbols outside the alphabet: {d['invalid_symbols']}"
+    if code == "OVERGENERATES":
+        return f"generates {_word(cex)}, which is not in L"
+    if code == "UNDERGENERATES":
+        return f"cannot generate {_word(cex)}, which is in L"
+    if code == "CNF_VIOLATION":
+        return f"not in CNF: {(d.get('violations') or ['?'])[0]}"
+    return str(d.get("error") or code)[:120]
+
+
+LANGUAGE_WRONG = ("NOT_EQUIVALENT", "INCOMPLETE_DFA", "OVERGENERATES", "UNDERGENERATES")
+
+
+def listed_examples_missed(t: dict, task: Optional[dict]) -> Optional[list[str]]:
+    """The in/out examples printed in the task prompt that a wrong-language answer gets wrong
+    (None when the task lists no examples or the answer's language was not wrong).
+
+    Diagnostic only, never part of a grade: it shows mistakes the model could have caught by
+    checking its own answer against its own prompt. Cost: one DFA run or one CYK parse per example."""
+    if task is None or t["grade"]["failure_code"] not in LANGUAGE_WRONG:
+        return None
+    examples, answer = task["examples"], t["parsed_answer"]
+    if not examples["in"] and not examples["out"]:
+        return None
+    alphabet = task["grader"]["params"]["alphabet"]
+    if task["grader"]["type"] == "dfa_exact":
+        dfa = DFA(states=answer["states"], alphabet=alphabet, start=answer["start"],
+                  accepting=answer["accepting"], transitions=answer["transitions"])
+        member = lambda w: accepts(dfa, w)  # noqa: E731  (a missing transition rejects)
+    else:
+        grammar = Grammar.model_validate(answer)
+        member = lambda w: cyk(grammar, alphabet, w)  # noqa: E731
+    return ([f"{_word(w)} (listed in L)" for w in examples["in"] if not member(w)]
+            + [f"{_word(w)} (listed not in L)" for w in examples["out"] if member(w)])
+
+
+def summarize(transcripts: list[dict], tasks: Optional[dict[str, dict]] = None) -> dict:
+    """``tasks`` (default: the current tasks/) supplies the prompt examples for the diagnostic
+    column; callers have already left out transcripts of other task versions."""
+    tasks = tasks_by_id() if tasks is None else tasks
     by_model: dict[str, list[dict]] = defaultdict(list)
     for t in transcripts:
         by_model[t["model"]].append(t)
@@ -94,6 +164,12 @@ def summarize(transcripts: list[dict]) -> dict:
             "completion_tokens": sum(t["usage"].get("completion_tokens") or 0 for t in items),
             "total_latency_s": round(sum(t.get("latency_s") or 0 for t in items), 1),
             "tasks": task_rows,
+            "failures": [
+                {"task_id": t["task_id"], "trial": t["trial"], "score": t["grade"]["score"],
+                 "failure_code": t["grade"]["failure_code"], "note": failure_note(t),
+                 "listed_examples_missed": listed_examples_missed(t, tasks.get(t["task_id"]))}
+                for t in sorted(valid, key=lambda t: (t["task_id"], t["trial"])) if t["grade"]["score"] < 1.0
+            ],
         }
     return {"n_transcripts": len(transcripts), "models": models}
 
@@ -139,6 +215,20 @@ def render_markdown(card: dict) -> str:
     for name, m in card["models"].items():
         hist = ", ".join(f"{k}: {v}" for k, v in sorted(m["failure_code_histogram"].items()))
         lines.append(f"- **{name}**: {hist}")
+    lines += ["", "## Every failed trial (API errors excluded)", "",
+              "What the grader found, in words. L is the task's target language. For automata and "
+              "grammars the quoted word is a shortest word the answer gets wrong in the way stated; for "
+              "task_05 it is the model's own witness. The last column (diagnostic, not part of the grade) "
+              "lists the examples printed in the prompt that a wrong-language answer already gets wrong; "
+              "it is empty for tasks whose prompt lists no examples.", "",
+              "| Model | Task | Trial | Score | Code | What was wrong | Prompt examples it gets wrong |",
+              "|---|---|---|---|---|---|---|"]
+    for name, m in card["models"].items():
+        for f in m["failures"]:
+            note = f["note"].replace("|", "\\|")
+            missed = f["listed_examples_missed"]
+            missed = "" if missed is None else (", ".join(missed) or "none")
+            lines.append(f"| {name} | {f['task_id']} | {f['trial']} | {f['score']} | {f['failure_code']} | {note} | {missed} |")
     lines.append("")
     return "\n".join(lines)
 
