@@ -23,7 +23,7 @@ from reference import build  # noqa: E402
 
 TASKS_DIR = ROOT / "tasks"
 REFERENCE_DIR = ROOT / "reference"
-DRAFT_NOTE = "DRAFTED BY CLAUDE CODE - author must review and rewrite in their own words"
+DRAFT_NOTE = "DRAFTED BY CLAUDE CODE at the author's request; not rewritten by the author (see docs/AI_USE.md)"
 
 # --------------------------------------------------------------------------- shared text
 
