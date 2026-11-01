@@ -34,3 +34,7 @@ kept at git tag `pilot-v1` and in `pilot_v1/`.
 | Left quotient engine | `automata/nfa.py::left_quotient` (+ brute-force tests) | e.g. compare with `right_quotient`: which one needs subsets, and why | | ☐ |
 | Harness | `harness/`, `run_eval.py` (fake-client tests), stale-transcript guard | e.g. run `--regrade pilot_v1/transcripts` and read the refusal | | ☐ |
 | Chat-app import | `harness/manual.py`; paste one reply you know is right and one you know is wrong, import, and check the grades | | | ☐ |
+| Parser fix (2026-11-01) | a JSON block opens only at the start of a line (`harness/parsing.py`, OPEN_QUESTIONS #50) | e.g. paste `I end with one ```json block.` above a correct answer and check it scores 1.0 | | ☐ |
+| Failure explainer | `scripts/explain_failures.py`: first faulty transition or flag of each wrong DFA | e.g. follow ChatGPT's T06 trial 2 table by hand on `aabbabaab` and find the wrong arrow it names | | ☐ |
+| README analysis (drafted by Claude Code at the author's request) | who relies on this, why each task is hard, per-task notes, failure modes, hot take, limitations, prior art | e.g. check every number against `results/summary.md` and open two of the linked transcripts | | ☐ |
+| Submission texts (drafted by Claude Code at the author's request) | `docs/SUBMISSION.md` (form description, checklist, rubric critique), `docs/VIDEO_SCRIPT.md` | e.g. read the description aloud, check each number against the README "Results", and run every command the video shows | | ☐ |

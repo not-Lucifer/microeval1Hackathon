@@ -111,5 +111,10 @@ counts, so there is no second calibration round.
 | Nov 3-4 | remaining trials + reruns of API errors | optional second app (e.g. another free chat app) |
 | Nov 5-8 | analysis, README, video, zip | |
 
+**Status (2026-11-01): ahead of plan.** Route A trials 1-3 are done for Nemotron and Dots
+(Gemma's free provider answered HTTP 429 to every call, so it has no valid trial). Route B
+trials 1-3 are done for ChatGPT. Still optional: a second chat app, e.g.
+`--new-manual NAME --trials 3`.
+
 Commit transcripts after each run (`git add transcripts results manual`, then commit). They are
 the evidence judges re-grade.
