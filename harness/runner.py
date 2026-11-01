@@ -54,7 +54,20 @@ def write_json(path: Path, obj: Any) -> None:
     )
 
 
-def build_transcript(task: dict, spec: ModelSpec, trial: int, result: CompletionResult, cost: Optional[float]) -> dict:
+def answered_at(path: Path, task: dict, result: CompletionResult) -> Optional[str]:
+    """The date stored in the transcript already at ``path`` if it records this same answer to
+    this same prompt, so a cache replay keeps the date the model actually answered."""
+    if not path.exists():
+        return None
+    old = json.loads(path.read_text(encoding="utf-8"))
+    same = (old.get("prompt"), old.get("raw_output"), old.get("finish_reason")) == (
+        task["prompt"], result.text, result.finish_reason)
+    return old.get("date") if same else None
+
+
+def build_transcript(task: dict, spec: ModelSpec, trial: int, result: CompletionResult, cost: Optional[float],
+                     date: Optional[str] = None) -> dict:
+    """``date`` defaults to now; a cache replay passes the original one (see answered_at)."""
     if result.error is not None:
         parsed, grade = None, GradeResult.fail(FailureCode.API_ERROR, error=result.error)
     else:
@@ -64,7 +77,7 @@ def build_transcript(task: dict, spec: ModelSpec, trial: int, result: Completion
         "model": spec.name,
         "settings": spec.settings(),
         "trial": trial,
-        "date": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "date": date or datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "system_prompt": SYSTEM_PROMPT,
         "prompt": task["prompt"],
         "raw_output": result.text,
@@ -137,8 +150,10 @@ async def run_trials(
             price = call_cost(result.usage, spec) if result.error is None else None
             if cached is None:
                 cost.add(price)
-            transcript = build_transcript(task, spec, trial, result, price)
-            write_json(transcript_path(transcripts_dir, spec.name, task["id"], trial), transcript)
+            path = transcript_path(transcripts_dir, spec.name, task["id"], trial)
+            date = answered_at(path, task, result) if cached is not None else None
+            transcript = build_transcript(task, spec, trial, result, price, date)
+            write_json(path, transcript)
             produced.append(transcript)
             g = transcript["grade"]
             log(f"{spec.name:28} {task['id']} trial {trial}: score {g['score']} {g['failure_code'] or ''}")

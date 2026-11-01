@@ -181,6 +181,20 @@ def test_cache_avoids_repeat_calls_but_not_api_errors(tmp_path):
     assert [c[0] for c in retry.calls] == ["bad-model"]  # only the API_ERROR trial was retried
 
 
+def test_replaying_cached_answers_keeps_the_date_they_were_given(tmp_path):
+    """A later run (e.g. --trials 3 after --trials 2) replays finished trials from the cache; their
+    transcripts must keep the date the model answered, not the date of the replay."""
+    run(tmp_path, FakeClient(scripted_replies()))
+    earlier = "2000-01-01T00:00:00+00:00"
+    paths = sorted((tmp_path / "transcripts").rglob("trial_*.json"))
+    for p in paths:
+        p.write_text(json.dumps({**json.loads(p.read_text(encoding="utf-8")), "date": earlier}), encoding="utf-8")
+    run(tmp_path, FakeClient({("bad-model", "task_05"): [CompletionResult(error="RateLimitError: 429")]}))
+    dates = {p.relative_to(tmp_path).as_posix(): json.loads(p.read_text(encoding="utf-8"))["date"] for p in paths}
+    retried = "transcripts/bad-model/task_05/trial_1.json"  # API errors are never cached: a new call
+    assert dates.pop(retried) != earlier and set(dates.values()) == {earlier}
+
+
 def test_max_cost_stops_new_calls(tmp_path):
     client = FakeClient(scripted_replies())
     spent = CostTracker(max_usd=0.01)
