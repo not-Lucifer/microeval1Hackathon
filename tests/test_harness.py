@@ -51,6 +51,20 @@ def test_no_json_at_all():
     assert extract_final_json("I think the answer is 42.")[0] is None
 
 
+@pytest.mark.parametrize("prose", [
+    "As instructed, I end with one ```json block.\n\n",
+    "The final answer goes in a ```json fence.\n",
+    "- End your reply with exactly one fenced code block that starts with ```json and contains only the final answer.\n",
+])
+def test_a_fence_mentioned_inside_a_sentence_is_not_a_block(prose):
+    """Only a fence at the start of a line opens a block (as in Markdown); found by review, 2026-11-01."""
+    assert extract_final_json(prose + fenced({"witness": "ab"})) == ({"witness": "ab"}, None)
+
+
+def test_indented_fence_is_still_a_block():
+    assert extract_final_json('Answer:\n  ```json\n  {"witness": "ab"}\n  ```') == ({"witness": "ab"}, None)
+
+
 def test_uppercase_fence_and_trailing_text():
     assert extract_final_json("```JSON\n{\"witness\": \"ab\"}\n```\nThanks!") == ({"witness": "ab"}, None)
 
@@ -123,6 +137,9 @@ def test_end_to_end_grades_and_metrics(tmp_path):
     # variance across trials: bad-model scored 0 in both trial rounds (its trial-1 API error is excluded)
     assert good["mean_score_by_trial"] == {"1": 1.0, "2": 1.0} and bad["mean_score_by_trial"] == {"1": 0.0, "2": 0.0}
     md = render_markdown(card)
+    # bad-model has 2 valid trials of task_01 but only 1 of task_05 (an API error): shown as a range
+    assert (bad["trials_per_task_min"], bad["trials_per_task"]) == (1, 2)
+    assert next(line for line in md.splitlines() if line.startswith("| bad-model (")).split(" | ")[1] == "1–2"
     assert "good-model" in md
     assert "| bad-model | task_05 | 2 | 0.0 | WITNESS_NOT_DISTINGUISHING | `ab` is in neither language |  |" in md
     assert [f["task_id"] for f in bad["failures"]] == ["task_01", "task_01", "task_05"] and good["failures"] == []

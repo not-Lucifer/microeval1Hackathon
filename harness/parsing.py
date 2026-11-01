@@ -10,7 +10,9 @@ import json
 import re
 from typing import Any, Optional
 
-JSON_FENCE = re.compile(r"```json[^\n]*\n(.*?)```", re.DOTALL | re.IGNORECASE)
+# A block opens only with ```json at the start of a line (leading spaces allowed), as in
+# Markdown, so a sentence that merely mentions "```json" does not swallow the real answer.
+JSON_FENCE = re.compile(r"^[ \t]*```json[^\n]*\n(.*?)```", re.DOTALL | re.IGNORECASE | re.MULTILINE)
 
 
 def last_top_level_object(text: str) -> Optional[dict]:

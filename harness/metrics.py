@@ -150,6 +150,7 @@ def summarize(transcripts: list[dict], tasks: Optional[dict[str, dict]] = None) 
             "api_errors": [f"{t['task_id']}/trial_{t['trial']}" for t in items if t["grade"]["failure_code"] == API_ERROR],
             "truncated": sum(t["grade"]["failure_code"] == TRUNCATED for t in valid),
             "trials_per_task": max((r["trials"] for r in task_rows.values()), default=0),
+            "trials_per_task_min": min((r["trials"] for r in task_rows.values()), default=0),
             "pass_rate": round(sum(s == 1.0 for s in scores) / len(scores), 4) if scores else None,
             "mean_score": round(mean(scores), 4) if scores else None,
             "mean_score_by_trial": {str(k): round(mean(v), 4) for k, v in sorted(trial_means.items())},
@@ -195,8 +196,10 @@ def render_markdown(card: dict) -> str:
             setting = f"`{s['openrouter_id']}`, T={s['temperature']}, reasoning={s['reasoning']}"
         cost = f"{m['cost_usd']:.2f}" + (f" (+{m['calls_with_unknown_cost']} unknown)" if m["calls_with_unknown_cost"] else "")
         by_trial = " / ".join(f"{v:.2f}" for v in m["mean_score_by_trial"].values()) or "–"
+        lo, hi = m["trials_per_task_min"], m["trials_per_task"]
+        trials = str(hi) if lo == hi else f"{lo}–{hi}"  # tasks with fewer valid trials are visible
         lines.append(
-            f"| {name} ({setting}) | {m['trials_per_task']} | {_fmt(m['pass_rate'])} | {_fmt(m['pass_at_k'])} | "
+            f"| {name} ({setting}) | {trials} | {_fmt(m['pass_rate'])} | {_fmt(m['pass_at_k'])} | "
             f"{_fmt(m['pass_hat_k'])} | {'–' if m['mean_score'] is None else m['mean_score']} | {by_trial} | "
             f"{m['truncated']} | {len(m['api_errors'])} | {cost} |"
         )
