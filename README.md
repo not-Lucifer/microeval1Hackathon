@@ -199,7 +199,7 @@ The first draft of Task 08, `{aⁱbʲaᵏ : i+k = 2j, i > k ≥ 1}`, is **not co
 See [docs/AI_USE.md](docs/AI_USE.md). In short:
 - **Claude Code** drafted the code, tests, task prompts, reference constructions and docs. At the author's request it also drafted this README's analysis sections (who relies on this, why each task is hard, per-task notes, failure analysis and hot take, provenance) and the task rationale texts.
 - **How it was checked:** every number is recomputed by scripts, every grader is tested against references, mutants and brute force, and every model grade was re-checked by an independent script. The author read the failing transcripts.
-- **Review:** at the author's request, Claude Code re-did every row of `docs/REVIEW_LOG.md` (each task, reference and grader) with an independent script, `python scripts/review_checks.py`, and ticked those rows as machine checks. The author then checked 26 of the 29 rows by hand and ticked them in a separate column (2026-11-01). The log keeps the two kinds of check apart.
+- **Review:** at the author's request, Claude Code re-did every row of `docs/REVIEW_LOG.md` (each task, reference and grader) with an independent script, `python scripts/review_checks.py`, and ticked those rows as machine checks. The author then checked all 29 rows by hand and ticked them in a separate column (2026-11-01). The log keeps the two kinds of check apart.
 
 ## Repository hygiene
 

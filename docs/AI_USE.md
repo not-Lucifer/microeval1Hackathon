@@ -34,7 +34,7 @@ the author decided not to rewrite them (2026-11-01).
   no-tools and new-chat setup (`manual/chatgpt-free/info.yaml`). Free trials 2-3 were started by
   Claude Code at the author's request, with the README's free-model command.
 - Read the failing transcripts and studied the test cases (author's statement, 2026-11-01).
-- Checked and ticked 26 of the 29 rows of `docs/REVIEW_LOG.md` by hand (2026-11-01).
+- Checked and ticked all 29 rows of `docs/REVIEW_LOG.md` by hand (2026-11-01).
 
 ## Review of tasks, references and graders
 
@@ -42,8 +42,8 @@ the author decided not to rewrite them (2026-11-01).
   with `scripts/review_checks.py`. That script re-implements each language, automaton and
   grammar independently of the project code and compares the project's references, graders and
   stored grades against them. It passed, and Claude Code ticked the "Claude Code" column.
-- The author then checked 26 of the 29 rows by hand and ticked them in the separate "Author"
-  column (2026-11-01). Still open: Witness grader, Model grades, Submission texts.
+- The author then checked all 29 rows by hand and ticked them in the separate "Author"
+  column (2026-11-01).
 - The review script found one documentation error: the README said T06's 17 reachable subsets
   include the empty set, which they do not (OPEN_QUESTIONS #53, fixed).
 

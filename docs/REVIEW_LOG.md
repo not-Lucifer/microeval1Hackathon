@@ -9,8 +9,7 @@ One row per task, reference solution, grader and generator, with two kinds of ch
   references, graders and stored grades against that. Claude Code ticked these on 2026-11-01, at
   the author's request, after the script passed. **These are machine checks, not a human review.**
 - **✔ Author** means the author ticked the row after checking that item by hand. On 2026-11-01
-  the author ticked 26 of the 29 rows; still open: Witness grader, Model grades, Submission
-  texts. The "Suggested hand check" column is the check proposed for each row; the author did
+  the author ticked all 29 rows. The "Suggested hand check" column is the check proposed for each row; the author did
   not record a different method.
 
 Rows are for task set **v2** (the current `tasks/`). v1 is kept at git tag `pilot-v1` and in `pilot_v1/`.
@@ -36,13 +35,13 @@ Rows are for task set **v2** (the current `tasks/`). v1 is kept at git tag `pilo
 | T08 reference | three-case grammar by i mod 3, 30 CNF rules | CNF, infinite, generates exactly L up to length 36; derives `aba` (i ≡ 1), `aabbaa` (i ≡ 2), `aaabbbaaa` (i ≡ 0) | ✔ | derive the three words and say which case each uses | ✔ |
 | Original T08 non-CF proof | `scripts/check_task08_noncf.py` | Own pumping check: every decomposition of a^(p+1) b^p a^(p−1) fails for p = 2..8; the project script exits 0. Supports the proof; it is not a proof for all p | ✔ | give the pumping argument without notes | ✔ |
 | DFA grader | `graders/dfa_grader.py` + mutants | 110 answers (5 references, 105 mutants: redirected arrows, flipped flags, duplicated states, a deleted transition): grader score = own exact score every time, with counterexamples of the same length | ✔ | explain why a duplicated state scores 0.5 but a missing transition 0 | ✔ |
-| Witness grader | `graders/witness_grader.py` + mutants | 23 witnesses (ε, the reference, a distinguishing word of length 17, a trailing space, off-alphabet, each one-letter change): grader = own score | ✔ | | ☐ |
+| Witness grader | `graders/witness_grader.py` + mutants | 23 witnesses (ε, the reference, a distinguishing word of length 17, a trailing space, off-alphabet, each one-letter change): grader = own score | ✔ | | ✔ |
 | CFG grader (bounded) | `graders/cfg_grader.py`, `automata/cfg.py::check_upto` | T08: 40 grammars (reference, each production dropped, 8 random extra productions, one non-CNF) agree with own enumeration up to the grader's N = 36. T07: 31 grammars agree up to length 14 (below N = 16; a longer counterexample is checked directly) | ✔ | explain the "wrapped enumeration" argument and why it is exact up to N | ✔ |
-| Model grades | all 75 transcripts | All 54 graded answers re-scored by own code (exact for DFAs and T05, up to 36 for T08, 14 for T07): 54 agree | ✔ | open two failing transcripts and confirm the counterexample by hand | ☐ |
+| Model grades | all 75 transcripts | All 54 graded answers re-scored by own code (exact for DFAs and T05, up to 36 for T08, 14 for T07): 54 agree | ✔ | open two failing transcripts and confirm the counterexample by hand | ✔ |
 | Left quotient engine | `automata/nfa.py::left_quotient` (+ brute-force tests) | Exactly equivalent to the own construction on 300 random DFA pairs | ✔ | compare with `right_quotient`: which one needs subsets, and why | ✔ |
 | Harness | `harness/`, `run_eval.py` (fake-client tests), stale-transcript guard | `--regrade pilot_v1/transcripts` exits 1 ("212 transcript(s) answer a different version of their task") and leaves `results/` unchanged | ✔ | run it and read the refusal | ✔ |
 | Chat-app import | `harness/manual.py` | In a temporary folder: a right reply scores 1.0, a wrong one 0.0, and a setup without the no-tools confirmation is refused | ✔ | paste one reply you know is right and one you know is wrong, import, check the grades | ✔ |
 | Parser fix (2026-11-01) | a JSON block opens only at the start of a line (`harness/parsing.py`, OPEN_QUESTIONS #50) | A reply that mentions ```` ```json ```` in a sentence before the real block scores 1.0 | ✔ | try it with your own wording | ✔ |
 | Failure explainer | `scripts/explain_failures.py` | ChatGPT's T06 trial 2, with own code: the only faulty arrow is `JL` --a--> `JL` and no flag is wrong, as the explainer says; it accepts `aabbabaab` (not in L) and agrees with L on 2,041 of 2,047 words up to length 10 | ✔ | follow the table by hand on `aabbabaab` | ✔ |
 | README analysis (drafted by Claude Code at the author's request) | who relies on this, why each task is hard, per-task notes, failure modes, hot take, limitations, prior art | 23 numbers recomputed from `results/scorecard.json` and the transcripts and found in the README. The wording, the hot take and the prior-art comparison cannot be machine-checked | ✔ (numbers) | read it critically; open two linked transcripts | ✔ |
-| Submission texts (drafted by Claude Code at the author's request) | `docs/SUBMISSION.md`, `docs/VIDEO_SCRIPT.md` | 10 numbers recomputed and found in the texts | ✔ (numbers) | read the description aloud; run every command the video shows | ☐ |
+| Submission texts (drafted by Claude Code at the author's request) | `docs/SUBMISSION.md`, `docs/VIDEO_SCRIPT.md` | 10 numbers recomputed and found in the texts | ✔ (numbers) | read the description aloud; run every command the video shows | ✔ |
