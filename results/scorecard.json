@@ -185,6 +185,11 @@
         }
       ],
       "mean_score": 0.3125,
+      "mean_score_by_trial": {
+        "1": 0.3125,
+        "2": 0.5,
+        "3": 0.125
+      },
       "mean_score_sd_across_trial_indices": 0.1531,
       "pass_at_k": 0.5,
       "pass_hat_k": 0.0,
@@ -367,20 +372,23 @@
       },
       "total_latency_s": 0,
       "trials_per_task": 3,
+      "trials_per_task_min": 3,
       "truncated": 0,
       "valid_trials": 24
     },
     "dots-3-note-free": {
       "api_errors": [],
       "calls_with_unknown_cost": 0,
-      "completion_tokens": 436486,
+      "completion_tokens": 1274460,
       "cost_usd": 0.0,
       "dates": [
-        "2026-10-31"
+        "2026-10-31",
+        "2026-11-01"
       ],
       "failure_code_histogram": {
-        "PASS": 3,
-        "TRUNCATED": 5
+        "NOT_EQUIVALENT": 1,
+        "PASS": 10,
+        "TRUNCATED": 13
       },
       "failures": [
         {
@@ -396,6 +404,22 @@
           "listed_examples_missed": null,
           "note": "no final answer within 64000 output tokens",
           "score": 0.0,
+          "task_id": "task_01",
+          "trial": 2
+        },
+        {
+          "failure_code": "TRUNCATED",
+          "listed_examples_missed": null,
+          "note": "no final answer within 64000 output tokens",
+          "score": 0.0,
+          "task_id": "task_01",
+          "trial": 3
+        },
+        {
+          "failure_code": "TRUNCATED",
+          "listed_examples_missed": null,
+          "note": "no final answer within 64000 output tokens",
+          "score": 0.0,
           "task_id": "task_02",
           "trial": 1
         },
@@ -404,8 +428,48 @@
           "listed_examples_missed": null,
           "note": "no final answer within 64000 output tokens",
           "score": 0.0,
+          "task_id": "task_02",
+          "trial": 2
+        },
+        {
+          "failure_code": "TRUNCATED",
+          "listed_examples_missed": null,
+          "note": "no final answer within 64000 output tokens",
+          "score": 0.0,
+          "task_id": "task_02",
+          "trial": 3
+        },
+        {
+          "failure_code": "NOT_EQUIVALENT",
+          "listed_examples_missed": null,
+          "note": "accepts `aabb`, which is not in L",
+          "score": 0.0,
+          "task_id": "task_03",
+          "trial": 3
+        },
+        {
+          "failure_code": "TRUNCATED",
+          "listed_examples_missed": null,
+          "note": "no final answer within 64000 output tokens",
+          "score": 0.0,
           "task_id": "task_05",
           "trial": 1
+        },
+        {
+          "failure_code": "TRUNCATED",
+          "listed_examples_missed": null,
+          "note": "no final answer within 64000 output tokens",
+          "score": 0.0,
+          "task_id": "task_05",
+          "trial": 2
+        },
+        {
+          "failure_code": "TRUNCATED",
+          "listed_examples_missed": null,
+          "note": "no final answer within 64000 output tokens",
+          "score": 0.0,
+          "task_id": "task_05",
+          "trial": 3
         },
         {
           "failure_code": "TRUNCATED",
@@ -422,13 +486,34 @@
           "score": 0.0,
           "task_id": "task_08",
           "trial": 1
+        },
+        {
+          "failure_code": "TRUNCATED",
+          "listed_examples_missed": null,
+          "note": "no final answer within 64000 output tokens",
+          "score": 0.0,
+          "task_id": "task_08",
+          "trial": 2
+        },
+        {
+          "failure_code": "TRUNCATED",
+          "listed_examples_missed": null,
+          "note": "no final answer within 64000 output tokens",
+          "score": 0.0,
+          "task_id": "task_08",
+          "trial": 3
         }
       ],
-      "mean_score": 0.375,
-      "mean_score_sd_across_trial_indices": null,
-      "pass_at_k": 0.375,
-      "pass_hat_k": 0.375,
-      "pass_rate": 0.375,
+      "mean_score": 0.4167,
+      "mean_score_by_trial": {
+        "1": 0.375,
+        "2": 0.5,
+        "3": 0.375
+      },
+      "mean_score_sd_across_trial_indices": 0.0589,
+      "pass_at_k": 0.5,
+      "pass_hat_k": 0.25,
+      "pass_rate": 0.4167,
       "settings": {
         "max_tokens": 64000,
         "openrouter_id": "dots-studio/dots-3-note-preview:free",
@@ -442,136 +527,188 @@
       "tasks": {
         "task_01": {
           "counterexamples": [
+            null,
+            null,
             null
           ],
           "failure_codes": [
+            "TRUNCATED",
+            "TRUNCATED",
             "TRUNCATED"
           ],
           "mean_score": 0.0,
           "passes": 0,
           "scores": [
+            0.0,
+            0.0,
             0.0
           ],
-          "trials": 1
+          "trials": 3
         },
         "task_02": {
           "counterexamples": [
+            null,
+            null,
             null
           ],
           "failure_codes": [
+            "TRUNCATED",
+            "TRUNCATED",
             "TRUNCATED"
           ],
           "mean_score": 0.0,
           "passes": 0,
           "scores": [
+            0.0,
+            0.0,
             0.0
           ],
-          "trials": 1
+          "trials": 3
         },
         "task_03": {
           "counterexamples": [
-            null
+            null,
+            null,
+            "aabb"
           ],
           "failure_codes": [
-            null
+            null,
+            null,
+            "NOT_EQUIVALENT"
           ],
-          "mean_score": 1.0,
-          "passes": 1,
+          "mean_score": 0.6667,
+          "passes": 2,
           "scores": [
-            1.0
+            1.0,
+            1.0,
+            0.0
           ],
-          "trials": 1
+          "trials": 3
         },
         "task_04": {
           "counterexamples": [
+            null,
+            null,
             null
           ],
           "failure_codes": [
+            null,
+            null,
             null
           ],
           "mean_score": 1.0,
-          "passes": 1,
+          "passes": 3,
           "scores": [
+            1.0,
+            1.0,
             1.0
           ],
-          "trials": 1
+          "trials": 3
         },
         "task_05": {
           "counterexamples": [
+            null,
+            null,
             null
           ],
           "failure_codes": [
+            "TRUNCATED",
+            "TRUNCATED",
             "TRUNCATED"
           ],
           "mean_score": 0.0,
           "passes": 0,
           "scores": [
+            0.0,
+            0.0,
             0.0
           ],
-          "trials": 1
+          "trials": 3
         },
         "task_06": {
           "counterexamples": [
+            null,
+            null,
             null
           ],
           "failure_codes": [
+            null,
+            null,
             null
           ],
           "mean_score": 1.0,
-          "passes": 1,
+          "passes": 3,
           "scores": [
+            1.0,
+            1.0,
             1.0
           ],
-          "trials": 1
+          "trials": 3
         },
         "task_07": {
           "counterexamples": [
+            null,
+            null,
             null
           ],
           "failure_codes": [
-            "TRUNCATED"
+            "TRUNCATED",
+            null,
+            null
           ],
-          "mean_score": 0.0,
-          "passes": 0,
+          "mean_score": 0.6667,
+          "passes": 2,
           "scores": [
-            0.0
+            0.0,
+            1.0,
+            1.0
           ],
-          "trials": 1
+          "trials": 3
         },
         "task_08": {
           "counterexamples": [
+            null,
+            null,
             null
           ],
           "failure_codes": [
+            "TRUNCATED",
+            "TRUNCATED",
             "TRUNCATED"
           ],
           "mean_score": 0.0,
           "passes": 0,
           "scores": [
+            0.0,
+            0.0,
             0.0
           ],
-          "trials": 1
+          "trials": 3
         }
       },
-      "total_latency_s": 4575.4,
-      "trials_per_task": 1,
-      "truncated": 5,
-      "valid_trials": 8
+      "total_latency_s": 13353.1,
+      "trials_per_task": 3,
+      "trials_per_task_min": 3,
+      "truncated": 13,
+      "valid_trials": 24
     },
     "gemma-4-31b-free": {
       "api_errors": [
         "task_01/trial_1",
+        "task_01/trial_2",
         "task_02/trial_1"
       ],
       "calls_with_unknown_cost": 0,
       "completion_tokens": 0,
       "cost_usd": 0,
       "dates": [
-        "2026-10-31"
+        "2026-10-31",
+        "2026-11-01"
       ],
       "failure_code_histogram": {},
       "failures": [],
       "mean_score": null,
+      "mean_score_by_trial": {},
       "mean_score_sd_across_trial_indices": null,
       "pass_at_k": null,
       "pass_hat_k": null,
@@ -589,21 +726,24 @@
       "tasks": {},
       "total_latency_s": 0,
       "trials_per_task": 0,
+      "trials_per_task_min": 0,
       "truncated": 0,
       "valid_trials": 0
     },
     "nemotron-3-ultra-free": {
       "api_errors": [],
       "calls_with_unknown_cost": 0,
-      "completion_tokens": 321163,
+      "completion_tokens": 905574,
       "cost_usd": 0.0,
       "dates": [
-        "2026-10-31"
+        "2026-10-31",
+        "2026-11-01"
       ],
       "failure_code_histogram": {
         "NON_MINIMAL_STATE_BLOAT": 1,
-        "PASS": 5,
-        "TRUNCATED": 2
+        "NOT_EQUIVALENT": 2,
+        "PASS": 16,
+        "TRUNCATED": 5
       },
       "failures": [
         {
@@ -615,6 +755,14 @@
           "trial": 1
         },
         {
+          "failure_code": "NOT_EQUIVALENT",
+          "listed_examples_missed": [],
+          "note": "rejects `100100`, which is in L",
+          "score": 0.0,
+          "task_id": "task_01",
+          "trial": 2
+        },
+        {
           "failure_code": "NON_MINIMAL_STATE_BLOAT",
           "listed_examples_missed": null,
           "note": "right language, but 17 states (minimal: 16)",
@@ -623,19 +771,56 @@
           "trial": 1
         },
         {
+          "failure_code": "NOT_EQUIVALENT",
+          "listed_examples_missed": null,
+          "note": "accepts `ababba`, which is not in L",
+          "score": 0.0,
+          "task_id": "task_03",
+          "trial": 2
+        },
+        {
+          "failure_code": "TRUNCATED",
+          "listed_examples_missed": null,
+          "note": "no final answer within 64000 output tokens",
+          "score": 0.0,
+          "task_id": "task_05",
+          "trial": 2
+        },
+        {
           "failure_code": "TRUNCATED",
           "listed_examples_missed": null,
           "note": "no final answer within 64000 output tokens",
           "score": 0.0,
           "task_id": "task_08",
           "trial": 1
+        },
+        {
+          "failure_code": "TRUNCATED",
+          "listed_examples_missed": null,
+          "note": "no final answer within 64000 output tokens",
+          "score": 0.0,
+          "task_id": "task_08",
+          "trial": 2
+        },
+        {
+          "failure_code": "TRUNCATED",
+          "listed_examples_missed": null,
+          "note": "no final answer within 64000 output tokens",
+          "score": 0.0,
+          "task_id": "task_08",
+          "trial": 3
         }
       ],
       "mean_score": 0.6875,
-      "mean_score_sd_across_trial_indices": null,
-      "pass_at_k": 0.625,
-      "pass_hat_k": 0.625,
-      "pass_rate": 0.625,
+      "mean_score_by_trial": {
+        "1": 0.6875,
+        "2": 0.5,
+        "3": 0.875
+      },
+      "mean_score_sd_across_trial_indices": 0.1531,
+      "pass_at_k": 0.875,
+      "pass_hat_k": 0.375,
+      "pass_rate": 0.6667,
       "settings": {
         "max_tokens": 64000,
         "openrouter_id": "nvidia/nemotron-3-ultra-550b-a55b:free",
@@ -649,122 +834,171 @@
       "tasks": {
         "task_01": {
           "counterexamples": [
+            null,
+            "100100",
             null
           ],
           "failure_codes": [
-            "TRUNCATED"
+            "TRUNCATED",
+            "NOT_EQUIVALENT",
+            null
           ],
-          "mean_score": 0.0,
-          "passes": 0,
+          "mean_score": 0.3333,
+          "passes": 1,
           "scores": [
-            0.0
+            0.0,
+            0.0,
+            1.0
           ],
-          "trials": 1
+          "trials": 3
         },
         "task_02": {
           "counterexamples": [
+            null,
+            null,
             null
           ],
           "failure_codes": [
-            "NON_MINIMAL_STATE_BLOAT"
+            "NON_MINIMAL_STATE_BLOAT",
+            null,
+            null
           ],
-          "mean_score": 0.5,
-          "passes": 0,
+          "mean_score": 0.8333,
+          "passes": 2,
           "scores": [
-            0.5
+            0.5,
+            1.0,
+            1.0
           ],
-          "trials": 1
+          "trials": 3
         },
         "task_03": {
           "counterexamples": [
+            null,
+            "ababba",
             null
           ],
           "failure_codes": [
+            null,
+            "NOT_EQUIVALENT",
             null
           ],
-          "mean_score": 1.0,
-          "passes": 1,
+          "mean_score": 0.6667,
+          "passes": 2,
           "scores": [
+            1.0,
+            0.0,
             1.0
           ],
-          "trials": 1
+          "trials": 3
         },
         "task_04": {
           "counterexamples": [
+            null,
+            null,
             null
           ],
           "failure_codes": [
+            null,
+            null,
             null
           ],
           "mean_score": 1.0,
-          "passes": 1,
+          "passes": 3,
           "scores": [
+            1.0,
+            1.0,
             1.0
           ],
-          "trials": 1
+          "trials": 3
         },
         "task_05": {
           "counterexamples": [
+            null,
+            null,
             null
           ],
           "failure_codes": [
+            null,
+            "TRUNCATED",
             null
           ],
-          "mean_score": 1.0,
-          "passes": 1,
+          "mean_score": 0.6667,
+          "passes": 2,
           "scores": [
+            1.0,
+            0.0,
             1.0
           ],
-          "trials": 1
+          "trials": 3
         },
         "task_06": {
           "counterexamples": [
+            null,
+            null,
             null
           ],
           "failure_codes": [
+            null,
+            null,
             null
           ],
           "mean_score": 1.0,
-          "passes": 1,
+          "passes": 3,
           "scores": [
+            1.0,
+            1.0,
             1.0
           ],
-          "trials": 1
+          "trials": 3
         },
         "task_07": {
           "counterexamples": [
+            null,
+            null,
             null
           ],
           "failure_codes": [
+            null,
+            null,
             null
           ],
           "mean_score": 1.0,
-          "passes": 1,
+          "passes": 3,
           "scores": [
+            1.0,
+            1.0,
             1.0
           ],
-          "trials": 1
+          "trials": 3
         },
         "task_08": {
           "counterexamples": [
+            null,
+            null,
             null
           ],
           "failure_codes": [
+            "TRUNCATED",
+            "TRUNCATED",
             "TRUNCATED"
           ],
           "mean_score": 0.0,
           "passes": 0,
           "scores": [
+            0.0,
+            0.0,
             0.0
           ],
-          "trials": 1
+          "trials": 3
         }
       },
-      "total_latency_s": 11777.9,
-      "trials_per_task": 1,
-      "truncated": 2,
-      "valid_trials": 8
+      "total_latency_s": 26586.8,
+      "trials_per_task": 3,
+      "trials_per_task_min": 3,
+      "truncated": 5,
+      "valid_trials": 24
     }
   },
-  "n_transcripts": 42
+  "n_transcripts": 75
 }
