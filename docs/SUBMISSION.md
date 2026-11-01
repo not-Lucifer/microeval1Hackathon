@@ -47,12 +47,12 @@ Status as of 2026-11-01. "Author" means only the author can do or attest to it.
 | Description filled in | **author**: paste the text above |
 | Representative transcripts included for every model reported | done: every transcript is in `transcripts/` (Gemma: its three API-error records) |
 | I've scored my own project against the rubric | **author**: a critic's draft is below |
-| I've reviewed every task, reference answer and grading rule myself | **not by the author by hand.** At the author's request Claude Code re-did every row of `docs/REVIEW_LOG.md` with an independent script (`scripts/review_checks.py`, all OK) and ticked the "Claude Code" column; the "Author" column is empty. Say so honestly if asked |
+| I've reviewed every task, reference answer and grading rule myself | **author**: 26 of the 29 rows of `docs/REVIEW_LOG.md` ticked by hand (2026-11-01). That covers every task and reference answer and the DFA and CFG graders; the witness grader row is still open. Every row was also re-done by `scripts/review_checks.py` (all OK) |
 | `verify_specs.py` passes; README numbers match its output | verified |
 | `pytest` green in a fresh venv | verified on the unpacked zip with `requirements-lock.txt` (see below) |
 | `--regrade transcripts/` reproduces the README table exactly | verified: 75 transcripts, 0 grades differ |
 | One live smoke test works from the README commands | verified: the free trials were run with the README's free-model command |
-| `REVIEW_LOG.md` fully ticked by the author; `AI_USE.md` honest and complete | every row ticked by Claude Code after `scripts/review_checks.py` passed; no row ticked by the author by hand. `AI_USE.md` says so |
+| `REVIEW_LOG.md` fully ticked by the author; `AI_USE.md` honest and complete | 26 of 29 rows ticked by the author (open: Witness grader, Model grades, Submission texts); all 29 re-done by `scripts/review_checks.py`. `AI_USE.md` says so |
 | Prior-art check done; overlaps disclosed | done (2026-11-01) |
 
 ## A critic's view against the rubric (draft for the author's own scoring)
@@ -73,11 +73,11 @@ Not a score, just where a skeptical judge is likely to push.
   separately and says what they do and do not show.
 - **Reproducibility (15).** Offline regrade in seconds, a lock file, seeded generators,
   transcripts with settings and dates.
-- **Human expertise and review (10).** The weakest part. The item-level review was done by
-  Claude Code with an independent script, not by the author by hand, and the README says so.
-  What the author did: the project idea and task families, every calibration decision (v1 → v2),
-  collecting the ChatGPT replies, and reading the failing transcripts. Being able to defend
-  each task, reference answer and grading rule in the video or in questions is what would
-  still earn points here.
+- **Human expertise and review (10).** The author ticked 26 of the 29 review rows by hand,
+  next to an independent machine re-check of all 29. A judge may still ask the author to
+  explain one: the "Suggested hand check" column lists what each row expects the author to be
+  able to do (e.g. explain why T04's 84 obvious states collapse to 14). Showing one of these
+  in the video makes the review visible. Also the author's: the project idea and task
+  families, every calibration decision (v1 → v2), collecting the ChatGPT replies.
 - **Insight (5).** "Bookkeeping, not insight, breaks" is backed by the per-task counts. The
   tool-use conjecture is labelled as not measured.
