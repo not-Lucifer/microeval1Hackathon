@@ -43,7 +43,8 @@ pilot_v1/    transcripts, ChatGPT replies and results of the task set v1 pilot (
 tasks/       task_01..08 JSON: prompt + metadata ONLY (never answers) -- GENERATED, do not hand-edit
 reference/   build.py (constructions + seeded generators) and task_XX.ref.json (never loaded by the harness)
 scripts/     generate_instances.py verify_specs.py check_task08_noncf.py search_t05_pairs.py
-             check_secrets.py report.py make_zip.sh explain_failures.py (reads reference/, so not harness code)
+             check_secrets.py report.py make_zip.sh explain_failures.py review_checks.py (both read reference/,
+             so not harness code; review_checks.py re-implements every check behind docs/REVIEW_LOG.md)
 tests/       unit tests, mutant tests, brute-force cross-checks, no-leak, harness (fake client), hygiene
 .githooks/   pre-commit -> scripts/check_secrets.py --staged
 results/  transcripts/  docs/
@@ -110,7 +111,8 @@ v1 (easier instances of the same families) was replaced after the 2026-10-31 pil
 - 2026-10-31: author chose to replace the tasks (OPEN_QUESTIONS 39-48). Pilot committed and tagged `pilot-v1`, moved to `pilot_v1/`. Task set v2 built: minimal sizes 21 / 16 / 13 / 14 states, T05 witness 16, T06 17 subsets → 16, T07 N = 16, T08 N = 36. Old answers can no longer be graded against new tasks (stale-transcript guard). 1907 tests green; `verify_specs.py` all OK.
 - 2026-11-01: v2 runs started (pushed; tag `pilot-v1` on origin). Free trial 1: Nemotron 5/8, Dots 3/8 (5 TRUNCATED at 64k), Gemma 429 again. ChatGPT free (Think off) trials 1-3: 6/24, pass^k 0. All 33 graded answers re-checked outside the graders. `results/summary.md` now lists every failed trial in words, plus the prompt examples a wrong answer already breaks (diagnostic only). Budget kept at 64k for all v2 trials (OPEN_QUESTIONS 49). 1920 tests green.
 - 2026-11-01: free trials 2-3 done (Gemma 429 again, no valid trial). Final v2 results: Nemotron 16/24, Dots 10/24 (13 TRUNCATED), ChatGPT 6/24; 32/72 overall. All 75 transcripts re-graded with the fixed parser (0 differ) and re-checked by an independent script. README analysis sections, `docs/SUBMISSION.md` and `docs/VIDEO_SCRIPT.md` drafted by Claude Code at the author's request.
-- Next (author only): tick `docs/REVIEW_LOG.md`, record and upload the video, fill in the HackerRank form, submit the zip.
+- 2026-11-01: at the author's request, `scripts/review_checks.py` re-does every REVIEW_LOG row independently (all OK); Claude Code ticked its own column, the author's by-hand column stays empty. It found one wrong README claim (T06 ∅, OPEN_QUESTIONS #53).
+- Next (author only): record and upload the video, fill in the HackerRank form, submit the zip. The repo is public (GitHub API, 2026-11-01) although this file says private until submission: the author decides before any push.
 
 ## Working agreement
 - Start non-trivial work in plan mode; state the plan, then execute phase by phase (see `docs/KICKOFF_PROMPTS.md`).

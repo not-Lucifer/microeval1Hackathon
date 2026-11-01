@@ -19,6 +19,7 @@ answer and grading rule. Claude Code (Anthropic) was used as a pair programmer.
 | Failure table (2026-11-01) | `harness/metrics.py::failure_note`, `listed_examples_missed`; the "Every failed trial" section of `results/summary.md` | `tests/test_harness.py` (one case per failure code; an accept-everything DFA and an overgenerating grammar mutant against the prompt examples). The v2 grades it describes were also re-checked outside the graders: each model answer run on every word up to length 8-13 against a direct reading of the task definition (T03 by brute force over prefixes, T06 by direct NFA simulation, T05 by Python `re`, T07/T08 by CYK); all 33 graded answers agreed, and again all 54 after trials 2-3 (with each stored counterexample, the state count of each passing DFA, and each passing grammar up to length 18 (T07) / 60 (T08)) |
 | Failure explainer (2026-11-01) | `scripts/explain_failures.py`: first faulty table entry of each wrong DFA | `tests/test_explain_failures.py`: no faults on the reference, a planted flipped flag or redirected transition is found exactly |
 | README analysis sections and submission texts (2026-11-01, at the author's request: "fill in those sections as a proper critic") | README: who relies on this, why each task is hard, per-task notes, main failure mode and hot take, limitations, provenance and prior-art search; task `why_hard` / `real_world` texts; `docs/SUBMISSION.md` (form description, checklist); `docs/VIDEO_SCRIPT.md` | every number in them is copied from `results/summary.md`, `scripts/verify_specs.py`, `scripts/explain_failures.py` or a transcript; claims about prior work were checked against the papers' abstracts; an independent Claude Code review session acted as a skeptical judge (findings in `docs/OPEN_QUESTIONS.md`) |
+| Review script (2026-11-01, at the author's request) | `scripts/review_checks.py`: an independent re-check behind every `docs/REVIEW_LOG.md` row | `tests/test_review_checks.py` (own helpers on tiny cases; every check passes). Its findings were compared with the project's outputs, not assumed: it caught one wrong README claim (#53) |
 | Repo hygiene | `.gitignore`, `.githooks/pre-commit`, `scripts/check_secrets.py`, `scripts/make_zip.sh` | `tests/test_repo_hygiene.py` |
 | Docs | `docs/OPEN_QUESTIONS.md`, `docs/REVIEW_LOG.md`, this file, README draft | Author review pending |
 
@@ -34,10 +35,15 @@ the author decided not to rewrite them (2026-11-01).
   Claude Code at the author's request, with the README's free-model command.
 - Read the failing transcripts (author's statement, 2026-11-01).
 
-## What is still the author's to verify personally
+## Review of tasks, references and graders
 
-- `docs/REVIEW_LOG.md`: a row is ticked only after the author has checked that item by hand.
-  Claude Code never ticks a row.
+- At the author's request (2026-11-01), Claude Code re-did every row of `docs/REVIEW_LOG.md`
+  with `scripts/review_checks.py`. That script re-implements each language, automaton and
+  grammar independently of the project code and compares the project's references, graders and
+  stored grades against them. It passed, and Claude Code ticked the "Claude Code" column.
+- No row has been checked by the author by hand; the "Author" column is empty.
+- The review script found one documentation error: the README said T06's 17 reachable subsets
+  include the empty set, which they do not (OPEN_QUESTIONS #53, fixed).
 
 ## Where AI is NOT used
 

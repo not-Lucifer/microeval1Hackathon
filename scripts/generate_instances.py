@@ -396,7 +396,7 @@ Let L = L(N). Give the minimal complete DFA for L.
         "examples": {"in": [], "out": []},
         "difficulty_knobs": {"nfa_states": build.T06_NFA_STATES, "reachable_subsets": "computed by verify_specs.py"},
         "metadata": {
-            "why_hard": "The subset construction with ε-closures reaches many subsets (verify_specs.py gives the number, including the empty set); every step needs a correct ε-closure, the start state is the closure of q0 (not q0), and the few indistinguishable subsets must then be found and merged.",
+            "why_hard": "The subset construction with ε-closures reaches many subsets (verify_specs.py gives the number; the empty set would count, but here it is never reached); every step needs a correct ε-closure, the start state is the closure of q0 (not q0), and the few indistinguishable subsets must then be found and merged.",
             "real_world": "Compiling regex/lexer specifications and protocol models (NFA -> DFA) by hand or in review.",
             "expected_failure_modes": ["ε-closure errors", "start state taken as {q0} instead of its closure", "a subset missed or duplicated", "no merging of equivalent subsets", "missing empty-set trap"],
             "seed": seed,

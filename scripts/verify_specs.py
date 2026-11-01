@@ -43,7 +43,7 @@ EXPECTED = {
     "T05 shortest distinguishing word length": 16,
     "T05 number of shortest distinguishing words": 1,
     "T05 alternative pair: shortest witness length": 14,
-    "T06 reachable subsets (incl. empty set)": 17,
+    "T06 reachable subsets (the empty set counts if reached)": 17,
     "T06 minimal DFA states": 16,
     "T07 words by length 2,4,...,16": [1, 3, 11, 43, 175, 734, 3151, 13778],
     "T08 words of length <= 30": 63,
@@ -125,7 +125,7 @@ def compute() -> tuple[dict, list[str]]:
     # --- T06
     nfa = ENFA(**load_task("task_06_enfa_minimal_dfa")["instance"]["nfa"])
     det, n_subsets = subset_construction(nfa)
-    got["T06 reachable subsets (incl. empty set)"] = n_subsets
+    got["T06 reachable subsets (the empty set counts if reached)"] = n_subsets
     got["T06 minimal DFA states"] = minimal_size(det)
     check(build.t06_constraint_failures(nfa) == [], f"T06 constraints: {build.t06_constraint_failures(nfa)}")
     check(brute_mismatches(det, lambda w: nfa_accepts(nfa, w), 10) == 0, "T06 subset DFA disagrees with NFA simulation")
