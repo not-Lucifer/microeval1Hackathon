@@ -89,6 +89,9 @@ def regrade(transcripts_dir: Path, write: bool, results_dir: Path = RESULTS_DIR)
         t["grade"], t["parsed_answer"] = new, parsed
         if write:
             write_json(transcript_path(transcripts_dir, t["model"], t["task_id"], t["trial"]), t)
+    if not transcripts and stale:  # e.g. --regrade pilot_v1/transcripts: nothing current to report
+        print(f"no transcript answers the current tasks; {results_dir} left unchanged")
+        return len(stale)
     card = summarize(transcripts)
     write_reports(card, results_dir)
     print(f"regraded {len(transcripts)} transcripts; {changed} grade(s) differ from the stored ones")
@@ -111,7 +114,7 @@ def live(args) -> int:
     if not tasks or not specs:
         print("nothing to run (check --task/--model filters and openrouter_id values in models.yaml)")
         return 1
-    n_calls = len(specs) * len(tasks) * args.trials
+    n_calls = len(specs) * len(tasks) * args.trials 
     if args.dry_run:
         rows = estimate(specs, tasks, args.trials, args.assume_completion_tokens,
                         observed_cost_per_call(load_transcripts(TRANSCRIPTS_DIR)))

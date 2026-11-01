@@ -236,10 +236,17 @@ def test_regrade_refuses_answers_to_another_task_version(tmp_path, capsys):
     assert card["n_transcripts"] == 7  # the stale one is not counted
 
 
-def test_v1_pilot_transcripts_never_count_against_the_current_tasks():
+def test_v1_pilot_transcripts_never_count_against_the_current_tasks(tmp_path, capsys):
     pilot = load_transcripts(run_eval.ROOT / "pilot_v1" / "transcripts")
     current, stale = split_stale(pilot, tasks_by_id())
     assert pilot and current == [] and len(stale) == len(pilot)
+    # regrading only old answers refuses them and leaves the existing results/ untouched
+    results = tmp_path / "results"
+    results.mkdir()
+    (results / "summary.md").write_text("the current v2 results", encoding="utf-8")
+    assert run_eval.regrade(run_eval.ROOT / "pilot_v1" / "transcripts", write=False, results_dir=results) == len(pilot)
+    assert (results / "summary.md").read_text(encoding="utf-8") == "the current v2 results"
+    assert "results left unchanged" in capsys.readouterr().out
 
 
 @pytest.mark.parametrize("entry, expected", [({"name": "m", "openrouter_id": None}, 0), ({"name": "m", "openrouter_id": "lab/m"}, 1)])
