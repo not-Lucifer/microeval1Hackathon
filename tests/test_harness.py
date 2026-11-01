@@ -120,6 +120,8 @@ def test_end_to_end_grades_and_metrics(tmp_path):
     assert (good["pass_rate"], good["pass_at_k"], good["pass_hat_k"]) == (1.0, 1.0, 1.0)
     assert bad["valid_trials"] == 3 and bad["api_errors"] == ["task_05/trial_1"]
     assert (bad["pass_rate"], bad["truncated"]) == (0.0, 1)
+    # variance across trials: bad-model scored 0 in both trial rounds (its trial-1 API error is excluded)
+    assert good["mean_score_by_trial"] == {"1": 1.0, "2": 1.0} and bad["mean_score_by_trial"] == {"1": 0.0, "2": 0.0}
     md = render_markdown(card)
     assert "good-model" in md
     assert "| bad-model | task_05 | 2 | 0.0 | WITNESS_NOT_DISTINGUISHING | `ab` is in neither language |  |" in md

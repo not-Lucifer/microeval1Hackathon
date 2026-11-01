@@ -152,6 +152,7 @@ def summarize(transcripts: list[dict], tasks: Optional[dict[str, dict]] = None) 
             "trials_per_task": max((r["trials"] for r in task_rows.values()), default=0),
             "pass_rate": round(sum(s == 1.0 for s in scores) / len(scores), 4) if scores else None,
             "mean_score": round(mean(scores), 4) if scores else None,
+            "mean_score_by_trial": {str(k): round(mean(v), 4) for k, v in sorted(trial_means.items())},
             "mean_score_sd_across_trial_indices": round(pstdev([mean(v) for v in trial_means.values()]), 4)
             if len(trial_means) > 1 else None,
             # float(): the mean of booleans is an int when they are all equal (e.g. 1, not 1.0)
@@ -183,8 +184,8 @@ def render_markdown(card: dict) -> str:
     if not card["models"]:
         return "\n".join(lines + ["_No transcripts yet._", ""])
     lines += [
-        "| Model (settings) | Trials/task | Pass rate | pass@k | pass^k | Mean score | Truncated | API errors (excluded) | Cost (USD) |",
-        "|---|---|---|---|---|---|---|---|---|",
+        "| Model (settings) | Trials/task | Pass rate | pass@k | pass^k | Mean score | Mean score by trial | Truncated | API errors (excluded) | Cost (USD) |",
+        "|---|---|---|---|---|---|---|---|---|---|",
     ]
     for name, m in card["models"].items():
         s = m["settings"]
@@ -193,9 +194,10 @@ def render_markdown(card: dict) -> str:
         else:
             setting = f"`{s['openrouter_id']}`, T={s['temperature']}, reasoning={s['reasoning']}"
         cost = f"{m['cost_usd']:.2f}" + (f" (+{m['calls_with_unknown_cost']} unknown)" if m["calls_with_unknown_cost"] else "")
+        by_trial = " / ".join(f"{v:.2f}" for v in m["mean_score_by_trial"].values()) or "–"
         lines.append(
             f"| {name} ({setting}) | {m['trials_per_task']} | {_fmt(m['pass_rate'])} | {_fmt(m['pass_at_k'])} | "
-            f"{_fmt(m['pass_hat_k'])} | {'–' if m['mean_score'] is None else m['mean_score']} | "
+            f"{_fmt(m['pass_hat_k'])} | {'–' if m['mean_score'] is None else m['mean_score']} | {by_trial} | "
             f"{m['truncated']} | {len(m['api_errors'])} | {cost} |"
         )
     task_ids = sorted({tid for m in card["models"].values() for tid in m["tasks"]})
