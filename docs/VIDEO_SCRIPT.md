@@ -1,7 +1,7 @@
 # Video script (≤ 5:00)
 
-Drafted by Claude Code at the author's request (see `docs/AI_USE.md`). About 570 words of
-narration at ~140 words per minute ≈ 4:05, which leaves time for pauses and screen changes. An AI voice is allowed by the rules. Every number
+Drafted by Claude Code at the author's request (see `docs/AI_USE.md`). About 620 words of
+narration at ~140 words per minute ≈ 4:24, which leaves time for pauses and screen changes. An AI voice is allowed by the rules. Every number
 below is copied from `results/summary.md`, `scripts/explain_failures.py` or a transcript;
 re-check them against those files right before recording.
 
@@ -37,7 +37,7 @@ row for task_04 trial 1 in the "Every failed trial" table of `results/summary.md
 > ChatGPT's first answer: the obvious 84-state machine. The grader proves it accepts exactly
 > the right language, and proves it is six times bigger than necessary: half credit. In two
 > other fresh chats, ChatGPT did find the 14-state machine. The same model, the same question,
-> different answers.
+> different answers. With Think on, its first answer was the same 84-state machine.
 
 ## 3. A wrong answer that looks right: Task 06 (1:50 – 2:50)
 **Screen:** terminal: `python scripts/explain_failures.py`; highlight the two task_06 trial 2 / 3 lines.
@@ -52,13 +52,15 @@ row for task_04 trial 1 in the "Every failed trial" table of `results/summary.md
 ## 4. Results (2:50 – 3:50)
 **Screen:** the first table of `results/summary.md`, then the per-task table.
 
-> Seventy-two graded trials, all on free routes: 32 exactly right. Nemotron, a large open
-> reasoning model, solved 16 of 24, but was right in all three trials on only three tasks.
-> ChatGPT's free tier with Think off solved 6 of 24, and no task three times out of three.
+> Ninety-six graded trials, all on free routes: 50 exactly right. The best was ChatGPT's free
+> tier with Think on: it solved 18 of 24 and every task at least once, but only two tasks
+> three times out of three. With Think off, the same app solved 6 of 24. Nemotron, the best
+> open reasoning model, solved 16 of 24.
 > Three things go wrong again and again. Models run out of budget: 18 of the 48 open-model
 > trials used all 64,000 output tokens without an answer, including every attempt at the
-> grammar in Task 08. Models skip minimization: correct machines with extra states. And
-> models give wrong machines that contradict their own prompt.
+> grammar in Task 08. Models skip the last step: correct machines with extra states, a correct
+> grammar with two rules that normal form forbids. And models give wrong machines that
+> contradict their own prompt.
 
 ## 5. Why you can trust the grader (3:50 – 4:20)
 **Screen:** terminal: `pytest -q` (cut to the end), `python scripts/verify_specs.py` (last line),
@@ -75,9 +77,10 @@ row for task_04 trial 1 in the "Every failed trial" table of `results/summary.md
 **Screen:** the per-task table in the README "Results" section, then the "Every failed trial"
 table in `results/summary.md`, last column.
 
-> The surprise: the task built on a clever trick, Task 04, was the easiest, eight of nine
-> right. The hardest were plain bookkeeping, each solved once in nine. Without reasoning,
+> The surprise: the task built on a clever trick, Task 04, was the easiest, ten of twelve
+> right. The hardest were plain bookkeeping, each solved three times in twelve. Without reasoning,
 > six of ChatGPT's seven wrong answers on tasks with examples fail an example printed in
 > their own prompt. One grammar cannot even produce "aba", the first one. With reasoning,
 > the open models were right 26 of the 30 times they answered, but ran out of budget
-> 18 times. The missing skill is not cleverness. It is reliable bookkeeping.
+> 18 times, and ChatGPT with Think on got only two of eight tasks right every time. The missing
+> skill is not cleverness. It is reliable bookkeeping.

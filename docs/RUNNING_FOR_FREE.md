@@ -120,8 +120,9 @@ counts, so there is no second calibration round.
 
 **Status (2026-11-01): ahead of plan.** Route A trials 1-3 are done for Nemotron and Dots
 (Gemma's free provider answered HTTP 429 to every call, so it has no valid trial). Route B
-trials 1-3 are done for ChatGPT. Still optional: a second chat app, e.g.
-`--new-manual NAME --trials 3`.
+trials 1-3 are done for ChatGPT with Think off (2026-11-01) and with Think on (2026-11-02).
+Folders for Gemini, DeepSeek (DeepThink on) and Claude.ai are created (`manual/gemini-free/`,
+`manual/deepseek-deepthink/`, `manual/claude-free/`) and still empty.
 
 Commit transcripts after each run (`git add transcripts results manual`, then commit). They are
 the evidence judges re-grade.

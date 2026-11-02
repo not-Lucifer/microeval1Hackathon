@@ -34,6 +34,9 @@ the author decided not to rewrite them (2026-11-01).
 - Ran the first free API run (trial 1) and collected every ChatGPT reply by hand, confirming the
   no-tools and new-chat setup (`manual/chatgpt-free/info.yaml`). Free trials 2-3 were started by
   Claude Code at the author's request, with the README's free-model command.
+- Collected the 24 ChatGPT replies with Think on by hand on 2026-11-02, using
+  `scripts/paste_helper.py`, and confirmed the setup (`manual/chatgpt-think/info.yaml`). Claude
+  Code imported and graded them and updated the README and submission texts.
 - Read the failing transcripts and studied the test cases (author's statement, 2026-11-01).
 - Checked and ticked all 29 rows of `docs/REVIEW_LOG.md` by hand (2026-11-01).
 

@@ -1,0 +1,8 @@
+# Fill in every field before importing (python run_eval.py --import-manual manual/).
+app: "ChatGPT, free plan, web"
+model_shown: "no model version shown, only a 'Thinking' label (free plan, Think on)"
+date: "2026-11-02"
+reasoning_mode: "Think on"
+no_tools_confirmed: true    # code execution, web search and file tools were OFF and no reply used them
+new_chat_per_trial: true    # every trial was a brand-new chat (memory/personalization off)
+notes: "Each reply was copied with the copy button of its JSON code block, so any text ChatGPT wrote around the block is not saved (only the final JSON is graded). Saved with scripts/paste_helper.py. Task set v2, trials 1-3."

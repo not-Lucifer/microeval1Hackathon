@@ -852,14 +852,18 @@ def check_explainer() -> Result:
                 f"{agree} of {2 ** 11 - 1} words up to length 10")
 
 
+OPEN_MODELS = ["nemotron-3-ultra-free", "dots-3-note-free"]
+
+
 def scorecard_numbers() -> dict:
     card = load("results/scorecard.json")["models"]
-    models = ["nemotron-3-ultra-free", "dots-3-note-free", "chatgpt-free"]
+    models = [m for m in card if card[m]["valid_trials"]]  # every model with at least one graded trial
     per_task = {m: [card[m]["tasks"][f"task_0{i}"]["passes"] for i in range(1, 9)] for m in models}
-    answered = {"passes": 0, "answered": 0}
+    answered = {"passes": 0, "answered": 0, "graded": 0}
     for p in sorted((ROOT / "transcripts").glob("*/*/*.json")):
         t = json.loads(p.read_text(encoding="utf-8"))
-        if p.parts[-3] in models[:2] and t["parsed_answer"] is not None:
+        answered["graded"] += t["parsed_answer"] is not None
+        if p.parts[-3] in OPEN_MODELS and t["parsed_answer"] is not None:
             answered["answered"] += 1
             answered["passes"] += t["grade"]["score"] == 1.0
     examples = [f for f in card["chatgpt-free"]["failures"] if f["listed_examples_missed"] is not None]
@@ -879,12 +883,16 @@ def check_readme() -> Result:
     claims = [f"Of {s['valid']} graded trials", f"{s['pass']} ({round(100 * s['pass'] / s['valid'])}%) were exactly right",
               f"solved {sum(s['per_task']['nemotron-3-ultra-free'])} of 24",
               f"solved {sum(s['per_task']['chatgpt-free'])} of 24",
+              f"solved {sum(s['per_task']['chatgpt-think'])} of 24",
+              f"on only {round(8 * card['chatgpt-think']['pass_hat_k'])} of the 8 tasks",
+              f"on only {round(8 * card['nemotron-3-ultra-free']['pass_hat_k'])} of the 8 tasks",
+              f"misses {24 - sum(s['per_task']['chatgpt-think'])} of 24",
               f"In {s['truncated']} of their 48 trials", f"In the {s['answered']} trials where",
               f"exactly right {s['passes']} times",
-              f"{NUMBER_WORDS[s['chatgpt_examples'][1]]} of its wrong answers",
+              f"{NUMBER_WORDS[s['chatgpt_examples'][1]]} of the Think-off wrong answers",
               f"{NUMBER_WORDS[s['chatgpt_examples'][0]]} of the {NUMBER_WORDS[s['chatgpt_examples'][1]].lower()}",
-              "| **All (of 9)** | " + " | ".join(f"**{sum(c)}**" for c in zip(*s["per_task"].values())) + " |",
-              "2,041 of the 2,047"]
+              f"| **All (of {3 * len(s['models'])})** | " + " | ".join(f"**{sum(c)}**" for c in zip(*s["per_task"].values())) + " |",
+              "2,041 of the 2,047", f"all {s['graded']} graded answers"]
     claims += [f"| `{m}` | " + " | ".join(map(str, s["per_task"][m])) + " |" for m in s["models"]]
     claims += [f"{n} `{code}`" for code, n in s["codes"].items() if code != "PASS"]
     for m in s["models"]:
@@ -901,7 +909,9 @@ def check_submission_texts() -> Result:
     sub = (ROOT / "docs" / "SUBMISSION.md").read_text(encoding="utf-8")
     video = (ROOT / "docs" / "VIDEO_SCRIPT.md").read_text(encoding="utf-8")
     nemo, chat = sum(s["per_task"]["nemotron-3-ultra-free"]), sum(s["per_task"]["chatgpt-free"])
+    think = sum(s["per_task"]["chatgpt-think"])
     claims = [(sub, f"{s['pass']} of {s['valid']} trials"), (sub, f"solved {nemo} of 24"), (sub, f"solved {chat} of 24"),
+              (sub, f"solved {think} of 24"), (video, f"solved {think} of 24"),
               (sub, f"{s['truncated']} of 48 trials"), (video, f"{s['pass']} exactly right"), (video, f"solved {nemo} of 24"),
               (video, f"solved {chat} of 24"), (video, f"{s['truncated']} of the 48"),
               (video, f"right {s['passes']} of the {s['answered']} times"),

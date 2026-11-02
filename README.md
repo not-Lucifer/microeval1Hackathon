@@ -2,15 +2,15 @@
 
 **What it tests.** Whether LLMs, reasoning *without tools*, can build, determinize, minimize and check finite automata, regular expressions and context-free grammars. There are eight tasks a formal-methods practitioner would recognise. Every answer is graded by exact formal-language algorithms: product-BFS equivalence, partition-refinement minimization, shortest-witness search, and a bounded grammar check that is exact up to a stated length. **There is no LLM judge.**
 
-**Headline.** Of 72 graded trials (3 models × 8 tasks × 3 trials, free routes only), 32 (44%) were exactly right. The best model, NVIDIA Nemotron 3 Ultra (free endpoint, high reasoning effort), solved 16 of 24, but was right in all three trials on only 3 of the 8 tasks. ChatGPT's free tier with Think off solved 6 of 24, and no task three times out of three. Two tasks were solved once in 9 trials: a DFA for three simple conditions at once (T01) and a grammar with three remainder cases (T08). The two open reasoning models never finished a Task 08 grammar within 64,000 output tokens (0 of 6).
+**Headline.** Of 96 graded trials (4 model settings × 8 tasks × 3 trials, free routes only), 50 (52%) were exactly right. The best setting, ChatGPT's free web app with Think on, solved 18 of 24 and every task at least once, but was right in all three trials on only 2 of the 8 tasks. The same app with Think off solved 6 of 24. The best open model, NVIDIA Nemotron 3 Ultra (free endpoint, high reasoning effort), solved 16 of 24, right in all three trials on only 3 of the 8 tasks. Two tasks were solved only 3 times in 12 trials: a DFA for three simple conditions at once (T01) and a grammar with three remainder cases (T08). The two open reasoning models never finished a Task 08 grammar within 64,000 output tokens (0 of 6).
 
 ## Who relies on this, and why it matters
 
 People ask chat assistants to write and review small state machines all the time: a lexer rule, a protocol state machine with timeouts, a firewall or log-filter regex, a validator for a number format, a grammar for a configuration language. Students and tutors use them to check homework DFAs. In all of these the assistant answers in one go, without running code, and the human usually checks the answer by trying a few short inputs.
 
-Some wrong answers here are caught by a 1- to 4-letter word, but others survive any quick test. Two of ChatGPT's 15-state answers to Task 06 agree with the correct DFA on 99.7% of all words up to length 10. Their first error is the 9-letter word `aabbabaab`, and `scripts/explain_failures.py` traces each to a single wrong arrow in a 30-entry transition table. A wrong answer can also be bloated: one Task 04 answer has 84 states where 14 suffice. That is the difference between a controller that fits a hardware budget and one that does not. What a wrong state machine costs depends on where it sits: a lexer that silently mis-tokenizes, a timeout monitor that never fires, a filter that lets one class of inputs through.
+Some wrong answers here are caught by a 1- to 4-letter word, but others survive any quick test. Two of ChatGPT's 15-state answers to Task 06 (Think off) agree with the correct DFA on 99.7% of all words up to length 10. Their first error is the 9-letter word `aabbabaab`, and `scripts/explain_failures.py` traces each to a single wrong arrow in a 30-entry transition table. A right answer can also be bloated: two Task 04 answers, one from ChatGPT with Think off and one with Think on, have 84 states where 14 suffice. That is the difference between a controller that fits a hardware budget and one that does not. What a wrong state machine costs depends on where it sits: a lexer that silently mis-tokenizes, a timeout monitor that never fires, a filter that lets one class of inputs through.
 
-**Honest caveat.** A model *with* a code interpreter could likely solve every task here with a short program (subset construction plus minimization). The claim is therefore not "AI cannot do automata". The claim is narrower and practical: **when a model reasons about a state machine unaided, as it does in a chat or a code review, it often produces an automaton that is wrong or not minimal. Without reasoning it does not even check the answer against the examples it was given; with reasoning, the work often does not fit in a 64,000-token budget.** The primary condition is single-turn, with no tools; a tool-enabled ablation was not run (see Limitations).
+**Honest caveat.** A model *with* a code interpreter could likely solve every task here with a short program (subset construction plus minimization). The claim is therefore not "AI cannot do automata". The claim is narrower and practical: **when a model reasons about a state machine unaided, as it does in a chat or a code review, it often produces an automaton that is wrong or not minimal. Without reasoning it does not even check the answer against the examples it was given; with reasoning, the work often does not fit in a 64,000-token budget, and even the best run was right three times out of three on only 2 of the 8 tasks.** The primary condition is single-turn, with no tools; a tool-enabled ablation was not run (see Limitations).
 
 ## Quick start
 
@@ -65,7 +65,7 @@ Scores: **1.0** correct (and minimal / shortest where required), **0.5** right l
 | 05 | **Exact.** The true minimum length is computed by BFS on the product of the two minimal DFAs. |
 | 07–08 | **Exact up to length N only.** CFG equivalence is undecidable in general. A pass means the grammar is in CNF, agrees with the language on every word of length ≤ N, and generates an infinite language. `tests/test_graders.py::test_bounded_guarantee_is_honest` shows an error beyond N that is *not* caught. |
 
-The CFG check enumerates, per nonterminal, every string it derives up to the length where it could still matter, and tests each new string inside a fixed shortest context (`automata/cfg.py::check_upto`). It reports the overall shortest word on which the grammar is wrong: a missing word if one is shorter than the shortest wrongly generated word, otherwise the wrongly generated word. So a grammar coded `UNDERGENERATES` may also overgenerate (ChatGPT's Task 08 trial 1 does both).
+The CFG check enumerates, per nonterminal, every string it derives up to the length where it could still matter, and tests each new string inside a fixed shortest context (`automata/cfg.py::check_upto`). It reports the overall shortest word on which the grammar is wrong: a missing word if one is shorter than the shortest wrongly generated word, otherwise the wrongly generated word. So a grammar coded `UNDERGENERATES` may also overgenerate, and the other way round (ChatGPT's Task 08 trial 1 does both, with Think off and with Think on).
 
 N is 16 for T07 (13,778 words of length 16 alone) and 36 for T08 (92 words up to that length); grading a grammar still takes well under a second.
 
@@ -79,17 +79,18 @@ N is 16 for T07 (13,778 words of length 16 alone) and 36 for T08 (92 words up to
 - **Independent oracles:** three regex matchers (automaton, AST matcher, Python `re`) agree; subset construction agrees with direct NFA simulation; minimization agrees with a brute-force Myhill-Nerode count.
 - **Prompt/grader consistency:** every example in every prompt is checked against the reference (`tests/test_tasks_wellformed.py`).
 - **An independent review script:** `python scripts/review_checks.py` (about 15 s) re-implements every language, automaton and grammar with the standard library only. It checks each reference exactly against its own construction, compares the graders with its own scoring on 204 answers (the references and mutants of them), and re-scores every stored model grade. It found one wrong sentence in this README (about Task 06's subsets, now fixed) and no grading error.
-- **Every model grade re-checked outside the graders.** Each of the 54 graded answers was run on every word up to length 8–13 and compared with a direct reading of its task's definition (T03 by brute force over prefixes, T06 by simulating the ε-NFA, T05 with Python `re`, T07/T08 with CYK). Each stored counterexample was confirmed, and each passing DFA was confirmed to have the minimal number of states. All 54 agreed with the grader: no false pass and no false fail was found. The 18 truncated and 3 API-error transcripts were confirmed to contain no complete answer.
+- **Every model grade re-checked outside the graders.** Each of the 54 graded answers of the 2026-11-01 runs was run on every word up to length 8–13 and compared with a direct reading of its task's definition (T03 by brute force over prefixes, T06 by simulating the ε-NFA, T05 with Python `re`, T07/T08 with CYK). Each stored counterexample was confirmed, and each passing DFA was confirmed to have the minimal number of states. All 54 agreed with the grader: no false pass and no false fail was found. The 18 truncated and 3 API-error transcripts were confirmed to contain no complete answer. `scripts/review_checks.py` also re-scores every stored grade with its own code (exact for the DFAs and T05, up to length 14 for T07 and 36 for T08); after the ChatGPT Think-on import of 2026-11-02 it re-scored all 78 graded answers, and all 78 agree.
 
 ## Results
 
-Task set v2, trials run on 2026-10-31 and 2026-11-01. A pass is a score of 1.0; pass@3 is the share of tasks solved in at least one of 3 trials, pass^3 the share solved in all 3.
+Task set v2, trials run on 2026-10-31 and 2026-11-01 (ChatGPT with Think on: 2026-11-02). A pass is a score of 1.0; pass@3 is the share of tasks solved in at least one of 3 trials, pass^3 the share solved in all 3.
 
 | Model | Valid trials | Pass rate | pass@3 | pass^3 | Mean score | Mean score, trial 1 / 2 / 3 | Truncated | API errors (excluded) | Cost of the full run |
 |---|---|---|---|---|---|---|---|---|---|
 | `nemotron-3-ultra-free` | 24 | 67% | 88% | 38% | 0.69 | 0.69 / 0.50 / 0.88 | 5 | 0 | $0.00 (free) |
 | `dots-3-note-free` | 24 | 42% | 50% | 25% | 0.42 | 0.38 / 0.50 / 0.38 | 13 | 0 | $0.00 (free) |
 | `chatgpt-free` (Think off) | 24 | 25% | 50% | 0% | 0.31 | 0.31 / 0.50 / 0.12 | 0 | 0 | $0.00 (free) |
+| `chatgpt-think` (Think on) | 24 | 75% | 100% | 25% | 0.81 | 0.69 / 0.88 / 0.88 | 0 | 0 | $0.00 (free) |
 | `gemma-4-31b-free` | 0 | – | – | – | – | – | 0 | 3 | $0.00 (free) |
 
 Passes per task (out of 3 trials each):
@@ -99,9 +100,10 @@ Passes per task (out of 3 trials each):
 | `nemotron-3-ultra-free` | 1 | 2 | 2 | 3 | 2 | 3 | 3 | 0 |
 | `dots-3-note-free` | 0 | 0 | 2 | 3 | 0 | 3 | 2 | 0 |
 | `chatgpt-free` | 0 | 0 | 1 | 2 | 0 | 0 | 2 | 1 |
-| **All (of 9)** | **1** | **2** | **5** | **8** | **2** | **6** | **7** | **1** |
+| `chatgpt-think` | 2 | 3 | 3 | 2 | 2 | 2 | 2 | 2 |
+| **All (of 12)** | **3** | **5** | **8** | **10** | **4** | **8** | **9** | **3** |
 
-The 40 failures by code: 18 `TRUNCATED` (all from the two open models), 12 `NOT_EQUIVALENT`, 4 `NON_MINIMAL_STATE_BLOAT` (score 0.5), 3 `WITNESS_NOT_DISTINGUISHING`, 2 `UNDERGENERATES`, 1 `OVERGENERATES`. No answer was a parse error, an incomplete DFA or a CNF violation.
+The 46 failures by code: 18 `TRUNCATED` (all from the two open models), 12 `NOT_EQUIVALENT`, 7 `NON_MINIMAL_STATE_BLOAT` (score 0.5), 4 `WITNESS_NOT_DISTINGUISHING`, 2 `UNDERGENERATES`, 2 `OVERGENERATES`, 1 `CNF_VIOLATION`. No answer was a parse error or an incomplete DFA.
 
 The full tables, including every failed trial in words, are in [`results/summary.md`](results/summary.md) (generated by `scripts/report.py`; regenerate with `python run_eval.py --regrade transcripts/`).
 
@@ -110,6 +112,7 @@ The full tables, including every failed trial in words, are in [`results/summary
 - `dots-3-note-free`: `dots-studio/dots-3-note-preview:free` (280B, 16B active), same settings.
 - `gemma-4-31b-free`: `google/gemma-4-31b-it:free`, `max_tokens` 32,000. Its free provider answered HTTP 429 to every call on both days, so it has no valid trial (listed as API errors, excluded from every rate).
 - `chatgpt-free`: ChatGPT's free web app on 2026-11-01, default model (the app showed no model name), Think off, code/search/file tools and memory off, a brand-new chat per trial. The system prompt was pasted together with the task, and the reply was pasted back unedited (`manual/chatgpt-free/`). Temperature and model version are whatever the app used, so these rows can be re-graded but not re-run.
+- `chatgpt-think`: the same app on 2026-11-02 with Think on (the app showed a "Thinking" label but no model version), otherwise the same setup (`manual/chatgpt-think/`). Each reply was copied with the copy button of its JSON code block, so any text ChatGPT wrote around the block was not saved; only that block is graded in any case (`docs/OPEN_QUESTIONS.md` #54). The app does not show token use, so a truncation cannot be seen; every one of the 24 chats ended with an answer.
 
 Every transcript records the model id, settings, date, token usage, latency and cost. "Truncated" means the model used its whole output budget (`finish_reason = length`); it counts as a failure and is reported separately, and it is decided before parsing, so a cut-off reply scores 0 even if it already contained an answer. None of the truncated replies here did: most have no visible text at all, and the rest are cut off inside their working or their JSON. API errors are never counted as model failures.
 
@@ -117,44 +120,60 @@ Every transcript records the model id, settings, date, token usage, latency and 
 
 Each note names the failure the grader found; the "first fault" statements come from `python scripts/explain_failures.py`, which names the first wrong table entry on the counterexample.
 
-- **T01 (1 of 9; the hardest DFA task).** Only Nemotron's trial 3 is right.
-  - ChatGPT's [trial 1](transcripts/chatgpt-free/task_01/trial_1.json) has the right language with 28 states instead of 21: 7 of its states duplicate others.
-  - ChatGPT's [trial 2](transcripts/chatgpt-free/task_01/trial_2.json) and [trial 3](transcripts/chatgpt-free/task_01/trial_3.json) accept `100` and `001`, words with only two 0s. Each breaks 4 or 5 of the 8 examples printed in its prompt.
+"ChatGPT, Think off" is `chatgpt-free`; "ChatGPT, Think on" is `chatgpt-think`.
+
+- **T01 (3 of 12; the hardest DFA task).** Nemotron's trial 3 and ChatGPT's (Think on) trials 1 and 2 are right.
+  - ChatGPT's (Think on) [trial 3](transcripts/chatgpt-think/task_01/trial_3.json) is the right 21-state DFA plus 3 unreachable states left over from its construction. The prompt says every listed state counts, so 24 states score 0.5.
+  - ChatGPT's (Think off) [trial 1](transcripts/chatgpt-free/task_01/trial_1.json) has the right language with 28 states instead of 21: 7 of its states duplicate others.
+  - ChatGPT's (Think off) [trial 2](transcripts/chatgpt-free/task_01/trial_2.json) and [trial 3](transcripts/chatgpt-free/task_01/trial_3.json) accept `100` and `001`, words with only two 0s. Each breaks 4 or 5 of the 8 examples printed in its prompt.
   - Nemotron's [trial 2](transcripts/nemotron-3-ultra-free/task_01/trial_2.json) (24 states) mishandles the self-overlap of `0101`: after `100`, a `1` sends it to the trap state as if `1001` contained the pattern. Its shortest error is `100100`; 3 of its 48 transitions are wrong.
   - Dots ran out of budget all three times.
-- **T02 (2 of 9).** Nemotron's trials 2 and 3 are right.
-  - Two answers have the right language and one state too many (17 for 16): ChatGPT's [trial 1](transcripts/chatgpt-free/task_02/trial_1.json) has two identical dead states, and Nemotron's [trial 1](transcripts/nemotron-3-ultra-free/task_02/trial_1.json) two identical rows.
-  - ChatGPT's [trial 2](transcripts/chatgpt-free/task_02/trial_2.json) forgets that an `a` directly after a `b` is exempt from its own rule. It rejects `bcba`, and the prompt's own example `abcba`.
-  - ChatGPT's [trial 3](transcripts/chatgpt-free/task_02/trial_3.json) lets a `b`'s deadline expire without rejecting, and accepts `bcc`.
+- **T02 (5 of 12).** ChatGPT (Think on) is right 3 times out of 3, Nemotron in trials 2 and 3.
+  - Two answers have the right language and one state too many (17 for 16): ChatGPT's (Think off) [trial 1](transcripts/chatgpt-free/task_02/trial_1.json) has two identical dead states, and Nemotron's [trial 1](transcripts/nemotron-3-ultra-free/task_02/trial_1.json) two identical rows.
+  - ChatGPT's (Think off) [trial 2](transcripts/chatgpt-free/task_02/trial_2.json) forgets that an `a` directly after a `b` is exempt from its own rule. It rejects `bcba`, and the prompt's own example `abcba`.
+  - ChatGPT's (Think off) [trial 3](transcripts/chatgpt-free/task_02/trial_3.json) lets a `b`'s deadline expire without rejecting, and accepts `bcc`.
   - Dots ran out of budget all three times.
-- **T03 (5 of 9).** Every model is right at least once. The two wrong open-model answers both have 12 states, one fewer than the minimum, so they cannot be right:
+- **T03 (8 of 12).** Every model is right at least once, and ChatGPT (Think on) 3 times out of 3. The two wrong open-model answers both have 12 states, one fewer than the minimum, so they cannot be right:
   - Dots' [trial 3](transcripts/dots-3-note-free/task_03/trial_3.json) has a single wrong transition out of 24 and accepts `aabb`.
   - Nemotron's [trial 2](transcripts/nemotron-3-ultra-free/task_03/trial_2.json) has 4 wrong transitions and accepts `ababba`.
-  - ChatGPT's [trial 3](transcripts/chatgpt-free/task_03/trial_3.json) rejects the one-letter word `a`.
-- **T04 (8 of 9; the easiest).** The task built around one insight was the one models solved best. The only miss is ChatGPT's [trial 1](transcripts/chatgpt-free/task_04/trial_1.json): the obvious machine (power of 3 mod 7, value mod 7, parity of 2s), with 84 states. Each of the 14 true states appears in it 6 times. It is correct, so it scores 0.5. Every other trial found the 14-state DFA.
-- **T05 (2 of 9).** Nemotron's trials 1 and 3 found the unique 16-letter witness `ababaababaababaa`. Its [trial 2](transcripts/nemotron-3-ultra-free/task_05/trial_2.json) wrote the same word, followed by a question mark, just before the budget ran out. ChatGPT answered `ε` twice and a 14-letter word once; none of the three is in either language. Dots ran out of budget all three times.
-- **T06 (6 of 9).** Both open models are right 3 times out of 3; ChatGPT never is. Its [trial 2](transcripts/chatgpt-free/task_06/trial_2.json) and [trial 3](transcripts/chatgpt-free/task_06/trial_3.json) are the closest misses in the whole run. Each has 15 states, one fewer than the minimum, and exactly one wrong entry in a 30-entry table. Each agrees with the correct DFA on 2,041 of the 2,047 words up to length 10. The first error is the 9-letter word `aabbabaab`.
-- **T07 (7 of 9).** Nemotron is right 3 times out of 3; Dots and ChatGPT twice each. ChatGPT's [trial 3](transcripts/chatgpt-free/task_07/trial_3.json) drops the parity rule for the word itself: it generates `[]` and `[[]]`, both listed in its prompt as not in L. Every one of the 109 wrong words it generates up to length 10 has an odd number of top-level `[`-groups. Dots' trial 1 ran out of budget.
-- **T08 (1 of 9; the hardest task).** Only ChatGPT's trial 2, with 41 productions, is right. The two open models never produced a grammar: all 6 of their trials used the whole budget, and Nemotron's three are still working out the grammar where they stop ([trial 1](transcripts/nemotron-3-ultra-free/task_08/trial_1.json)).
-  - ChatGPT's [trial 1](transcripts/chatgpt-free/task_08/trial_1.json) misses all 25 words with i ≡ 0 (mod 3) up to length 36 (shortest: `aaabbbaaa`) and also generates 24 words that are not in L.
-  - Its [trial 3](transcripts/chatgpt-free/task_08/trial_3.json) covers only the i ≡ 0 case. It cannot generate `aba`, the first example in its prompt, and generates 61 words that are not in L.
+  - ChatGPT's (Think off) [trial 3](transcripts/chatgpt-free/task_03/trial_3.json) rejects the one-letter word `a`.
+- **T04 (10 of 12; the easiest).** The task built around one insight was the one models solved best. The only misses are the first trials of ChatGPT with Think off ([trial 1](transcripts/chatgpt-free/task_04/trial_1.json)) and with Think on ([trial 1](transcripts/chatgpt-think/task_04/trial_1.json)). Both are the obvious machine (power of 3 mod 7, value mod 7, parity of 2s), with 84 states. Each of the 14 true states appears in it 6 times. It is correct, so it scores 0.5. Every other trial found the 14-state DFA.
+- **T05 (4 of 12).** Nemotron's trials 1 and 3 and ChatGPT's (Think on) trials 1 and 3 found the unique 16-letter witness `ababaababaababaa`.
+  - Nemotron's [trial 2](transcripts/nemotron-3-ultra-free/task_05/trial_2.json) wrote the same word, followed by a question mark, just before the budget ran out.
+  - ChatGPT's (Think on) [trial 2](transcripts/chatgpt-think/task_05/trial_2.json) answered the 14-letter `ababaababababa`. ChatGPT (Think off) answered `ε` twice and a 14-letter word once. None of these four answers is in either language.
+  - Dots ran out of budget all three times.
+- **T06 (8 of 12).** Both open models are right 3 times out of 3, ChatGPT with Think on twice, and ChatGPT with Think off never.
+  - ChatGPT's (Think on) [trial 3](transcripts/chatgpt-think/task_06/trial_3.json) is the right 16-state DFA plus 2 unreachable states, so it scores 0.5, like T01 above.
+  - ChatGPT's (Think off) [trial 2](transcripts/chatgpt-free/task_06/trial_2.json) and [trial 3](transcripts/chatgpt-free/task_06/trial_3.json) are the closest misses in the whole run. Each has 15 states, one fewer than the minimum, and exactly one wrong entry in a 30-entry table. Each agrees with the correct DFA on 2,041 of the 2,047 words up to length 10. The first error is the 9-letter word `aabbabaab`.
+- **T07 (9 of 12).** Nemotron is right 3 times out of 3; Dots and both ChatGPT settings twice each.
+  - ChatGPT's (Think on) [trial 1](transcripts/chatgpt-think/task_07/trial_1.json) has two unit productions, `C → RBR` and `EC → RPAR`, which Chomsky normal form forbids. Its language is right: with the two rules replaced by `C → ]` and `EC → )`, the grader passes it (a diagnostic, not its score).
+  - ChatGPT's (Think off) [trial 3](transcripts/chatgpt-free/task_07/trial_3.json) drops the parity rule for the word itself: it generates `[]` and `[[]]`, both listed in its prompt as not in L. Every one of the 109 wrong words it generates up to length 10 has an odd number of top-level `[`-groups.
+  - Dots' trial 1 ran out of budget.
+- **T08 (3 of 12; tied with T01 as the hardest).** ChatGPT's (Think off) trial 2, with 41 productions, and ChatGPT's (Think on) trials 2 and 3 are right. The two open models never produced a grammar: all 6 of their trials used the whole budget, and Nemotron's three are still working out the grammar where they stop ([trial 1](transcripts/nemotron-3-ultra-free/task_08/trial_1.json)).
+  - ChatGPT's (Think on) [trial 1](transcripts/chatgpt-think/task_08/trial_1.json) gets the case of a last block of 1 or 2 `a`s wrong once the first block has 4 or more: it rounds the first block down to a multiple of 3. Up to length 36 it generates 12 words not in L (shortest `aaabbba`, which should be `aaaabbba`) and misses those 12 words of L.
+  - ChatGPT's (Think off) [trial 1](transcripts/chatgpt-free/task_08/trial_1.json) misses all 25 words with i ≡ 0 (mod 3) up to length 36 (shortest: `aaabbbaaa`) and also generates 24 words that are not in L.
+  - ChatGPT's (Think off) [trial 3](transcripts/chatgpt-free/task_08/trial_3.json) covers only the i ≡ 0 case. It cannot generate `aba`, the first example in its prompt, and generates 61 words that are not in L.
 
 ## Main failure mode and hot take
 
 **What the results show** (each point is a count from `results/summary.md`):
 
 1. **Bookkeeping breaks, not insight.**
-   - T04 is built around one clever idea: track the residue the remaining digits still owe, which shrinks 84 obvious states to 14. It was the easiest task, with 8 of 9 trials exactly right.
-   - T01 and T08 need only routine steps, applied many times: a product of three simple conditions, and a grammar with three remainder cases. They were the hardest, each solved once in 9 trials.
+   - T04 is built around one clever idea: track the residue the remaining digits still owe, which shrinks 84 obvious states to 14. It was the easiest task, with 10 of 12 trials exactly right.
+   - T01 and T08 need only routine steps, applied many times: a product of three simple conditions, and a grammar with three remainder cases. They were the hardest, each solved 3 times in 12 trials.
 2. **Without reasoning, no checking.**
-   - ChatGPT with Think off answers at once, and 18 of its 24 answers are wrong or bloated.
-   - Seven of its wrong answers are to tasks whose prompt lists example words. Six of the seven get at least one of those examples wrong, such as a Task 08 grammar that cannot derive `aba`, the first word listed.
-3. **With reasoning, checking costs too much.**
+   - ChatGPT with Think off answers at once, and 18 of its 24 answers are wrong or bloated. The same app with Think on, given the same prompts, misses 6 of 24.
+   - Seven of the Think-off wrong answers are to tasks whose prompt lists example words. Six of the seven get at least one of those examples wrong, such as a Task 08 grammar that cannot derive `aba`, the first word listed.
+3. **With reasoning, open models run out of budget.**
    - In the 30 trials where the two open reasoning models gave an answer, they were exactly right 26 times.
    - In 18 of their 48 trials they used all 64,000 output tokens without giving an answer. That includes every one of their 6 attempts at Task 08.
-4. **Near misses are invisible to spot checks.** Three wrong DFAs have a single wrong arrow each: ChatGPT's T06 trials 2 and 3, and Dots' T03 trial 3. The two T06 answers agree with the correct DFA on 99.7% of words up to length 10.
+4. **The best run is not reliable, and it slips on the last step.**
+   - ChatGPT with Think on solved every task at least once, but all three times on only T02 and T03.
+   - Four of its six misses got the language right and the required form wrong. Three DFAs have extra states: two are the minimal DFA plus unreachable leftovers, one is the 84-state obvious machine. One grammar is right except for two unit productions, which CNF forbids.
+   - Only two of its misses are wrong in substance: a T05 witness in neither language, and a T08 grammar with one case off by one or two letters.
+5. **Near misses are invisible to spot checks.** Three wrong DFAs have a single wrong arrow each: ChatGPT's (Think off) T06 trials 2 and 3, and Dots' T03 trial 3. The two T06 answers agree with the correct DFA on 99.7% of words up to length 10.
 
-**Hot take.** These models know the constructions. What they cannot yet do without tools is carry one out reliably: the minimal DFAs here have 13 to 21 states and 26 to 48 transitions, and one wrong arrow is enough. Checking that bookkeeping by hand costs a reasoning model tens of thousands of tokens, and skipping it gives answers that fail their own examples. What this run does not measure, and is only a conjecture: most of these failures would disappear with a code interpreter, since every task is a short program. If so, an answer about a state machine produced without tools is a draft until a program has checked it.
+**Hot take.** These models know the constructions. What they cannot yet do without tools is carry one out reliably: the minimal DFAs here have 13 to 21 states and 26 to 48 transitions, and one wrong arrow is enough. Checking that bookkeeping by hand costs an open reasoning model tens of thousands of tokens, and skipping it gives answers that fail their own examples. The best run here did the checking and still finished the job three times out of three on only 2 of 8 tasks, often stumbling on the last, mechanical step (drop the unreachable states, remove the unit rules). What this run does not measure, and is only a conjecture: most of these failures would disappear with a code interpreter, since every task is a short program. If so, an answer about a state machine produced without tools is a draft until a program has checked it.
 
 ## Reproducing
 
@@ -169,7 +188,7 @@ Each note names the failure the grader found; the "first fault" statements come 
 - **Results vary run to run** (sampling, provider changes); the saved transcripts are the evidence, and the offline re-grade reproduces every number in this README exactly.
 - **The v1 pilot:** in the git repository (the zip has no git history), `git checkout pilot-v1`, then `python run_eval.py --regrade transcripts/` (0 grades differ), then `git checkout main`. The zip contains the pilot's transcripts and summary in `pilot_v1/` for reading.
 
-**Cost and runtime.** Every model call was free: $0.00 in total (OpenRouter `:free` endpoints and ChatGPT's free web app). The two open models produced 2.18 million output tokens: 905,574 for Nemotron and 1,274,460 for Dots. Summed API latency was 26,587 s for Nemotron (7.4 h, about 18 minutes per trial) and 13,353 s for Dots (3.7 h, about 9 minutes per trial). Because of the 50-requests-per-day free limit, the runs were spread over two days. ChatGPT's replies were pasted by hand and not timed. Re-checking everything offline takes about a minute for the tests, about 10 s for `verify_specs.py` and about 2 s for the regrade.
+**Cost and runtime.** Every model call was free: $0.00 in total (OpenRouter `:free` endpoints and ChatGPT's free web app). The two open models produced 2.18 million output tokens: 905,574 for Nemotron and 1,274,460 for Dots. Summed API latency was 26,587 s for Nemotron (7.4 h, about 18 minutes per trial) and 13,353 s for Dots (3.7 h, about 9 minutes per trial). Because of the 50-requests-per-day free limit, the runs were spread over two days. ChatGPT's replies (both settings) were pasted by hand and not timed. Re-checking everything offline takes about a minute for the tests, about 10 s for `verify_specs.py` and about 2 s for the regrade.
 
 ## Spec-validation case study: the original Task 08
 
@@ -177,7 +196,8 @@ The first draft of Task 08, `{aⁱbʲaᵏ : i+k = 2j, i > k ≥ 1}`, is **not co
 
 ## Limitations
 
-- **Frontier coverage is thin.** With no budget for paid APIs, the only frontier model is ChatGPT's free tier with Think off, collected by hand. The two API models are large open-weight reasoning models on free endpoints. A paid run of current frontier models with high reasoning effort is the obvious next step; the harness supports it (`models.yaml`).
+- **Frontier coverage is thin.** With no budget for paid APIs, the only frontier product is ChatGPT's free tier, with Think off and with Think on, collected by hand. The app shows no model version, so the two settings need not even be the same model. The two API models are large open-weight reasoning models on free endpoints.
+- **Chat-app runs are not controlled.** Model version, temperature and reasoning budget are whatever the app used, and token use is not shown, so a chat-app reply cannot be marked truncated the way an API reply is. A paid run of current frontier models with high reasoning effort is the obvious next step; the harness supports it (`models.yaml`).
 - **Small samples.** 3 trials per task and model, one instance per task. Pass rates have wide uncertainty; the per-trial means and pass^k show how much they move.
 - **A fixed output budget.** API models get 64,000 output tokens (`docs/OPEN_QUESTIONS.md` #49). 18 of the two open models' 22 failures are truncations. Their pass rates therefore measure "right within 64,000 tokens", and a larger budget could turn some truncations into answers, right or wrong. Truncations are reported separately for this reason.
 - **Gemma has no data.** Its free provider refused every call (HTTP 429), so only two open models were measured through the API.

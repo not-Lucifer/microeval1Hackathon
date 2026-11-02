@@ -1,0 +1,29 @@
+{
+  "states": [
+    "q0_even", "q0_odd",
+    "q1_even", "q1_odd",
+    "q2_even", "q2_odd",
+    "q3_even", "q3_odd",
+    "q4_even", "q4_odd",
+    "q5_even", "q5_odd",
+    "q6_even", "q6_odd"
+  ],
+  "start": "q4_even",
+  "accepting": ["q0_even"],
+  "transitions": {
+    "q0_even": {"0": "q0_even", "1": "q2_even", "2": "q4_odd"},
+    "q0_odd":  {"0": "q0_odd",  "1": "q2_odd",  "2": "q4_even"},
+    "q1_even": {"0": "q5_even", "1": "q0_even", "2": "q2_odd"},
+    "q1_odd":  {"0": "q5_odd",  "1": "q0_odd",  "2": "q2_even"},
+    "q2_even": {"0": "q3_even", "1": "q5_even", "2": "q0_odd"},
+    "q2_odd":  {"0": "q3_odd",  "1": "q5_odd",  "2": "q0_even"},
+    "q3_even": {"0": "q1_even", "1": "q3_even", "2": "q5_odd"},
+    "q3_odd":  {"0": "q1_odd",  "1": "q3_odd",  "2": "q5_even"},
+    "q4_even": {"0": "q6_even", "1": "q1_even", "2": "q3_odd"},
+    "q4_odd":  {"0": "q6_odd",  "1": "q1_odd",  "2": "q3_even"},
+    "q5_even": {"0": "q4_even", "1": "q6_even", "2": "q1_odd"},
+    "q5_odd":  {"0": "q4_odd",  "1": "q6_odd",  "2": "q1_even"},
+    "q6_even": {"0": "q2_even", "1": "q4_even", "2": "q6_odd"},
+    "q6_odd":  {"0": "q2_odd",  "1": "q4_odd",  "2": "q6_even"}
+  }
+}
