@@ -66,3 +66,17 @@ def test_task05_default_pair_hand_proof():
     shortest = [w for w in all_words(AB, 16) if len(w) == 16 and accepts(d1, w) != accepts(d2, w)]
     assert shortest == ["ababaababaababaa"]
     assert accepts(d1, "ababababababaa") and accepts(d2, "ababababababaa")
+
+
+def test_readme_regex_one_liner_prints_what_the_readme_says():
+    """The README's "Reviewing a regex change" command, run as written."""
+    import subprocess
+    import sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1]
+    readme = (root / "README.md").read_text(encoding="utf-8")
+    command = next(line.strip() for line in readme.splitlines() if line.strip().startswith('python -c "from automata.regex'))
+    code = command[len('python -c "'):-1]
+    out = subprocess.run([sys.executable, "-c", code], cwd=root, capture_output=True, text=True, check=True).stdout.strip()
+    assert out == "(False, 'ababaababaababaa')"
+    assert f"this prints `{out}`" in readme

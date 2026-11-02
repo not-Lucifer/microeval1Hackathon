@@ -12,6 +12,16 @@ Some wrong answers here are caught by a 1- to 4-letter word, but others survive 
 
 **Honest caveat.** A model *with* a code interpreter could likely solve every task here with a short program (subset construction plus minimization). The claim is therefore not "AI cannot do automata". The claim is narrower and practical: **when a model reasons about a state machine unaided, as it does in a chat or a code review, it often produces an automaton that is wrong or not minimal. Without reasoning it does not even check the answer against the examples it was given; with reasoning, the work often does not fit in a 64,000-token budget, and even the best run was right three times out of three on only 2 of the 8 tasks.** The primary condition is single-turn, with no tools; a tool-enabled ablation was not run (see Limitations).
 
+**Using the graders outside this eval.** The checking code is plain Python with no model calls, so it can check a state machine, a regex edit or a grammar, whoever wrote it. These are uses of the code as it is; none was tried with outside users.
+- **Reviewing a regex change.** `automata.regex.to_min_dfa` and `automata.dfa.equivalent` either prove that two regexes match the same words or give the shortest word on which they differ. On the Task 05 pair, this prints `(False, 'ababaababaababaa')` in about a third of a second, a difference that no test shorter than 16 letters can find:
+  ```bash
+  python -c "from automata.regex import to_min_dfa as m; from automata.dfa import equivalent; print(equivalent(m('(ab)*a+b(ab)+a+(ba)+(ba)+a', ['a','b']), m('(ab)?a+b(ab)+a+(ba)+(ba)+a', ['a','b'])))"
+  ```
+  The regex syntax is the small one stated in the Task 05 prompt: one-character symbols, `|`, `*`, `+`, `?` and parentheses.
+- **Checking a generated DFA before it is used.** `equivalent` and `minimal_size` (`automata/dfa.py`) decide whether a DFA has exactly the intended language and how many states it needs. When it is wrong they give a shortest word it gets wrong, and `scripts/explain_failures.py` points to the first faulty transition on that word.
+- **Grading automata homework.** The task prompts and graders work as an autograder that answers a wrong DFA with the shortest word it gets wrong, not a bare "incorrect". For grammars the check is exact only up to a length bound.
+- **Choosing a model or a policy.** A team that lets an assistant write lexer rules or validators can run these tasks on its candidate models (`models.yaml`) and look at pass^3, not only the pass rate. The results here argue for a checker, or a code tool, behind any model-written state machine.
+
 ## Quick start
 
 ```bash
