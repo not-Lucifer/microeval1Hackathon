@@ -69,6 +69,13 @@ This creates `manual/chatgpt-free/info.yaml`, empty files
 web search, file tools, and memory/personalization. Use a temporary or incognito chat if the
 app has one. Keep the same model and the same reasoning setting for every trial.
 
+**Faster:** `python scripts/paste_helper.py <name>` does the file handling for steps 3.2-3.4.
+It puts the next prompt on the clipboard; you paste it into a new chat and copy the reply, then
+press Enter and it saves the reply to the right trial file, unchanged. Trial 1 of every task
+comes first. You still use the app by hand: automating a consumer chat app with a bot or
+browser agent is against the terms of several of them (e.g. OpenAI's and Anthropic's), and the
+hackathon rules require respecting every tool's terms.
+
 **3. For every task and every trial:**
 1. Open a **brand-new chat**.
 2. Paste the whole content of `manual/prompts/task_XX.txt` as one message.

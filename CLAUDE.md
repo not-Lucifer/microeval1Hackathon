@@ -43,7 +43,7 @@ pilot_v1/    transcripts, ChatGPT replies and results of the task set v1 pilot (
 tasks/       task_01..08 JSON: prompt + metadata ONLY (never answers) -- GENERATED, do not hand-edit
 reference/   build.py (constructions + seeded generators) and task_XX.ref.json (never loaded by the harness)
 scripts/     generate_instances.py verify_specs.py check_task08_noncf.py search_t05_pairs.py
-             check_secrets.py report.py make_zip.sh explain_failures.py review_checks.py (both read reference/,
+             check_secrets.py report.py make_zip.sh explain_failures.py review_checks.py paste_helper.py (the first two read reference/,
              so not harness code; review_checks.py re-implements every check behind docs/REVIEW_LOG.md)
 tests/       unit tests, mutant tests, brute-force cross-checks, no-leak, harness (fake client), hygiene
 .githooks/   pre-commit -> scripts/check_secrets.py --staged
