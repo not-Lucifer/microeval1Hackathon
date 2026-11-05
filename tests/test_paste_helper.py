@@ -51,6 +51,16 @@ def test_refuses_an_empty_clipboard_or_the_prompt_itself(tmp_path):
     assert (manual / "m" / "task_01" / "trial_1.txt").read_text(encoding="utf-8") == ""
 
 
+def test_a_reply_identical_to_a_saved_one_is_saved_only_when_confirmed(tmp_path):
+    manual = make_manual(tmp_path)
+    (manual / "m" / "task_01" / "trial_1.txt").write_text(REPLY.replace("\r\n", "\n"), encoding="utf-8")
+    target = manual / "m" / "task_02" / "trial_1.txt"
+    saved, _ = run(manual, ["", "n", "q"], [REPLY])
+    assert saved == 0 and target.read_text(encoding="utf-8") == ""
+    saved, _ = run(manual, ["", "y", "q"], [REPLY])
+    assert saved == 1 and target.read_text(encoding="utf-8") == REPLY.replace("\r\n", "\n")
+
+
 def test_a_reply_without_a_json_block_is_saved_only_when_confirmed(tmp_path):
     manual = make_manual(tmp_path)
     saved, _ = run(manual, ["", "n", "", "y", "q"], ["no block here", "no block here"], trial=1)

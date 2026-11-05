@@ -13,6 +13,8 @@ For each empty manual/<name>/task_XX/trial_N.txt:
 
 You still use the chat app yourself, by hand: the script only moves text between the clipboard
 and the files. It never shows a grade, so no reply is kept or redone because of its score.
+It asks before saving a reply identical to one already saved for this model (a wrong-chat copy).
+Run one helper at a time: they share the clipboard.
 At the prompt: Enter = save the copied reply, s = skip this one, r = copy the prompt again, q = quit.
 Then fill in manual/<name>/info.yaml and run: python run_eval.py --import-manual manual/
 """
@@ -44,6 +46,15 @@ def reply_problem(text: str, prompt: str) -> Optional[str]:
         return "the clipboard is empty: copy the reply with the app's copy button first"
     if text.strip() == prompt.strip() or prompt.strip()[:200] in text:
         return "the clipboard still holds the prompt: copy the model's reply first"
+    return None
+
+
+def same_reply_as(manual_dir: Path, name: str, path: Path, text: str) -> Optional[Path]:
+    """Another saved trial file of this model with the same text: usually a copy from the wrong chat."""
+    target = text.replace("\r\n", "\n").strip()
+    for other in sorted((manual_dir / name).glob("task_*/trial_*.txt")):
+        if other != path and other.read_text(encoding="utf-8").strip() == target:
+            return other
     return None
 
 
@@ -80,6 +91,9 @@ def collect(manual_dir: Path, name: str, trial: Optional[int], get_clip: Callabl
                 print(problem)
                 continue
             if "```json" not in text.lower() and ask("no ```json block in the copied text; save anyway? [y/N] ").strip().lower() != "y":
+                continue
+            twin = same_reply_as(manual_dir, name, path, text)
+            if twin and ask(f"same text as the saved {twin.parent.name} {twin.stem.replace('_', ' ')}: copied from the wrong chat? save anyway? [y/N] ").strip().lower() != "y":
                 continue
             save_reply(path, text)
             saved += 1
