@@ -1,0 +1,15 @@
+{
+  "start": "S",
+  "productions": [
+    {"lhs": "S", "rhs": ["A", "B"]},
+    {"lhs": "A", "rhs": ["a"]},
+    {"lhs": "B", "rhs": ["C", "D"]},
+    {"lhs": "C", "rhs": ["b"]},
+    {"lhs": "D", "rhs": ["a"]},
+    {"lhs": "S", "rhs": ["E", "F"]},
+    {"lhs": "E", "rhs": ["A", "S"]},
+    {"lhs": "F", "rhs": ["G", "H"]},
+    {"lhs": "G", "rhs": ["C", "C"]},
+    {"lhs": "H", "rhs": ["D", "D"]}
+  ]
+}

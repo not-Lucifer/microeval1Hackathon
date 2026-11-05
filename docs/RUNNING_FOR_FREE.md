@@ -66,13 +66,15 @@ This creates `manual/chatgpt-free/info.yaml`, empty files
 `manual/prompts/task_01.txt ...` (the exact text to paste).
 
 **2. Before chatting:** in the app's settings, turn **off** code execution / data analysis,
-web search, file tools, and memory/personalization. Use a temporary or incognito chat if the
+web search, file tools, side panels (Canvas, Artifacts), and memory/personalization. Use a temporary or incognito chat if the
 app has one. Keep the same model and the same reasoning setting for every trial.
 
 **Faster:** `python scripts/paste_helper.py <name>` does the file handling for steps 3.2-3.4.
 It puts the next prompt on the clipboard; you paste it into a new chat and copy the reply, then
 press Enter and it saves the reply to the right trial file, unchanged. Trial 1 of every task
-comes first. You still use the app by hand: automating a consumer chat app with a bot or
+comes first. It asks before saving a reply identical to one already saved for that model, which
+usually means a copy from the wrong chat. Run one helper at a time, because they share the
+clipboard. You still use the app by hand: automating a consumer chat app with a bot or
 browser agent is against the terms of several of them (e.g. OpenAI's and Anthropic's), and the
 hackathon rules require respecting every tool's terms.
 
@@ -84,11 +86,19 @@ hackathon rules require respecting every tool's terms.
 4. Paste it into `manual/<name>/task_XX/trial_N.txt` and save. **Never edit it**: no
    retyping, no added or removed spaces. The grader is strict (a space inside a T05 witness
    scores 0, as the prompt says), so the file must be exactly what the model wrote.
-5. If the reply visibly ran code or searched the web, discard it and redo the trial in a new chat.
+5. If the reply visibly ran code, searched the web or put its answer in a side panel, discard it
+   and redo the trial in a new chat. Do the same for an app error or a limit message: neither is
+   the model's answer. (In the helper: `r` copies the prompt again.)
+6. If the model itself stops without a final JSON (cut off, a question, a refusal), save the reply
+   as it is: that is a failure. Do not press "Continue", because the eval is single-turn.
+7. If the app says a limit was reached or switches to another model, stop (`q` in the helper) and
+   go on after the limit resets, so that every trial uses the same model.
 
 **4. Fill in `manual/<name>/info.yaml`**: app, the model name the app showed, the date, the
 reasoning mode, and set `no_tools_confirmed` and `new_chat_per_trial` to `true` only if both are
-really true. The import refuses a folder with missing fields.
+really true. In `notes`, say how the replies were copied and how many were discarded and redone;
+if the run took several days, use the first day as `date` and give the range in `notes`. The
+import refuses a folder with missing fields.
 
 **5. Grade:**
 
@@ -121,8 +131,10 @@ counts, so there is no second calibration round.
 **Status (2026-11-01): ahead of plan.** Route A trials 1-3 are done for Nemotron and Dots
 (Gemma's free provider answered HTTP 429 to every call, so it has no valid trial). Route B
 trials 1-3 are done for ChatGPT with Think off (2026-11-01) and with Think on (2026-11-02).
-Folders for Gemini, DeepSeek (DeepThink on) and Claude.ai are created (`manual/gemini-free/`,
-`manual/deepseek-deepthink/`, `manual/claude-free/`) and still empty.
+Gemini in Fast mode is done (2026-11-05). Claude.ai is at 9 of 24 replies, stopped by the free
+plan's limit; `python scripts/paste_helper.py claude-free` continues where it stopped.
+DeepSeek with DeepThink on was started on 2026-11-05 and dropped because it took too long
+(`docs/OPEN_QUESTIONS.md` #56).
 
 Commit transcripts after each run (`git add transcripts results manual`, then commit). They are
 the evidence judges re-grade.

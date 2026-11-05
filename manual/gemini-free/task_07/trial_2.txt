@@ -1,0 +1,20 @@
+{"start": "E", "productions": [
+  {"lhs": "L_r", "rhs": ["("]},
+  {"lhs": "R_r", "rhs": [")"]},
+  {"lhs": "L_s", "rhs": ["["]},
+  {"lhs": "R_s", "rhs": ["]"]},
+  {"lhs": "E", "rhs": ["E", "E"]},
+  {"lhs": "E", "rhs": ["O", "O"]},
+  {"lhs": "E", "rhs": ["L_r", "R_r"]},
+  {"lhs": "E", "rhs": ["L_r", "Z_E"]},
+  {"lhs": "Z_E", "rhs": ["E", "R_r"]},
+  {"lhs": "O", "rhs": ["E", "O"]},
+  {"lhs": "O", "rhs": ["O", "E"]},
+  {"lhs": "O", "rhs": ["L_s", "R_s"]},
+  {"lhs": "O", "rhs": ["L_s", "W"]},
+  {"lhs": "W", "rhs": ["Q", "R_s"]},
+  {"lhs": "Q", "rhs": ["Q", "Q"]},
+  {"lhs": "Q", "rhs": ["L_s", "R_s"]},
+  {"lhs": "Q", "rhs": ["L_s", "W_Q"]},
+  {"lhs": "W_Q", "rhs": ["Q", "R_s"]}
+]}

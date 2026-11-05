@@ -1,0 +1,12 @@
+{"start": "S", "productions": [
+  {"lhs": "S", "rhs": ["A", "X"]},
+  {"lhs": "X", "rhs": ["B", "C"]},
+  {"lhs": "A", "rhs": ["a"]},
+  {"lhs": "B", "rhs": ["b"]},
+  {"lhs": "C", "rhs": ["a"]},
+  {"lhs": "S", "rhs": ["D", "Y"]},
+  {"lhs": "Y", "rhs": ["S", "E"]},
+  {"lhs": "D", "rhs": ["A", "A"]},
+  {"lhs": "E", "rhs": ["F", "B"]},
+  {"lhs": "F", "rhs": ["B", "B"]}
+]}

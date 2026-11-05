@@ -857,7 +857,8 @@ OPEN_MODELS = ["nemotron-3-ultra-free", "dots-3-note-free"]
 
 def scorecard_numbers() -> dict:
     card = load("results/scorecard.json")["models"]
-    models = [m for m in card if card[m]["valid_trials"]]  # every model with at least one graded trial
+    models = [m for m in card if card[m]["valid_trials"] == 24]  # complete settings; a partial one is reported apart
+    partial = [m for m in card if 0 < card[m]["valid_trials"] < 24]
     per_task = {m: [card[m]["tasks"][f"task_0{i}"]["passes"] for i in range(1, 9)] for m in models}
     answered = {"passes": 0, "answered": 0, "graded": 0}
     for p in sorted((ROOT / "transcripts").glob("*/*/*.json")):
@@ -866,24 +867,29 @@ def scorecard_numbers() -> dict:
         if p.parts[-3] in OPEN_MODELS and t["parsed_answer"] is not None:
             answered["answered"] += 1
             answered["passes"] += t["grade"]["score"] == 1.0
-    examples = [f for f in card["chatgpt-free"]["failures"] if f["listed_examples_missed"] is not None]
-    return {"card": card, "models": models, "per_task": per_task, **answered,
+    def examples(model: str) -> tuple[int, int]:
+        """(wrong answers that break a prompt example, wrong answers on tasks that list examples)."""
+        wrong = [f for f in card[model]["failures"] if f["listed_examples_missed"] is not None]
+        return sum(bool(f["listed_examples_missed"]) for f in wrong), len(wrong)
+    return {"card": card, "models": models, "partial": partial, "per_task": per_task, **answered,
             "valid": sum(card[m]["valid_trials"] for m in models), "pass": sum(sum(v) for v in per_task.values()),
             "truncated": sum(card[m]["truncated"] for m in models),
-            "chatgpt_examples": (sum(bool(f["listed_examples_missed"]) for f in examples), len(examples)),
+            "chatgpt_examples": examples("chatgpt-free"), "gemini_examples": examples("gemini-free"),
             "codes": sum((Counter(card[m]["failure_code_histogram"]) for m in models), Counter())}
 
 
-NUMBER_WORDS = {6: "Six", 7: "Seven"}
+NUMBER_WORDS = {6: "Six", 7: "Seven", 9: "Nine", 11: "Eleven"}
 
 
 def check_readme() -> Result:
     s, text = scorecard_numbers(), (ROOT / "README.md").read_text(encoding="utf-8")
     card = s["card"]
+    by_task, per_col = [sum(c) for c in zip(*s["per_task"].values())], 3 * len(s["models"])
     claims = [f"Of {s['valid']} graded trials", f"{s['pass']} ({round(100 * s['pass'] / s['valid'])}%) were exactly right",
               f"solved {sum(s['per_task']['nemotron-3-ultra-free'])} of 24",
               f"solved {sum(s['per_task']['chatgpt-free'])} of 24",
               f"solved {sum(s['per_task']['chatgpt-think'])} of 24",
+              f"solved {sum(s['per_task']['gemini-free'])} of 24",
               f"on only {round(8 * card['chatgpt-think']['pass_hat_k'])} of the 8 tasks",
               f"on only {round(8 * card['nemotron-3-ultra-free']['pass_hat_k'])} of the 8 tasks",
               f"misses {24 - sum(s['per_task']['chatgpt-think'])} of 24",
@@ -891,10 +897,22 @@ def check_readme() -> Result:
               f"exactly right {s['passes']} times",
               f"{NUMBER_WORDS[s['chatgpt_examples'][1]]} of the Think-off wrong answers",
               f"{NUMBER_WORDS[s['chatgpt_examples'][0]]} of the {NUMBER_WORDS[s['chatgpt_examples'][1]].lower()}",
-              f"| **All (of {3 * len(s['models'])})** | " + " | ".join(f"**{sum(c)}**" for c in zip(*s["per_task"].values())) + " |",
+              f"{NUMBER_WORDS[s['gemini_examples'][1]].lower()} of the Fast-mode ones",
+              f"{NUMBER_WORDS[s['gemini_examples'][0]].lower()} of the {NUMBER_WORDS[s['gemini_examples'][1]].lower()}",
+              f"The {s['valid'] - s['pass']} failures by code",
+              f"T{by_task.index(max(by_task)) + 1:02d} ({max(by_task)} of {per_col}; the easiest)",
+              f"T04 ({by_task[3]} of {per_col})", f"solved in {by_task[3]} of {per_col} trials",
+              f"each solved {by_task[0]} times in {per_col} trials", f"solved only {by_task[7]} times in {per_col} trials",
+              f"| **All (of {per_col})** | " + " | ".join(f"**{n}**" for n in by_task) + " |",
               "2,041 of the 2,047", f"all {s['graded']} graded answers"]
     claims += [f"| `{m}` | " + " | ".join(map(str, s["per_task"][m])) + " |" for m in s["models"]]
     claims += [f"{n} `{code}`" for code, n in s["codes"].items() if code != "PASS"]
+    for m in s["partial"]:
+        c = card[m]
+        passes = sum(t["passes"] for t in c["tasks"].values())
+        cells = " | ".join(f"{t['passes']}/{t['trials']}" for _, t in sorted(c["tasks"].items()))
+        claims += [f"{passes} of its first {c['valid_trials']} replies", f"{c['valid_trials']} of 24) | {c['valid_trials']} | {round(100 * c['pass_rate'])}% | – | – | {c['mean_score']:.2f} |",
+                   f"not in the totals) | {cells} |"]
     for m in s["models"]:
         c = card[m]
         claims.append(f"| {c['valid_trials']} | {round(100 * c['pass_rate'])}% | {round(100 * c['pass_at_k'])}% | "
@@ -904,14 +922,26 @@ def check_readme() -> Result:
         f"; MISSING {missing}" if missing else "")
 
 
+def check_manual_replies() -> Result:
+    """No chat-app reply was saved under two different tasks (a copy from the wrong chat)."""
+    seen: dict[tuple[str, str], str] = {}
+    bad = []
+    for p in sorted((ROOT / "manual").glob("*/task_*/trial_*.txt")):
+        text = p.read_text(encoding="utf-8").strip()
+        if text and seen.setdefault((p.parts[-3], text), p.parts[-2]) != p.parts[-2]:
+            bad.append("/".join(p.parts[-3:]))
+    return not bad, f"{len(seen)} different chat-app replies, none saved under two tasks" + (f"; SAME TEXT {bad}" if bad else "")
+
+
 def check_submission_texts() -> Result:
     s = scorecard_numbers()
     sub = (ROOT / "docs" / "SUBMISSION.md").read_text(encoding="utf-8")
     video = (ROOT / "docs" / "VIDEO_SCRIPT.md").read_text(encoding="utf-8")
     nemo, chat = sum(s["per_task"]["nemotron-3-ultra-free"]), sum(s["per_task"]["chatgpt-free"])
-    think = sum(s["per_task"]["chatgpt-think"])
+    think, gemini = sum(s["per_task"]["chatgpt-think"]), sum(s["per_task"]["gemini-free"])
     claims = [(sub, f"{s['pass']} of {s['valid']} trials"), (sub, f"solved {nemo} of 24"), (sub, f"solved {chat} of 24"),
               (sub, f"solved {think} of 24"), (video, f"solved {think} of 24"),
+              (sub, f"solved {gemini} of 24"), (video, f"{gemini} of 24"),
               (sub, f"{s['truncated']} of 48 trials"), (video, f"{s['pass']} exactly right"), (video, f"solved {nemo} of 24"),
               (video, f"solved {chat} of 24"), (video, f"{s['truncated']} of the 48"),
               (video, f"right {s['passes']} of the {s['answered']} times"),
@@ -950,6 +980,7 @@ def all_checks() -> list[tuple[str, list[Result]]]:
         ("Left quotient engine", check_left_quotient),
         ("Harness", check_harness_guard),
         ("Chat-app import", check_manual_import),
+        ("Chat-app replies", check_manual_replies),
         ("Parser fix (2026-11-01)", check_parser),
         ("Failure explainer", check_explainer),
         ("README analysis", check_readme),

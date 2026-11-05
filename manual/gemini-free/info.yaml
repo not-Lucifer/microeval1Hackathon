@@ -1,0 +1,8 @@
+# Fill in every field before importing (python run_eval.py --import-manual manual/).
+app: "Gemini, free plan, web"
+model_shown: "no model name shown (free plan)"
+date: "2026-11-05"
+reasoning_mode: "Fast (default mode, no thinking mode selected)"
+no_tools_confirmed: true    # code execution, web search and file tools were OFF and no reply used them
+new_chat_per_trial: true    # every trial was a brand-new chat (memory/personalization off)
+notes: "Each saved reply is one bare JSON block with no text around it (copied with the code block's copy button), so any text Gemini wrote around the block is not saved; only the final JSON is graded. Saved with scripts/paste_helper.py. Task 07 trial 3 was first saved as a copy of task 06 trial 3 from the wrong chat; the file was cleared before any grading and the trial was run again in a new chat with the same setup (docs/OPEN_QUESTIONS.md #57). No other reply was discarded or redone. Task set v2, trials 1-3."

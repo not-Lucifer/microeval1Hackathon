@@ -633,6 +633,183 @@
       "truncated": 0,
       "valid_trials": 24
     },
+    "claude-free": {
+      "api_errors": [],
+      "calls_with_unknown_cost": 0,
+      "completion_tokens": 0,
+      "cost_usd": 0.0,
+      "dates": [
+        "2026-11-05"
+      ],
+      "failure_code_histogram": {
+        "NOT_EQUIVALENT": 1,
+        "PASS": 7,
+        "WITNESS_NOT_DISTINGUISHING": 1
+      },
+      "failures": [
+        {
+          "failure_code": "WITNESS_NOT_DISTINGUISHING",
+          "listed_examples_missed": null,
+          "note": "`ababaababababaa` is in both languages",
+          "score": 0.0,
+          "task_id": "task_05",
+          "trial": 1
+        },
+        {
+          "failure_code": "NOT_EQUIVALENT",
+          "listed_examples_missed": null,
+          "note": "accepts `aabbabaab`, which is not in L",
+          "score": 0.0,
+          "task_id": "task_06",
+          "trial": 1
+        }
+      ],
+      "mean_score": 0.7778,
+      "mean_score_by_trial": {
+        "1": 0.75,
+        "2": 1.0
+      },
+      "mean_score_sd_across_trial_indices": 0.125,
+      "pass_at_k": 0.75,
+      "pass_hat_k": 0.75,
+      "pass_rate": 0.7778,
+      "settings": {
+        "app": "Claude.ai, free plan, web",
+        "max_tokens": null,
+        "model_shown": "sonnet 5.5 medium",
+        "new_chat_per_trial": true,
+        "no_tools_confirmed": true,
+        "notes": "Each saved reply is one bare JSON block with no text around it, so any text Claude wrote around the block is not saved; only the final JSON is graded. Saved with scripts/paste_helper.py. No reply was discarded or redone. Partial so far: 9 of 24 replies on 2026-11-05, when the free plan's limit was reached. Task set v2.",
+        "openrouter_id": null,
+        "provider": null,
+        "reasoning": "extended thinking off (off or not offered on the free plan)",
+        "seed": null,
+        "source": "manual chat app",
+        "temperature": null
+      },
+      "tasks": {
+        "task_01": {
+          "counterexamples": [
+            null,
+            null
+          ],
+          "failure_codes": [
+            null,
+            null
+          ],
+          "mean_score": 1.0,
+          "passes": 2,
+          "scores": [
+            1.0,
+            1.0
+          ],
+          "trials": 2
+        },
+        "task_02": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            null
+          ],
+          "mean_score": 1.0,
+          "passes": 1,
+          "scores": [
+            1.0
+          ],
+          "trials": 1
+        },
+        "task_03": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            null
+          ],
+          "mean_score": 1.0,
+          "passes": 1,
+          "scores": [
+            1.0
+          ],
+          "trials": 1
+        },
+        "task_04": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            null
+          ],
+          "mean_score": 1.0,
+          "passes": 1,
+          "scores": [
+            1.0
+          ],
+          "trials": 1
+        },
+        "task_05": {
+          "counterexamples": [
+            "ababaababaababaa"
+          ],
+          "failure_codes": [
+            "WITNESS_NOT_DISTINGUISHING"
+          ],
+          "mean_score": 0.0,
+          "passes": 0,
+          "scores": [
+            0.0
+          ],
+          "trials": 1
+        },
+        "task_06": {
+          "counterexamples": [
+            "aabbabaab"
+          ],
+          "failure_codes": [
+            "NOT_EQUIVALENT"
+          ],
+          "mean_score": 0.0,
+          "passes": 0,
+          "scores": [
+            0.0
+          ],
+          "trials": 1
+        },
+        "task_07": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            null
+          ],
+          "mean_score": 1.0,
+          "passes": 1,
+          "scores": [
+            1.0
+          ],
+          "trials": 1
+        },
+        "task_08": {
+          "counterexamples": [
+            null
+          ],
+          "failure_codes": [
+            null
+          ],
+          "mean_score": 1.0,
+          "passes": 1,
+          "scores": [
+            1.0
+          ],
+          "trials": 1
+        }
+      },
+      "total_latency_s": 0,
+      "trials_per_task": 2,
+      "trials_per_task_min": 1,
+      "truncated": 0,
+      "valid_trials": 9
+    },
     "dots-3-note-free": {
       "api_errors": [],
       "calls_with_unknown_cost": 0,
@@ -949,6 +1126,402 @@
       "truncated": 13,
       "valid_trials": 24
     },
+    "gemini-free": {
+      "api_errors": [],
+      "calls_with_unknown_cost": 0,
+      "completion_tokens": 0,
+      "cost_usd": 0.0,
+      "dates": [
+        "2026-11-05"
+      ],
+      "failure_code_histogram": {
+        "NON_MINIMAL_STATE_BLOAT": 3,
+        "NOT_EQUIVALENT": 10,
+        "OVERGENERATES": 1,
+        "PASS": 4,
+        "UNDERGENERATES": 3,
+        "WITNESS_NOT_DISTINGUISHING": 3
+      },
+      "failures": [
+        {
+          "failure_code": "NOT_EQUIVALENT",
+          "listed_examples_missed": [
+            "`1101` (listed in L)"
+          ],
+          "note": "rejects `1101`, which is in L",
+          "score": 0.0,
+          "task_id": "task_01",
+          "trial": 1
+        },
+        {
+          "failure_code": "NOT_EQUIVALENT",
+          "listed_examples_missed": [
+            "`101` (listed in L)",
+            "`00100` (listed in L)"
+          ],
+          "note": "rejects `101`, which is in L",
+          "score": 0.0,
+          "task_id": "task_01",
+          "trial": 2
+        },
+        {
+          "failure_code": "NOT_EQUIVALENT",
+          "listed_examples_missed": [
+            "`110` (listed in L)",
+            "`1101` (listed in L)"
+          ],
+          "note": "rejects `110`, which is in L",
+          "score": 0.0,
+          "task_id": "task_01",
+          "trial": 3
+        },
+        {
+          "failure_code": "NOT_EQUIVALENT",
+          "listed_examples_missed": [
+            "`abcba` (listed in L)"
+          ],
+          "note": "rejects `abcba`, which is in L",
+          "score": 0.0,
+          "task_id": "task_02",
+          "trial": 1
+        },
+        {
+          "failure_code": "NOT_EQUIVALENT",
+          "listed_examples_missed": [
+            "`aaaac` (listed in L)"
+          ],
+          "note": "rejects `aaac`, which is in L",
+          "score": 0.0,
+          "task_id": "task_02",
+          "trial": 2
+        },
+        {
+          "failure_code": "NOT_EQUIVALENT",
+          "listed_examples_missed": [],
+          "note": "accepts `abbbcac`, which is not in L",
+          "score": 0.0,
+          "task_id": "task_02",
+          "trial": 3
+        },
+        {
+          "failure_code": "NOT_EQUIVALENT",
+          "listed_examples_missed": null,
+          "note": "accepts `aabb`, which is not in L",
+          "score": 0.0,
+          "task_id": "task_03",
+          "trial": 1
+        },
+        {
+          "failure_code": "NON_MINIMAL_STATE_BLOAT",
+          "listed_examples_missed": null,
+          "note": "right language, but 14 states (minimal: 13)",
+          "score": 0.5,
+          "task_id": "task_03",
+          "trial": 2
+        },
+        {
+          "failure_code": "NON_MINIMAL_STATE_BLOAT",
+          "listed_examples_missed": null,
+          "note": "right language, but 84 states (minimal: 14)",
+          "score": 0.5,
+          "task_id": "task_04",
+          "trial": 1
+        },
+        {
+          "failure_code": "NOT_EQUIVALENT",
+          "listed_examples_missed": [],
+          "note": "accepts `0001`, which is not in L",
+          "score": 0.0,
+          "task_id": "task_04",
+          "trial": 2
+        },
+        {
+          "failure_code": "NON_MINIMAL_STATE_BLOAT",
+          "listed_examples_missed": null,
+          "note": "right language, but 84 states (minimal: 14)",
+          "score": 0.5,
+          "task_id": "task_04",
+          "trial": 3
+        },
+        {
+          "failure_code": "WITNESS_NOT_DISTINGUISHING",
+          "listed_examples_missed": null,
+          "note": "`ababababababaa` is in both languages",
+          "score": 0.0,
+          "task_id": "task_05",
+          "trial": 1
+        },
+        {
+          "failure_code": "WITNESS_NOT_DISTINGUISHING",
+          "listed_examples_missed": null,
+          "note": "`ababaababababaa` is in both languages",
+          "score": 0.0,
+          "task_id": "task_05",
+          "trial": 2
+        },
+        {
+          "failure_code": "WITNESS_NOT_DISTINGUISHING",
+          "listed_examples_missed": null,
+          "note": "`ababababababaa` is in both languages",
+          "score": 0.0,
+          "task_id": "task_05",
+          "trial": 3
+        },
+        {
+          "failure_code": "NOT_EQUIVALENT",
+          "listed_examples_missed": null,
+          "note": "rejects `aabbabab`, which is in L",
+          "score": 0.0,
+          "task_id": "task_06",
+          "trial": 1
+        },
+        {
+          "failure_code": "NOT_EQUIVALENT",
+          "listed_examples_missed": null,
+          "note": "rejects `aabbabaaaab`, which is in L",
+          "score": 0.0,
+          "task_id": "task_06",
+          "trial": 3
+        },
+        {
+          "failure_code": "OVERGENERATES",
+          "listed_examples_missed": [
+            "`([])` (listed not in L)"
+          ],
+          "note": "generates `([])`, which is not in L",
+          "score": 0.0,
+          "task_id": "task_07",
+          "trial": 1
+        },
+        {
+          "failure_code": "UNDERGENERATES",
+          "listed_examples_missed": [
+            "`aabbaa` (listed in L)",
+            "`abbaaaa` (listed in L)",
+            "`aaabbbaaa` (listed in L)"
+          ],
+          "note": "cannot generate `aabbaa`, which is in L",
+          "score": 0.0,
+          "task_id": "task_08",
+          "trial": 1
+        },
+        {
+          "failure_code": "UNDERGENERATES",
+          "listed_examples_missed": [
+            "`aabbaa` (listed in L)",
+            "`abbaaaa` (listed in L)",
+            "`aaabbbaaa` (listed in L)"
+          ],
+          "note": "cannot generate `aabbaa`, which is in L",
+          "score": 0.0,
+          "task_id": "task_08",
+          "trial": 2
+        },
+        {
+          "failure_code": "UNDERGENERATES",
+          "listed_examples_missed": [
+            "`aabbaa` (listed in L)",
+            "`abbaaaa` (listed in L)",
+            "`aaabbbaaa` (listed in L)"
+          ],
+          "note": "cannot generate `aabbaa`, which is in L",
+          "score": 0.0,
+          "task_id": "task_08",
+          "trial": 3
+        }
+      ],
+      "mean_score": 0.2292,
+      "mean_score_by_trial": {
+        "1": 0.0625,
+        "2": 0.3125,
+        "3": 0.3125
+      },
+      "mean_score_sd_across_trial_indices": 0.1179,
+      "pass_at_k": 0.375,
+      "pass_hat_k": 0.0,
+      "pass_rate": 0.1667,
+      "settings": {
+        "app": "Gemini, free plan, web",
+        "max_tokens": null,
+        "model_shown": "no model name shown (free plan)",
+        "new_chat_per_trial": true,
+        "no_tools_confirmed": true,
+        "notes": "Each saved reply is one bare JSON block with no text around it (copied with the code block's copy button), so any text Gemini wrote around the block is not saved; only the final JSON is graded. Saved with scripts/paste_helper.py. Task 07 trial 3 was first saved as a copy of task 06 trial 3 from the wrong chat; the file was cleared before any grading and the trial was run again in a new chat with the same setup (docs/OPEN_QUESTIONS.md #57). No other reply was discarded or redone. Task set v2, trials 1-3.",
+        "openrouter_id": null,
+        "provider": null,
+        "reasoning": "Fast (default mode, no thinking mode selected)",
+        "seed": null,
+        "source": "manual chat app",
+        "temperature": null
+      },
+      "tasks": {
+        "task_01": {
+          "counterexamples": [
+            "1101",
+            "101",
+            "110"
+          ],
+          "failure_codes": [
+            "NOT_EQUIVALENT",
+            "NOT_EQUIVALENT",
+            "NOT_EQUIVALENT"
+          ],
+          "mean_score": 0.0,
+          "passes": 0,
+          "scores": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "trials": 3
+        },
+        "task_02": {
+          "counterexamples": [
+            "abcba",
+            "aaac",
+            "abbbcac"
+          ],
+          "failure_codes": [
+            "NOT_EQUIVALENT",
+            "NOT_EQUIVALENT",
+            "NOT_EQUIVALENT"
+          ],
+          "mean_score": 0.0,
+          "passes": 0,
+          "scores": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "trials": 3
+        },
+        "task_03": {
+          "counterexamples": [
+            "aabb",
+            null,
+            null
+          ],
+          "failure_codes": [
+            "NOT_EQUIVALENT",
+            "NON_MINIMAL_STATE_BLOAT",
+            null
+          ],
+          "mean_score": 0.5,
+          "passes": 1,
+          "scores": [
+            0.0,
+            0.5,
+            1.0
+          ],
+          "trials": 3
+        },
+        "task_04": {
+          "counterexamples": [
+            null,
+            "0001",
+            null
+          ],
+          "failure_codes": [
+            "NON_MINIMAL_STATE_BLOAT",
+            "NOT_EQUIVALENT",
+            "NON_MINIMAL_STATE_BLOAT"
+          ],
+          "mean_score": 0.3333,
+          "passes": 0,
+          "scores": [
+            0.5,
+            0.0,
+            0.5
+          ],
+          "trials": 3
+        },
+        "task_05": {
+          "counterexamples": [
+            "ababaababaababaa",
+            "ababaababaababaa",
+            "ababaababaababaa"
+          ],
+          "failure_codes": [
+            "WITNESS_NOT_DISTINGUISHING",
+            "WITNESS_NOT_DISTINGUISHING",
+            "WITNESS_NOT_DISTINGUISHING"
+          ],
+          "mean_score": 0.0,
+          "passes": 0,
+          "scores": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "trials": 3
+        },
+        "task_06": {
+          "counterexamples": [
+            "aabbabab",
+            null,
+            "aabbabaaaab"
+          ],
+          "failure_codes": [
+            "NOT_EQUIVALENT",
+            null,
+            "NOT_EQUIVALENT"
+          ],
+          "mean_score": 0.3333,
+          "passes": 1,
+          "scores": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "trials": 3
+        },
+        "task_07": {
+          "counterexamples": [
+            "([])",
+            null,
+            null
+          ],
+          "failure_codes": [
+            "OVERGENERATES",
+            null,
+            null
+          ],
+          "mean_score": 0.6667,
+          "passes": 2,
+          "scores": [
+            0.0,
+            1.0,
+            1.0
+          ],
+          "trials": 3
+        },
+        "task_08": {
+          "counterexamples": [
+            "aabbaa",
+            "aabbaa",
+            "aabbaa"
+          ],
+          "failure_codes": [
+            "UNDERGENERATES",
+            "UNDERGENERATES",
+            "UNDERGENERATES"
+          ],
+          "mean_score": 0.0,
+          "passes": 0,
+          "scores": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "trials": 3
+        }
+      },
+      "total_latency_s": 0,
+      "trials_per_task": 3,
+      "trials_per_task_min": 3,
+      "truncated": 0,
+      "valid_trials": 24
+    },
     "gemma-4-31b-free": {
       "api_errors": [
         "task_01/trial_1",
@@ -1257,5 +1830,5 @@
       "valid_trials": 24
     }
   },
-  "n_transcripts": 99
+  "n_transcripts": 132
 }
