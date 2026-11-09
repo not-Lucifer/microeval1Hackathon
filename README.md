@@ -4,7 +4,7 @@
 
 **Headline.** Of 120 graded trials (5 model settings × 8 tasks × 3 trials, free routes only), 54 (45%) were exactly right. The best setting, ChatGPT's free web app with Think on, solved 18 of 24 and every task at least once, but was right in all three trials on only 2 of the 8 tasks. The same app with Think off solved 6 of 24, and Gemini's free web app in its default Fast mode solved 4 of 24. The best open model, NVIDIA Nemotron 3 Ultra (free endpoint, high reasoning effort), solved 16 of 24, right in all three trials on only 3 of the 8 tasks. Two tasks were solved only 3 times in 15 trials: a DFA for three simple conditions at once (T01) and a grammar with three remainder cases (T08). The two open reasoning models never finished a Task 08 grammar within 64,000 output tokens (0 of 6). A sixth setting, Claude.ai's free plan (Sonnet 5.5, extended thinking off), was run for only 2 trials per task and is not in these totals. It did best of all: 14 of 16 right, and every task at least once; both of its misses are near misses of the kind described below.
 
-**Video walkthrough (4:45):** VIDEO_LINK_TODO. It covers the problem, how the eval works, why models fail and what the results show.
+**Video walkthrough (under 5 minutes):** [https://youtu.be/uoQBka6VnOU](https://youtu.be/uoQBka6VnOU). It covers the problem, how the eval works, why models fail and what the results show.
 
 **Where to find each part:** short description (above) · [domain and expertise](#domain-and-expertise) · [what it tests and why it matters](#who-relies-on-this-and-why-it-matters) · [setup and run](#quick-start) (more in [Reproducing](#reproducing)) · [models tested and results](#results) · [failure analysis](#main-failure-mode-and-hot-take) · [prior work and sources](#provenance).
 

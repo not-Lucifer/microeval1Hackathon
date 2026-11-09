@@ -4,6 +4,8 @@ Drafted by Claude Code at the author's request (see `docs/AI_USE.md`). Every num
 `results/summary.md` (2026-11-09, final). If a result changes, regenerate it with
 `python run_eval.py --regrade transcripts/` and update this file and the README together.
 
+**Video link (form field and README):** https://youtu.be/uoQBka6VnOU
+
 ## Short written description (paste into the HackerRank form)
 
 **Automata-Synth-Eval.** Domain: formal languages and automata, the theory behind lexers,
