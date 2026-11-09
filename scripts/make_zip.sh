@@ -28,7 +28,7 @@ fi
 mkdir -p dist
 OUT=dist/automata-synth-eval.zip
 rm -f "$OUT"
-git archive --format=zip --prefix=automata-synth-eval/ -o "$OUT" HEAD
+git archive --format=zip -o "$OUT" HEAD   # no prefix: README.md sits at the root of the zip, as the rules ask
 
 SIZE=$(wc -c < "$OUT")
 LIMIT=$((50 * 1024 * 1024))
