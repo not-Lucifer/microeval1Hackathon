@@ -4,6 +4,24 @@
 
 **Headline.** Of 120 graded trials (5 model settings × 8 tasks × 3 trials, free routes only), 54 (45%) were exactly right. The best setting, ChatGPT's free web app with Think on, solved 18 of 24 and every task at least once, but was right in all three trials on only 2 of the 8 tasks. The same app with Think off solved 6 of 24, and Gemini's free web app in its default Fast mode solved 4 of 24. The best open model, NVIDIA Nemotron 3 Ultra (free endpoint, high reasoning effort), solved 16 of 24, right in all three trials on only 3 of the 8 tasks. Two tasks were solved only 3 times in 15 trials: a DFA for three simple conditions at once (T01) and a grammar with three remainder cases (T08). The two open reasoning models never finished a Task 08 grammar within 64,000 output tokens (0 of 6). A sixth setting, Claude.ai's free plan (Sonnet 5.5, extended thinking off), was run for only 2 trials per task and is not in these totals. It did best of all: 14 of 16 right, and every task at least once; both of its misses are near misses of the kind described below.
 
+**Video walkthrough (4:45):** VIDEO_LINK_TODO. It covers the problem, how the eval works, why models fail and what the results show.
+
+**Where to find each part:** short description (above) · [domain and expertise](#domain-and-expertise) · [what it tests and why it matters](#who-relies-on-this-and-why-it-matters) · [setup and run](#quick-start) (more in [Reproducing](#reproducing)) · [models tested and results](#results) · [failure analysis](#main-failure-mode-and-hot-take) · [prior work and sources](#provenance).
+
+## Domain and expertise
+
+**Field:** formal languages and automata theory, the part of the theory of computation behind lexers, regex engines, protocol and runtime monitors, input validators and parsers.
+
+**The expertise the eval draws on:**
+- building one automaton for several conditions at once (product constructions) and for timed obligations (T01, T02);
+- determinizing an ε-NFA by the subset construction with ε-closures (T06), and left quotients, which need reachability plus subsets (T03);
+- minimizing DFAs by partition refinement and proving minimality through Myhill–Nerode classes, the basis of the 0.5 score for a correct but bloated DFA (T01–T04, T06);
+- modular arithmetic on numbers read least significant digit first, where the right state is the remainder the rest of the number still owes (T04);
+- regex equivalence and the shortest word on which two regexes differ, found by BFS on a product automaton (T05);
+- context-free grammars in Chomsky normal form, and the pumping lemma, which showed that a first draft of Task 08 is not context-free and so has no reference answer (T07, T08).
+
+**How it is applied:** each task was chosen because an expert sees a specific trap in it (for example T04's reversal insight, or T05's `X*` versus `X?` edit that no short test reveals). Every reference answer is computed by a script and checked by an independent re-implementation (`scripts/review_checks.py`). The author checked every task, reference answer and grading rule by hand (`docs/REVIEW_LOG.md`).
+
 ## Who relies on this, and why it matters
 
 People ask chat assistants to write and review small state machines all the time: a lexer rule, a protocol state machine with timeouts, a firewall or log-filter regex, a validator for a number format, a grammar for a configuration language. Students and tutors use them to check homework DFAs. In all of these the assistant answers in one go, without running code, and the human usually checks the answer by trying a few short inputs.
@@ -206,7 +224,7 @@ Each note names the failure the grader found; the "first fault" statements come 
 - **Offline (what a judge needs):** the Quick start above. `python run_eval.py --regrade transcripts/` re-parses and re-grades every saved transcript and rewrites `results/` from them (transcripts themselves change only with `--write`). It exits 1 if any grade differs from the stored one. `python scripts/explain_failures.py` prints, for every wrong DFA, the first faulty entry of its table on the counterexample.
 - **Exact environment:** `pip install -r requirements-lock.txt` installs the exact version of every package used for the recorded runs (Python 3.13.7, Windows 11).
 - **Instances are deterministic:** `python scripts/generate_instances.py --check` confirms that `tasks/` and `reference/` match the seeded generators.
-- **Live, free models:** put `OPENROUTER_API_KEY=...` in `.env` (see `.env.example`), then
+- **Live, free models:** put `OPENROUTER_API_KEY=...` in `.env` (see `.env.example`) or set it as an environment variable, then
   `python run_eval.py --models models.free.yaml --trials 3 --max-cost 0 --concurrency 1 --max-attempts 2 --max-requests 45`.
   `--max-cost 0` refuses anything that is not a `:free` model. OpenRouter allows 50 free requests per day, and failed attempts count. Finished answers are cached, so the same command continues the next day. Guide: [docs/RUNNING_FOR_FREE.md](docs/RUNNING_FOR_FREE.md).
 - **Live, chat apps:** `python run_eval.py --new-manual NAME --trials 3` writes the exact text to paste and empty reply files (`python scripts/paste_helper.py NAME` then moves each prompt and reply through the clipboard); `python run_eval.py --import-manual manual/` grades them with the same code.

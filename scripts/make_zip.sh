@@ -15,6 +15,10 @@ if [ -n "$(git status --porcelain)" ]; then
   echo "make_zip: uncommitted changes; commit first (the zip is built from HEAD)" >&2
   exit 1
 fi
+if grep -q "VIDEO_LINK_TODO" README.md; then
+  echo "make_zip: README.md still has the VIDEO_LINK_TODO placeholder; put the video link in first" >&2
+  exit 1
+fi
 if git ls-files | grep -Eiq '\.(mp4|mov|mkv|avi|webm)$'; then
   echo "make_zip: video files are tracked; remove them" >&2
   exit 1
