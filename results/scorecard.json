@@ -643,7 +643,7 @@
       ],
       "failure_code_histogram": {
         "NOT_EQUIVALENT": 1,
-        "PASS": 7,
+        "PASS": 14,
         "WITNESS_NOT_DISTINGUISHING": 1
       },
       "failures": [
@@ -664,22 +664,22 @@
           "trial": 1
         }
       ],
-      "mean_score": 0.7778,
+      "mean_score": 0.875,
       "mean_score_by_trial": {
         "1": 0.75,
         "2": 1.0
       },
       "mean_score_sd_across_trial_indices": 0.125,
-      "pass_at_k": 0.75,
+      "pass_at_k": 1.0,
       "pass_hat_k": 0.75,
-      "pass_rate": 0.7778,
+      "pass_rate": 0.875,
       "settings": {
         "app": "Claude.ai, free plan, web",
         "max_tokens": null,
         "model_shown": "sonnet 5.5 medium",
         "new_chat_per_trial": true,
         "no_tools_confirmed": true,
-        "notes": "Each saved reply is one bare JSON block with no text around it, so any text Claude wrote around the block is not saved; only the final JSON is graded. Saved with scripts/paste_helper.py. No reply was discarded or redone. Partial so far: 9 of 24 replies on 2026-11-05, when the free plan's limit was reached. Task set v2.",
+        "notes": "Each saved reply is one bare JSON block with no text around it, so any text Claude wrote around the block is not saved; only the final JSON is graded. Saved with scripts/paste_helper.py. No reply was discarded or redone. Trials 1-2 only: 9 replies on 2026-11-05 (stopped by the free plan's limit) and 7 on 2026-11-09; trial 3 was skipped for lack of time before the deadline. Task set v2.",
         "openrouter_id": null,
         "provider": null,
         "reasoning": "extended thinking off (off or not offered on the free plan)",
@@ -707,108 +707,129 @@
         },
         "task_02": {
           "counterexamples": [
+            null,
             null
           ],
           "failure_codes": [
+            null,
             null
           ],
           "mean_score": 1.0,
-          "passes": 1,
+          "passes": 2,
           "scores": [
+            1.0,
             1.0
           ],
-          "trials": 1
+          "trials": 2
         },
         "task_03": {
           "counterexamples": [
+            null,
             null
           ],
           "failure_codes": [
+            null,
             null
           ],
           "mean_score": 1.0,
-          "passes": 1,
+          "passes": 2,
           "scores": [
+            1.0,
             1.0
           ],
-          "trials": 1
+          "trials": 2
         },
         "task_04": {
           "counterexamples": [
+            null,
             null
           ],
           "failure_codes": [
+            null,
             null
           ],
           "mean_score": 1.0,
-          "passes": 1,
+          "passes": 2,
           "scores": [
+            1.0,
             1.0
           ],
-          "trials": 1
+          "trials": 2
         },
         "task_05": {
           "counterexamples": [
-            "ababaababaababaa"
+            "ababaababaababaa",
+            null
           ],
           "failure_codes": [
-            "WITNESS_NOT_DISTINGUISHING"
+            "WITNESS_NOT_DISTINGUISHING",
+            null
           ],
-          "mean_score": 0.0,
-          "passes": 0,
+          "mean_score": 0.5,
+          "passes": 1,
           "scores": [
-            0.0
+            0.0,
+            1.0
           ],
-          "trials": 1
+          "trials": 2
         },
         "task_06": {
           "counterexamples": [
-            "aabbabaab"
+            "aabbabaab",
+            null
           ],
           "failure_codes": [
-            "NOT_EQUIVALENT"
+            "NOT_EQUIVALENT",
+            null
           ],
-          "mean_score": 0.0,
-          "passes": 0,
+          "mean_score": 0.5,
+          "passes": 1,
           "scores": [
-            0.0
+            0.0,
+            1.0
           ],
-          "trials": 1
+          "trials": 2
         },
         "task_07": {
           "counterexamples": [
+            null,
             null
           ],
           "failure_codes": [
+            null,
             null
           ],
           "mean_score": 1.0,
-          "passes": 1,
+          "passes": 2,
           "scores": [
+            1.0,
             1.0
           ],
-          "trials": 1
+          "trials": 2
         },
         "task_08": {
           "counterexamples": [
+            null,
             null
           ],
           "failure_codes": [
+            null,
             null
           ],
           "mean_score": 1.0,
-          "passes": 1,
+          "passes": 2,
           "scores": [
+            1.0,
             1.0
           ],
-          "trials": 1
+          "trials": 2
         }
       },
       "total_latency_s": 0,
       "trials_per_task": 2,
-      "trials_per_task_min": 1,
+      "trials_per_task_min": 2,
       "truncated": 0,
-      "valid_trials": 9
+      "valid_trials": 16
     },
     "dots-3-note-free": {
       "api_errors": [],
@@ -1830,5 +1851,5 @@
       "valid_trials": 24
     }
   },
-  "n_transcripts": 132
+  "n_transcripts": 139
 }

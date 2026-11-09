@@ -911,8 +911,8 @@ def check_readme() -> Result:
         c = card[m]
         passes = sum(t["passes"] for t in c["tasks"].values())
         cells = " | ".join(f"{t['passes']}/{t['trials']}" for _, t in sorted(c["tasks"].items()))
-        claims += [f"{passes} of its first {c['valid_trials']} replies", f"{c['valid_trials']} of 24) | {c['valid_trials']} | {round(100 * c['pass_rate'])}% | – | – | {c['mean_score']:.2f} |",
-                   f"not in the totals) | {cells} |"]
+        claims += [f"{passes} of {c['valid_trials']}", f"| {c['valid_trials']} | {round(100 * c['pass_rate'])}% | {round(100 * c['pass_at_k'])}% | "
+                   f"{round(100 * c['pass_hat_k'])}% | {c['mean_score']:.2f} |", f"not in the totals) | {cells} |"]
     for m in s["models"]:
         c = card[m]
         claims.append(f"| {c['valid_trials']} | {round(100 * c['pass_rate'])}% | {round(100 * c['pass_at_k'])}% | "

@@ -131,8 +131,8 @@ counts, so there is no second calibration round.
 **Status (2026-11-01): ahead of plan.** Route A trials 1-3 are done for Nemotron and Dots
 (Gemma's free provider answered HTTP 429 to every call, so it has no valid trial). Route B
 trials 1-3 are done for ChatGPT with Think off (2026-11-01) and with Think on (2026-11-02).
-Gemini in Fast mode is done (2026-11-05). Claude.ai is at 9 of 24 replies, stopped by the free
-plan's limit; `python scripts/paste_helper.py claude-free` continues where it stopped.
+Gemini in Fast mode is done (2026-11-05). Claude.ai has trials 1-2 (2026-11-05 and 2026-11-09);
+trial 3 was skipped for time (`docs/OPEN_QUESTIONS.md` #60).
 DeepSeek with DeepThink on was started on 2026-11-05 and dropped because it took too long
 (`docs/OPEN_QUESTIONS.md` #56).
 

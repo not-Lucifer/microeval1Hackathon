@@ -143,7 +143,7 @@
     "model_shown": "sonnet 5.5 medium",
     "new_chat_per_trial": true,
     "no_tools_confirmed": true,
-    "notes": "Each saved reply is one bare JSON block with no text around it, so any text Claude wrote around the block is not saved; only the final JSON is graded. Saved with scripts/paste_helper.py. No reply was discarded or redone. Partial so far: 9 of 24 replies on 2026-11-05, when the free plan's limit was reached. Task set v2.",
+    "notes": "Each saved reply is one bare JSON block with no text around it, so any text Claude wrote around the block is not saved; only the final JSON is graded. Saved with scripts/paste_helper.py. No reply was discarded or redone. Trials 1-2 only: 9 replies on 2026-11-05 (stopped by the free plan's limit) and 7 on 2026-11-09; trial 3 was skipped for lack of time before the deadline. Task set v2.",
     "openrouter_id": null,
     "provider": null,
     "reasoning": "extended thinking off (off or not offered on the free plan)",

@@ -37,11 +37,12 @@ the author decided not to rewrite them (2026-11-01).
 - Collected the 24 ChatGPT replies with Think on by hand on 2026-11-02, using
   `scripts/paste_helper.py`, and confirmed the setup (`manual/chatgpt-think/info.yaml`). Claude
   Code imported and graded them and updated the README and submission texts.
-- Collected the Gemini replies (Fast mode) and the first 9 Claude.ai replies by hand on
-  2026-11-05, and confirmed their setup (`manual/gemini-free/info.yaml`,
-  `manual/claude-free/info.yaml`). Chose to drop DeepSeek (`OPEN_QUESTIONS.md` #56).
+- Collected the Gemini replies (Fast mode, 2026-11-05) and the Claude.ai replies (trials 1-2,
+  2026-11-05 and 2026-11-09) by hand, and confirmed their setup (`manual/gemini-free/info.yaml`,
+  `manual/claude-free/info.yaml`). Chose to drop DeepSeek and to skip Claude's trial 3
+  (`OPEN_QUESTIONS.md` #56, #60).
 
-Claude Code is an Anthropic product, and a Claude model is among those tested. The grades come
+Claude Code is an Anthropic product, and a Claude model is among those tested (and scored best). The grades come
 from algorithms and can be re-run offline, but the task wording was drafted by Claude Code; the
 README's Limitations say so.
 - Read the failing transcripts and studied the test cases (author's statement, 2026-11-01).

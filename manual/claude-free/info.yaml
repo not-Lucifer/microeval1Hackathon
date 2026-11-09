@@ -5,4 +5,4 @@ date: "2026-11-05"
 reasoning_mode: "extended thinking off (off or not offered on the free plan)"
 no_tools_confirmed: true    # code execution, web search and file tools were OFF and no reply used them
 new_chat_per_trial: true    # every trial was a brand-new chat (memory/personalization off)
-notes: "Each saved reply is one bare JSON block with no text around it, so any text Claude wrote around the block is not saved; only the final JSON is graded. Saved with scripts/paste_helper.py. No reply was discarded or redone. Partial so far: 9 of 24 replies on 2026-11-05, when the free plan's limit was reached. Task set v2."
+notes: "Each saved reply is one bare JSON block with no text around it, so any text Claude wrote around the block is not saved; only the final JSON is graded. Saved with scripts/paste_helper.py. No reply was discarded or redone. Trials 1-2 only: 9 replies on 2026-11-05 (stopped by the free plan's limit) and 7 on 2026-11-09; trial 3 was skipped for lack of time before the deadline. Task set v2."
