@@ -5,5 +5,3 @@
 *.png binary
 *.zip binary
 
-# Left out of the submission zip: a condensed copy of the organisers' participant guide (third-party material).
-docs/HACKATHON_BRIEF.md export-ignore

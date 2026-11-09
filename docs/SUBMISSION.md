@@ -1,5 +1,7 @@
 # Submission texts and checklist
 
+> Submitted on 2026-11-09 from the commit tagged `submission`. `scripts/make_zip.sh` and `docs/HACKATHON_BRIEF.md`, named below, were removed from the repository afterwards and are in that tag.
+
 Drafted by Claude Code at the author's request (see `docs/AI_USE.md`). Every number is copied from
 `results/summary.md` (2026-11-09, final). If a result changes, regenerate it with
 `python run_eval.py --regrade transcripts/` and update this file and the README together.

@@ -1,4 +1,4 @@
-"""Every prompt states what the grader checks (CLAUDE.md rule 3), and every example in a
+"""Every prompt states what the grader checks (rule 3, docs/DESIGN_RULES.md), and every example in a
 prompt is consistent with the real grader/reference."""
 import json
 import re

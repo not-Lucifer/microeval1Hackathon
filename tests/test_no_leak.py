@@ -1,4 +1,4 @@
-"""Reference answers never reach the model (CLAUDE.md rule 5)."""
+"""Reference answers never reach the model (rule 5, docs/DESIGN_RULES.md)."""
 import ast
 import json
 from pathlib import Path

@@ -2,7 +2,11 @@
 
 This eval is **AI-assisted**. The author designed the project (idea doc, task families,
 rubric mapping in `docs/PROJECT_GUIDE.md`) and is responsible for every task, reference
-answer and grading rule. Claude Code (Anthropic) was used as a pair programmer.
+answer and grading rule. Claude Code (Anthropic) was used as a pair programmer, driven by a
+project instructions file (`CLAUDE.md`) and phase prompts (`docs/KICKOFF_PROMPTS.md`). Those two
+files, the clipboard helper `scripts/paste_helper.py` and the zip builder `scripts/make_zip.sh`
+were removed from the repository after submission (2026-11-09); all of them are in the
+git tag `submission`, the exact commit the submitted zip was built from.
 
 ## What Claude Code drafted (2026-10-30, Phases 0-3 of `docs/KICKOFF_PROMPTS.md`)
 

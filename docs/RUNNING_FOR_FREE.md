@@ -49,7 +49,7 @@ python run_eval.py --models models.free.yaml --trials 1 --max-cost 0 --concurren
   that model again later, e.g. at a different time of day.
 - `503 ... overloaded`: same, try again later. Finished answers are cached.
 - `TRUNCATED`: the model used its whole `max_tokens` without answering. That *is* a model
-  failure (CLAUDE.md rule 8). It is counted and reported separately.
+  failure (rule 8, docs/DESIGN_RULES.md). It is counted and reported separately.
 
 ---
 
@@ -69,14 +69,10 @@ This creates `manual/chatgpt-free/info.yaml`, empty files
 web search, file tools, side panels (Canvas, Artifacts), and memory/personalization. Use a temporary or incognito chat if the
 app has one. Keep the same model and the same reasoning setting for every trial.
 
-**Faster:** `python scripts/paste_helper.py <name>` does the file handling for steps 3.2-3.4.
-It puts the next prompt on the clipboard; you paste it into a new chat and copy the reply, then
-press Enter and it saves the reply to the right trial file, unchanged. Trial 1 of every task
-comes first. It asks before saving a reply identical to one already saved for that model, which
-usually means a copy from the wrong chat. Run one helper at a time, because they share the
-clipboard. You still use the app by hand: automating a consumer chat app with a bot or
-browser agent is against the terms of several of them (e.g. OpenAI's and Anthropic's), and the
-hackathon rules require respecting every tool's terms.
+Use each app by hand: automating a consumer chat app with a bot or browser agent is against the
+terms of several of them (e.g. OpenAI's and Anthropic's), and the hackathon rules require
+respecting every tool's terms. (The recorded runs used a small clipboard helper,
+`scripts/paste_helper.py`, removed after submission; it is in the git tag `submission`.)
 
 **3. For every task and every trial:**
 1. Open a **brand-new chat**.
@@ -88,10 +84,10 @@ hackathon rules require respecting every tool's terms.
    scores 0, as the prompt says), so the file must be exactly what the model wrote.
 5. If the reply visibly ran code, searched the web or put its answer in a side panel, discard it
    and redo the trial in a new chat. Do the same for an app error or a limit message: neither is
-   the model's answer. (In the helper: `r` copies the prompt again.)
+   the model's answer.
 6. If the model itself stops without a final JSON (cut off, a question, a refusal), save the reply
    as it is: that is a failure. Do not press "Continue", because the eval is single-turn.
-7. If the app says a limit was reached or switches to another model, stop (`q` in the helper) and
+7. If the app says a limit was reached or switches to another model, stop and
    go on after the limit resets, so that every trial uses the same model.
 
 **4. Fill in `manual/<name>/info.yaml`**: app, the model name the app showed, the date, the

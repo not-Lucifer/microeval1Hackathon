@@ -1,6 +1,8 @@
 # Automata-Synth-Eval — Project Development Guide
 
 **Hackathon:** micro1 Eval Hackathon · **Submission deadline:** Nov 9, 2026, 10:45 AM IST (internal target: Nov 8 evening IST)
+> Note (2026-11-09): this is the original planning kit. `CLAUDE.md`, `docs/HACKATHON_BRIEF.md`, `docs/KICKOFF_PROMPTS.md` and `scripts/make_zip.sh` were removed from the repository after submission and are in the git tag `submission`; the design rules are in `docs/DESIGN_RULES.md`.
+
 **Place at:** `docs/PROJECT_GUIDE.md` · Companion files: `CLAUDE.md` (repo root), `docs/HACKATHON_BRIEF.md`, `docs/KICKOFF_PROMPTS.md`
 
 ---

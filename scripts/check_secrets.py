@@ -1,4 +1,4 @@
-"""Secret and hygiene scanner, used by the git pre-commit hook and by make_zip.sh.
+"""Secret and hygiene scanner, used by the git pre-commit hook.
 
 Usage:
     python scripts/check_secrets.py            # scan every git-tracked file

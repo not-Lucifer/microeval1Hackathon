@@ -9,7 +9,7 @@ from graders.failure_codes import FailureCode
 
 
 class GradeResult(BaseModel):
-    score: float  # 1.0, 0.5 or 0.0 (see CLAUDE.md "Scoring convention")
+    score: float  # 1.0, 0.5 or 0.0 (see docs/DESIGN_RULES.md, "Scoring convention")
     passed: bool  # score == 1.0; used for pass@k and pass^k
     failure_code: Optional[FailureCode] = None
     counterexample: Optional[str] = None  # shortest string exposing the error, when one exists

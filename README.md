@@ -227,7 +227,7 @@ Each note names the failure the grader found; the "first fault" statements come 
 - **Live, free models:** put `OPENROUTER_API_KEY=...` in `.env` (see `.env.example`) or set it as an environment variable, then
   `python run_eval.py --models models.free.yaml --trials 3 --max-cost 0 --concurrency 1 --max-attempts 2 --max-requests 45`.
   `--max-cost 0` refuses anything that is not a `:free` model. OpenRouter allows 50 free requests per day, and failed attempts count. Finished answers are cached, so the same command continues the next day. Guide: [docs/RUNNING_FOR_FREE.md](docs/RUNNING_FOR_FREE.md).
-- **Live, chat apps:** `python run_eval.py --new-manual NAME --trials 3` writes the exact text to paste and empty reply files (`python scripts/paste_helper.py NAME` then moves each prompt and reply through the clipboard); `python run_eval.py --import-manual manual/` grades them with the same code.
+- **Live, chat apps:** `python run_eval.py --new-manual NAME --trials 3` writes the exact text to paste and empty reply files; `python run_eval.py --import-manual manual/` grades them with the same code.
 - **Live, paid models:** fill verified ids in `models.yaml`, then `python run_eval.py --models models.yaml --trials 3 --dry-run` (free estimate) and `--max-cost 5`. A live run refuses to start without `--max-cost` and stops if OpenRouter reports the account is out of credits.
 - **Results vary run to run** (sampling, provider changes); the saved transcripts are the evidence, and the offline re-grade reproduces every number in this README exactly.
 - **The v1 pilot:** in the git repository (the zip has no git history), `git checkout pilot-v1`, then `python run_eval.py --regrade transcripts/` (0 grades differ), then `git checkout main`. The zip contains the pilot's transcripts and summary in `pilot_v1/` for reading.
@@ -261,7 +261,7 @@ The first draft of Task 08, `{aⁱbʲaᵏ : i+k = 2j, i > k ≥ 1}`, is **not co
 
 ## AI use
 
-See [docs/AI_USE.md](docs/AI_USE.md). In short:
+See [docs/AI_USE.md](docs/AI_USE.md). The instructions and prompts used to drive Claude Code (`CLAUDE.md`, `docs/KICKOFF_PROMPTS.md`) were removed from the repository after submission and are in the git tag `submission`. In short:
 - **Claude Code** drafted the code, tests, task prompts, reference constructions and docs. At the author's request it also drafted this README's analysis sections (who relies on this, why each task is hard, per-task notes, failure analysis and hot take, provenance) and the task rationale texts.
 - **How it was checked:** every number is recomputed by scripts, every grader is tested against references, mutants and brute force, and every model grade was re-checked by an independent script. The author read the failing transcripts.
 - **Review:** at the author's request, Claude Code re-did every row of `docs/REVIEW_LOG.md` (each task, reference and grader) with an independent script, `python scripts/review_checks.py`, and ticked those rows as machine checks. The author then checked all 29 rows by hand and ticked them in a separate column (2026-11-01). The log keeps the two kinds of check apart.
@@ -269,6 +269,5 @@ See [docs/AI_USE.md](docs/AI_USE.md). In short:
 ## Repository hygiene
 
 - `git config core.hooksPath .githooks` enables a pre-commit hook (`scripts/check_secrets.py`) that blocks API keys, `.env` files, videos and files over 5 MB.
-- `bash scripts/make_zip.sh` builds the submission zip from the committed tree and fails on secrets or if the zip exceeds 50 MB.
 
 License: MIT.

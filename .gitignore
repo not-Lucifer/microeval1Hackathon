@@ -29,8 +29,13 @@ video/
 *.mkv
 *.avi
 *.webm
-# The official participant guide PDF is condensed in docs/HACKATHON_BRIEF.md
+# The official participant guide PDF
 docs/*.pdf
+# Kept locally, not published: Claude Code's instructions and prompts, and a condensed copy of
+# the participant guide (all three are in the git tag `submission`)
+CLAUDE.md
+docs/KICKOFF_PROMPTS.md
+docs/HACKATHON_BRIEF.md
 
 # --- Editors / OS -----------------------------------------------------------
 .vscode/

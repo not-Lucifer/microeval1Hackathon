@@ -3,7 +3,7 @@
     python scripts/verify_specs.py      # prints a table; exit 1 on any mismatch
 
 EXPECTED holds the values the docs quote. Each is recomputed here; when a doc and this
-script disagree, the computed value wins and the doc must be fixed (CLAUDE.md rule 1).
+script disagree, the computed value wins and the doc must be fixed (rule 1, docs/DESIGN_RULES.md).
 Besides the headline numbers, it re-runs brute-force cross-checks, re-asserts the
 generator constraints on the task files, checks that every reference answer scores 1.0,
 and that tasks/ and reference/ are up to date with scripts/generate_instances.py.

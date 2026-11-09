@@ -5,7 +5,7 @@ file (reference/*.ref.json: answers), deterministically from fixed seeds.
     python scripts/generate_instances.py --check  # exit 1 if files on disk are stale
 
 Prompt texts live here so that every condition the grader checks is visibly stated in
-the prompt (CLAUDE.md rule 3). tests/test_tasks_wellformed.py checks this mechanically.
+the prompt (rule 3, docs/DESIGN_RULES.md). tests/test_tasks_wellformed.py checks this mechanically.
 """
 from __future__ import annotations
 
